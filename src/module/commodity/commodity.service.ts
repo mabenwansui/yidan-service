@@ -4,19 +4,24 @@ import { Model } from 'mongoose'
 import { CreateCommodityDto } from './dto/createCommodity.dto'
 import { CommodityCreatedResponseDto } from './dto/commodityCreatedResponse.dto'
 import { Commodity } from './schemas/commodity.schema'
+import { AuthModule } from '@/module/auth/auth.module'
+
 
 @Injectable()
 export class CommodityService {
-  constructor(@InjectModel(Commodity.name) private readonly commodityModel: Model<Commodity>) {}
+  constructor(
+    @InjectModel(Commodity.name)
+    private readonly commodityModel: Model<Commodity>,
+  ) {}
 
   async create(createCatDto: CreateCommodityDto): Promise<CommodityCreatedResponseDto> {
+    console.log('createCatDto----------------:', createCatDto)
     const createdCat = await this.commodityModel.create(createCatDto)
     return createdCat
   }
 
   async findAll(): Promise<Commodity[]> {
     const result = await this.commodityModel.find().exec()
-    console.log('findAll', result)
     return result
   }
 

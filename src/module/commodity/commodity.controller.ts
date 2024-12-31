@@ -1,17 +1,17 @@
-import { Body, Controller, Get, Param, Post, ParseIntPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, ParseIntPipe, UseGuards } from '@nestjs/common'
 import { CreateCommodityDto } from './dto/createCommodity.dto'
 import { CommodityService } from './commodity.service'
 import { Commodity } from './schemas/commodity.schema'
+import { JwtAuthGuard } from '@/module/auth/jwt-auth.guard'
 
 @Controller('commodity')
 export class CommodityController {
   constructor(private readonly catsService: CommodityService) {}
 
-  @Post()
+  @Post('create')
+  @UseGuards(JwtAuthGuard)
   async create(@Body() createCatDto: CreateCommodityDto) {
-    const rb = await this.catsService.create(createCatDto)
-    console.log('rb', rb)
-    return rb
+    return await this.catsService.create(createCatDto)    
   }
 
   @Get()
