@@ -1,3 +1,1 @@
-export class CommodityListDto {
-  
-}
+export class CommodityListDto {}

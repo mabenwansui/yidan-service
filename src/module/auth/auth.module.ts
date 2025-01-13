@@ -7,7 +7,6 @@ import { UserModule } from '@/module/user/user.module'
 import { jwtConstants } from '@/common/constants/secret'
 import { JwtStrategy } from './jwt.strategy'
 
-
 @Module({
   imports: [
     UserModule,
@@ -15,10 +14,10 @@ import { JwtStrategy } from './jwt.strategy'
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
-    }),    
+    }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}

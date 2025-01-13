@@ -2,4 +2,6 @@ import { customAlphabet } from 'nanoid'
 
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
-export const generateUserId = () => customAlphabet(alphabet, 16)()
+export function generateUuid(length = 16) {
+  return customAlphabet(alphabet, length)()
+}

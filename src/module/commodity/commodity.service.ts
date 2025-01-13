@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { CreateCommodityDto } from './dto/createCommodity.dto'
@@ -9,13 +9,14 @@ import { AuthModule } from '@/module/auth/auth.module'
 
 @Injectable()
 export class CommodityService {
+  private readonly logger = new Logger(CommodityService.name);
   constructor(
     @InjectModel(Commodity.name)
     private readonly commodityModel: Model<Commodity>,
   ) {}
 
   async create(createCatDto: CreateCommodityDto): Promise<CommodityCreatedResponseDto> {
-    console.log('createCatDto----------------:', createCatDto)
+    this.logger.log(`createCatDto----------------:${JSON.stringify(createCatDto)}`)
     const createdCat = await this.commodityModel.create(createCatDto)
     return createdCat
   }

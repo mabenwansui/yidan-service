@@ -1,10 +1,16 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common'
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common'
 import { Response } from 'express'
-import { MongoError } from 'mongodb' // 如果是 MongoDB
-// import { ApiResponse } from './api-response.interface'; // 引入统一的响应接口
+import { ErrorCode } from '@/common/constants/errorCode'
 
 interface ErrorResponse {
+  status: number
+  code: string
   message: { message: Array<string> | string }
+}
+interface ErrorResponseDto {
+  error: string
+  message: Array<string>
+  statusCode: number
 }
 
 @Catch(HttpException)
@@ -12,17 +18,23 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
-    const status = exception.getStatus()
-    const errorResponse = exception.getResponse()
-    const errorResponseMessage =
-      typeof errorResponse === 'object'
-        ? (errorResponse as ErrorResponse).message?.toString()
-        : 'unknow error'
-    const apiResponse = {
-      flag: 0,
-      msg: errorResponseMessage,
-      code: status,
+    const errorResponse = exception.getResponse() as ErrorResponse | ErrorResponseDto
+    let apiResponse
+    if ((errorResponse as ErrorResponseDto)?.statusCode) {
+      const { message } = errorResponse as ErrorResponseDto
+      apiResponse = {
+        flag: 0,
+        msg: message[0],
+        code: ErrorCode.BAD_REQUEST_DTO,
+      }
+    } else {
+      const { message, code } = errorResponse as ErrorResponse
+      apiResponse = {
+        flag: 0,
+        msg: message,
+        code,
+      }
     }
-    response.status(status).json(apiResponse) // 返回统一格式的响应
+    response.status(HttpStatus.OK).json(apiResponse) // 返回统一格式的响应
   }
 }

@@ -1,3 +1,1 @@
-export class CommodityCreatedResponseDto {
-  
-}
+export class CommodityCreatedResponseDto {}

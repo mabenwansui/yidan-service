@@ -15,6 +15,7 @@ export class AuthService {
 
   async login(loginAuthDto: LoginAuthDto) {
     const { username, password } = loginAuthDto
+    this.userService.captcha()
     const userInfo = await this.validateUser(username, password)
     if (!userInfo) {
       throw new HttpException(ERROR_MESSAGE.LOGIN_FAILURE, ERROR_MESSAGE.LOGIN_FAILURE.status)
@@ -30,7 +31,9 @@ export class AuthService {
     password: string,
   ): Promise<Pick<UserFoundOneResponseDto, 'id' | 'username'> | null> {
     const userInfo = await this.userService.findByUsername(username)
-    if (!userInfo) { return null }
+    if (!userInfo) {
+      return null
+    }
     const compareResult = await bcrypt.compare(password, userInfo.password)
     if (!compareResult) return null
     const { username: name, id } = userInfo
