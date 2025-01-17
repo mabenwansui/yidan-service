@@ -1,10 +1,13 @@
 import { HttpException, Injectable } from '@nestjs/common'
+import { Response } from 'express'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { UserService } from '@/module/user/user.service'
 import { UserFoundOneResponseDto } from '@/module/user/dto/user-found-response.dto'
 import { LoginAuthDto } from './dto/login-auth.dto'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
+
+const EXPIRE_TIME = 1e3 * 60 * 60 * 24 * 7 // 7 days
 
 @Injectable()
 export class AuthService {
@@ -13,16 +16,25 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(loginAuthDto: LoginAuthDto) {
+  async login(loginAuthDto: LoginAuthDto, response: Response) {
     const { username, password } = loginAuthDto
-    this.userService.captcha()
     const userInfo = await this.validateUser(username, password)
     if (!userInfo) {
       throw new HttpException(ERROR_MESSAGE.LOGIN_FAILURE, ERROR_MESSAGE.LOGIN_FAILURE.status)
     }
     const payload = { username, sub: userInfo.id }
+    const jwt = await this.jwtService.signAsync(payload)
+    response.cookie('at', jwt, {
+      path: '/',
+      httpOnly: true,
+      maxAge: EXPIRE_TIME,
+      sameSite: 'none',
+      secure: true,
+      // domain: '127.0.0.1',
+    })
     return {
-      accessToken: await this.jwtService.signAsync(payload),
+      status: 'ok',
+      message: '登录成功',
     }
   }
 
@@ -51,3 +63,7 @@ export class AuthService {
   //   }
   // }
 }
+
+// return {
+//   accessToken: await this.jwtService.signAsync(payload),
+// }

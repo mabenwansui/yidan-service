@@ -37,4 +37,9 @@ export const ERROR_MESSAGE = {
     code: ErrorCode.USER_ALREADY_USED,
     message: '用户名已存在',
   },
+  NOT_FOUND: {
+    status: HttpStatus.NOT_FOUND,
+    code: ErrorCode.NOT_FOUND,
+    message: '请求的资源不存在',
+  },
 }

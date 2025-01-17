@@ -4,8 +4,6 @@ import { Model } from 'mongoose'
 import { CreateCommodityDto } from './dto/createCommodity.dto'
 import { CommodityCreatedResponseDto } from './dto/commodityCreatedResponse.dto'
 import { Commodity } from './schemas/commodity.schema'
-import { AuthModule } from '@/module/auth/auth.module'
-
 
 @Injectable()
 export class CommodityService {
@@ -16,7 +14,6 @@ export class CommodityService {
   ) {}
 
   async create(createCatDto: CreateCommodityDto): Promise<CommodityCreatedResponseDto> {
-    this.logger.log(`createCatDto----------------:${JSON.stringify(createCatDto)}`)
     const createdCat = await this.commodityModel.create(createCatDto)
     return createdCat
   }

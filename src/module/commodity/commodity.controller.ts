@@ -11,7 +11,7 @@ export class CommodityController {
   @Post('create')
   @UseGuards(JwtAuthGuard)
   async create(@Body() createCatDto: CreateCommodityDto) {
-    return await this.catsService.create(createCatDto)    
+    return await this.catsService.create(createCatDto)
   }
 
   @Get()
@@ -22,7 +22,7 @@ export class CommodityController {
 
   @Get(':name')
   async findOne(@Param('name', ParseIntPipe) name: number): Promise<any> {
-    return this.catsService.findOne(name);
+    return this.catsService.findOne(name)
   }
 
   // @Post(':id')

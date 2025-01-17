@@ -9,7 +9,12 @@ import { JwtPayload } from './interface/jwt-payload.interface'
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
   constructor(private authService: AuthService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req) => {
+          return req?.cookies.maben
+        },
+      ]),
       ignoreExpiration: false,
       secretOrKey: jwtConstants.secret,
     })
@@ -19,8 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
     return { userId: jwtPayload.sub, username: jwtPayload.username }
   }
 }
-
-
 
 // const { username } = jwtPayload
 // const user = await this.authService.validateUser(username, password)

@@ -1,6 +1,8 @@
 export enum ErrorCode {
+  /** 请求资源不存在 */
+  NOT_FOUND = '10001',
   /** 请求参数错误 */
-  BAD_REQUEST = '10001',
+  BAD_REQUEST = '10011',
   /** 登录失败, 用户名或密码错误 */
   LOGIN_FAILURE = '10101',
   /** 权限校验失败, 请重新登录 */
