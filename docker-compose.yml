@@ -1,9 +1,16 @@
 services:
   mongodb:
     image: mongo:8.0
+    container_name: service-mongodb
     ports:
       - 27017:27017
     volumes:
       - mongo-data:/data/db
+      - ./docker.conf/mongod.conf:/etc/mongod.conf
+      - ./docker.conf/mongodb.confg:/data/configdb
+    restart: always
 volumes:
   mongo-data:
+
+
+

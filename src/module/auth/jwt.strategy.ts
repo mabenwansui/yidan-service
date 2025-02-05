@@ -9,10 +9,9 @@ import { JwtPayload } from './interface/jwt-payload.interface'
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
   constructor(private authService: AuthService) {
     super({
-      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
-          return req?.cookies.maben
+          return req?.cookies.at
         },
       ]),
       ignoreExpiration: false,
@@ -21,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-auth') {
   }
 
   async validate(jwtPayload: JwtPayload): Promise<any> {
-    return { userId: jwtPayload.sub, username: jwtPayload.username }
+    const { sub, name, role } = jwtPayload
+    return { userId: sub, username: name, role }
   }
 }
 

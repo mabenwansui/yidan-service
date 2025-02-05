@@ -1,28 +1,23 @@
 import { Body, Controller, Post } from '@nestjs/common'
-import { CreateUserDto } from './dto/create-user.dto'
-import { CreateAdminDto } from './dto/create-admin.dto'
+import { Public } from '@/common/decorators/public.decorator'
+import { CreateUserDto, CreateAdminDto } from './dto/create.dto'
 import { GetUserInfoDto, GetUserInfoByIdDto } from './dto/get-user-info.dto'
 import { UserService } from './user.service'
-import { ROLE } from './constants'
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post('register')
-  async create(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.create({
-      ...createUserDto,
-      role: ROLE.USER,
-    })
+  async create(@Body() createDto: CreateUserDto) {
+    return await this.userService.createUser(createDto)
   }
 
+  @Public()
   @Post('register-admin')
-  async createAdmin(@Body() createUserDto: CreateAdminDto) {
-    return await this.userService.createAdmin({
-      ...createUserDto,
-      role: ROLE.ADMIN,
-    })
+  async createAdmin(@Body() createDto: CreateAdminDto) {
+    return await this.userService.createAdmin(createDto)
   }
 
   @Post('get-user-info')

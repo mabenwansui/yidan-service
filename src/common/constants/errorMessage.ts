@@ -17,6 +17,11 @@ export const ERROR_MESSAGE = {
     code: ErrorCode.AUTH_CHECK_FAILED,
     message: '权限校验失败, 请重新登录',
   },
+  AUTH_REFRESH_CHECK_FAILED: {
+    status: HttpStatus.UNAUTHORIZED,
+    code: ErrorCode.AUTH_REFRESH_CHECK_FAILED,
+    message: '权限校验失败, 请重新登录',
+  },
   CAPTCHA_NOT_FOUND: {
     status: HttpStatus.BAD_REQUEST,
     code: ErrorCode.CAPTCHA_NOT_FOUND,

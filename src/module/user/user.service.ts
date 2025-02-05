@@ -2,14 +2,12 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import * as captcha from 'svg-captcha'
 import { generateUuid } from '@/common/utils/generateuuid'
 import { pwdEncrypt } from '@/common/utils/pwdEncrypt'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { User } from './schemas/user.schema'
-import { ROLE } from './constants'
-import { CreateUserDto } from './dto/create-user.dto'
-import { CreateAdminDto } from './dto/create-admin.dto'
+import { ROLE } from '@/common/constants/role'
+import { CreateDto, CreateUserDto, CreateAdminDto } from './dto/create.dto'
 import { UserCreatedResponseDto } from './dto/user-created-response.dto'
 import { UserFoundOneResponseDto } from './dto/user-found-response.dto'
 import { CaptchaService } from '@/module/captcha/captcha.service'
@@ -26,8 +24,8 @@ export class UserService {
     private readonly captchaService: CaptchaService,
   ) {}
 
-  async create(createUserDto: CreateUserDto & Role): Promise<UserCreatedResponseDto> {
-    const { username, password, ...rest } = createUserDto
+  private async create(createDto: CreateDto & Role): Promise<UserCreatedResponseDto> {
+    const { username, password, ...rest } = createDto
     const isUnique = await this.userModel.findOne({ username })
     if (isUnique) {
       throw new HttpException(
@@ -35,7 +33,6 @@ export class UserService {
         ERROR_MESSAGE.USER_ALREADY_USED.status,
       )
     }
-
     try {
       const _password = await pwdEncrypt(password)
       const date = new Date()
@@ -57,39 +54,25 @@ export class UserService {
     }
   }
 
-  async createAdmin(createAdminDto: CreateAdminDto & Role): Promise<UserCreatedResponseDto> {
-    const { username, password, captchaKey, captchaVal, ...rest } = createAdminDto
+  async createUser(createUserDto: CreateUserDto): Promise<UserCreatedResponseDto> {
+    const dto = {
+      ...createUserDto,
+      role: ROLE.USER,
+    }
+    return await this.create(dto)
+  }
+
+  async createAdmin(createAdminDto: CreateAdminDto): Promise<UserCreatedResponseDto> {
+    const { captchaKey, captchaVal, ...rest } = createAdminDto
     const captcha = this.captchaService.verifyCaptcha(captchaKey, captchaVal)
     if (!captcha) {
       throw new HttpException(ERROR_MESSAGE.CAPTCHA_ERROR, ERROR_MESSAGE.CAPTCHA_ERROR.status)
     }
-    const isUnique = await this.userModel.findOne({ username })
-    if (isUnique) {
-      throw new HttpException(
-        ERROR_MESSAGE.USER_ALREADY_USED,
-        ERROR_MESSAGE.USER_ALREADY_USED.status,
-      )
+    const dto = {
+      ...rest,
+      role: ROLE.ADMIN,
     }
-
-    try {
-      const _password = await pwdEncrypt(password)
-      const date = new Date()
-      const dto = {
-        id: generateUuid(16),
-        createdAt: date,
-        updatedAt: date,
-        username,
-        password: _password,
-        ...rest,
-      }
-      return await this.userModel.create(dto)
-    } catch (error) {
-      console.error(error)
-      throw new HttpException(
-        ERROR_MESSAGE.CREATE_USER_FAILED,
-        ERROR_MESSAGE.CREATE_USER_FAILED.status,
-      )
-    }
+    return await this.create(dto)
   }
 
   async findByUsername(username: string): Promise<UserFoundOneResponseDto> {
@@ -98,15 +81,6 @@ export class UserService {
 
   async findById(id: string): Promise<UserFoundOneResponseDto> {
     return await this.userModel.findById({ id })
-  }
-
-  async captcha() {
-    const _captcha = captcha.create({
-      size: 4,
-      ignoreChars: '0o1i',
-    })
-    debugger
-    console.log(_captcha)
   }
 }
 

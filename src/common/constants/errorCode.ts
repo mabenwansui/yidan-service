@@ -6,11 +6,13 @@ export enum ErrorCode {
   /** 登录失败, 用户名或密码错误 */
   LOGIN_FAILURE = '10101',
   /** 权限校验失败, 请重新登录 */
-  AUTH_CHECK_FAILED = '10102',
+  AUTH_CHECK_FAILED = '10111',
+  /** 权限校验失败, 请重新登录 */
+  AUTH_REFRESH_CHECK_FAILED = '10112',
   /** 验证码已过期 */
-  CAPTCHA_NOT_FOUND = '10103',
+  CAPTCHA_NOT_FOUND = '10121',
   /** 验证码错误, 请重新输入 */
-  CAPTCHA_ERROR = '10104',
+  CAPTCHA_ERROR = '10122',
   /** 创建用户失败, 服务器内部错误，请联系管理员 */
   CREATE_USER_FAILED = '10201',
   /** 用户名已存在 */

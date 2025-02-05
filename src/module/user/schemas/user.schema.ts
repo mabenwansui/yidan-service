@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
-import { ROLE } from '../constants'
+import { ROLE } from '@/common/constants/role'
 
 export type UserDocument = HydratedDocument<User>
 
@@ -12,7 +12,7 @@ export class User {
   @Prop()
   password: string
 
-  @Prop()
+  @Prop({ required: true })
   role: ROLE
 
   @Prop()
