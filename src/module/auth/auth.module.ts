@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Auth, AuthSchema } from './schemas/auth.schemas'
-import { APP_GUARD } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
 import { UserModule } from '@/module/user/user.module'
-import { jwtConstants } from '@/common/constants/secret'
-import { JwtStrategy } from './jwt.strategy'
-import { JwtAuthGuard } from './jwt-auth.guard'
+import { JWT_CONSTANTS } from '@/common/constants/secret'
+import { JwtAdminStrategy } from './jwt-admin.strategy'
 
 @Module({
   imports: [
@@ -17,19 +15,12 @@ import { JwtAuthGuard } from './jwt-auth.guard'
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1d' },
-    }),
+      secret: JWT_CONSTANTS.SECRET,
+      signOptions: { expiresIn: '1d' }
+    })
   ],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [AuthService, JwtAdminStrategy],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService]
 })
 export class AuthModule {}

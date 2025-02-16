@@ -34,7 +34,7 @@ function cookieOptions(options: CookieOptions) {
     httpOnly: true,
     sameSite: 'none',
     secure: true,
-    ...options,
+    ...options
   }
   return _options
 }
@@ -45,7 +45,7 @@ export class AuthService {
     @InjectModel(Auth.name)
     private readonly authModel: Model<Auth>,
     private userService: UserService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async adminLogin(loginAuthDto: LoginAuthDto, response: Response) {
@@ -60,13 +60,13 @@ export class AuthService {
       {
         userId: id,
         userName: username,
-        expiresIn: new Date(Date.now() + COOKIE_EXPIRE_TIME),
+        expiresIn: new Date(Date.now() + COOKIE_EXPIRE_TIME)
       },
-      response,
+      response
     )
     return {
       status: 'ok',
-      message: '登录成功',
+      message: '登录成功'
     }
   }
 
@@ -75,15 +75,15 @@ export class AuthService {
     if (result) {
       const { userId, userName, expiresIn } = result
       if (Date.now() <= expiresIn.getTime()) {
-        this.createToken({ username: userName, id: userId, role: ROLE.ADMIN }, response)
+        await this.createToken({ username: userName, id: userId, role: ROLE.ADMIN }, response)
         return {
-          status: 'ok',
+          status: 'ok'
         } as const
       }
     }
     throw new HttpException(
       ERROR_MESSAGE.AUTH_REFRESH_CHECK_FAILED,
-      ERROR_MESSAGE.AUTH_REFRESH_CHECK_FAILED.status,
+      ERROR_MESSAGE.AUTH_REFRESH_CHECK_FAILED.status
     )
   }
 
@@ -95,8 +95,8 @@ export class AuthService {
       await this.authModel.updateOne(
         { userId },
         {
-          expiresIn,
-        },
+          expiresIn
+        }
       )
       key = result.key
     } else {
@@ -105,7 +105,7 @@ export class AuthService {
         userId,
         userName,
         key: authKey,
-        expiresIn,
+        expiresIn
       })
       key = authKey
     }
@@ -114,8 +114,8 @@ export class AuthService {
       key,
       cookieOptions({
         expires: expiresIn,
-        httpOnly: false,
-      }),
+        httpOnly: false
+      })
     )
   }
   // 授权
@@ -127,17 +127,17 @@ export class AuthService {
       COOKIE_KEY.AUTH_TOKEN,
       jwt,
       cookieOptions({
-        expires: new Date(Date.now() + AUTH_EXPIRE_TIME),
-      }),
+        expires: new Date(Date.now() + AUTH_EXPIRE_TIME)
+      })
     )
     return jwt
   }
 
   private async validateUser(
     username: string,
-    password: string,
+    password: string
   ): Promise<Pick<UserFoundOneResponseDto, 'id' | 'username'> | null> {
-    const userInfo = await this.userService.findByUsername(username)
+    const userInfo = await this.userService.findAllInfoByUsername(username)
     if (!userInfo) {
       return null
     }
@@ -146,7 +146,7 @@ export class AuthService {
     const { username: name, id } = userInfo
     return {
       id,
-      username: name,
+      username: name
     }
   }
 }

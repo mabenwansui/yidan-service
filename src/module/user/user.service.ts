@@ -11,6 +11,7 @@ import { CreateDto, CreateUserDto, CreateAdminDto } from './dto/create.dto'
 import { UserCreatedResponseDto } from './dto/user-created-response.dto'
 import { UserFoundOneResponseDto } from './dto/user-found-response.dto'
 import { CaptchaService } from '@/module/captcha/captcha.service'
+import { JwtPayload } from '@/module/auth/interface/jwt-payload.interface'
 
 interface Role {
   role: ROLE
@@ -21,7 +22,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-    private readonly captchaService: CaptchaService,
+    private readonly captchaService: CaptchaService
   ) {}
 
   private async create(createDto: CreateDto & Role): Promise<UserCreatedResponseDto> {
@@ -30,7 +31,7 @@ export class UserService {
     if (isUnique) {
       throw new HttpException(
         ERROR_MESSAGE.USER_ALREADY_USED,
-        ERROR_MESSAGE.USER_ALREADY_USED.status,
+        ERROR_MESSAGE.USER_ALREADY_USED.status
       )
     }
     try {
@@ -42,14 +43,21 @@ export class UserService {
         updatedAt: date,
         username,
         password: _password,
-        ...rest,
+        ...rest
       }
-      return await this.userModel.create(dto)
+      const result = await this.userModel.create(dto)
+      return {
+        id: result.id,
+        username: result.username,
+        email: result.email,
+        phoneNumber: result.phoneNumber,
+        role: result.role
+      }
     } catch (error) {
       console.error(error)
       throw new HttpException(
         ERROR_MESSAGE.CREATE_USER_FAILED,
-        ERROR_MESSAGE.CREATE_USER_FAILED.status,
+        ERROR_MESSAGE.CREATE_USER_FAILED.status
       )
     }
   }
@@ -57,7 +65,7 @@ export class UserService {
   async createUser(createUserDto: CreateUserDto): Promise<UserCreatedResponseDto> {
     const dto = {
       ...createUserDto,
-      role: ROLE.USER,
+      role: ROLE.USER
     }
     return await this.create(dto)
   }
@@ -70,12 +78,31 @@ export class UserService {
     }
     const dto = {
       ...rest,
-      role: ROLE.ADMIN,
+      role: ROLE.ADMIN
     }
     return await this.create(dto)
   }
 
-  async findByUsername(username: string): Promise<UserFoundOneResponseDto> {
+  async getUserInfo(jwtPayload: JwtPayload): Promise<UserFoundOneResponseDto> {
+    const { name } = jwtPayload
+    const { id, username, email, role } = await this.userModel.findOne({ username: name })
+    return {
+      id,
+      username,
+      email,
+      role
+    }
+  }
+  // private async findByUsername(username: string): Promise<UserFoundOneResponseDto> {
+  //   const { id, username: _username, email, role } = await this.userModel.findOne({ username })
+  //   return {
+  //     id,
+  //     username: _username,
+  //     email,
+  //     role,
+  //   }
+  // }
+  async findAllInfoByUsername(username: string) {
     return await this.userModel.findOne({ username })
   }
 

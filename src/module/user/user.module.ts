@@ -9,6 +9,6 @@ import { CaptchaModule } from '@/module/captcha/captcha.module'
   imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), CaptchaModule],
   controllers: [UserController],
   providers: [UserService],
-  exports: [UserService],
+  exports: [UserService]
 })
 export class UserModule {}

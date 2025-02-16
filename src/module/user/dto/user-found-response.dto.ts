@@ -1,7 +1,8 @@
 import { User } from '../interface/user.interface'
+import { ROLE } from '@/common/constants/role'
 export class UserFoundOneResponseDto implements User {
   id: string
   username: string
-  password: string
-  email?: string // 邮箱
+  email?: string
+  role: ROLE
 }

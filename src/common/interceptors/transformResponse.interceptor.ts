@@ -3,7 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
-  HttpStatus,
+  HttpStatus
 } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -21,9 +21,9 @@ export class TransformResponseInterceptor<T> implements NestInterceptor<T, any> 
       map((data) => {
         return {
           flag: 1, // 成功标志
-          data: data || {}, // 返回数据
+          data: data || {} // 返回数据
         }
-      }),
+      })
     )
   }
 }

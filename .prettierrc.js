@@ -4,9 +4,9 @@ module.exports = {
   useTabs: false, // 使用空格而不是制表符进行缩进
   semi: false, // 在语句末尾添加分号
   singleQuote: true, // 使用单引号而不是双引号
+  trailingComma: "none", // 尾随逗号的使用方式：none, es5, all
   // quoteProps: "as-needed", // 对象属性的引号使用方式：as-needed, consistent, preserve
   // jsxSingleQuote: false, // 在JSX中使用单引号
-  // trailingComma: "es5", // 尾随逗号的使用方式：none, es5, all
   // bracketSpacing: true, // 在对象文字中的括号之间打印空格
   // jsxBracketSameLine: false, // 将多行JSX元素的`>`放在最后一行的末尾，而不是单独放在下一行
   // arrowParens: "always", // 箭头函数参数总是使用括号：always, avoid

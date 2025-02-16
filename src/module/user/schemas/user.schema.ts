@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 import { ROLE } from '@/common/constants/role'
+import { User as IUser } from '../interface/user.interface'
 
 export type UserDocument = HydratedDocument<User>
 
 @Schema()
-export class User {
+export class User implements IUser {
   @Prop({ required: true })
   username: string
 

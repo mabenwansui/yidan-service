@@ -1,4 +1,4 @@
-export enum ErrorCode {
+export enum ERROR_CODE {
   /** 请求资源不存在 */
   NOT_FOUND = '10001',
   /** 请求参数错误 */
@@ -19,4 +19,8 @@ export enum ErrorCode {
   USER_ALREADY_USED = '10202',
   /** 请求参数错误DTO */
   BAD_REQUEST_DTO = '11001',
+  /** 上传图片格式错误 */
+  UPLOAD_IMAGE_MIMETYPE_ERROR = '20110',
+  /** 上传图片大小错误 */
+  UPLOAD_IMAGE_SIZE_ERROR = '20111'
 }

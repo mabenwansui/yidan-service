@@ -15,9 +15,6 @@ export class Commodity {
   tags: [string] // 标签
 
   @Prop()
-  discount: number // 折扣
-
-  @Prop()
   originalPrice: number // 原价
 
   @Prop({ required: true })
@@ -32,8 +29,8 @@ export class Commodity {
   @Prop()
   details: string // 详情
 
-  @Prop()
-  imgUrl: string // 图片
+  @Prop({ type: [String], default: [] })
+  imgNames: [string] // 图片
 
   @Prop()
   stockConunt: number // 库存

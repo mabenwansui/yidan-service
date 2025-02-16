@@ -9,7 +9,7 @@ const minUserPwdLength = 6
 const userTitle = '用户名'
 const pwdTitle = '密码'
 
-export class CreateDto implements Omit<User, 'id'> {
+export class CreateDto implements Omit<User, 'id' | 'role'> {
   @IsNotEmpty({ message: `${userTitle}不能为空` })
   @IsString()
   @MaxLength(maxUsernameLength, { message: `${userTitle}长度不能超过${maxUsernameLength}` })

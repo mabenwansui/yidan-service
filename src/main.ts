@@ -14,15 +14,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     httpsOptions: {
       key: tslKey,
-      cert: tslCrt,
-    },
+      cert: tslCrt
+    }
     // logger: ['error', 'warn', 'log', 'debug', 'verbose', ]
   })
   app.enableCors({
     origin: corsOrigin, // 允许来自 origin 的请求
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // 允许的 HTTP 方法
-    allowedHeaders: ['Content-Type', 'Authorization', 'credentials'], // 允许的请求头
-    credentials: true, // 允许发送认证信息（cookies等）
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'POST'], // 允许的 HTTP 方法
+    allowedHeaders: ['Content-Type', 'Authorization', 'credentials', 'X-Requested-With'], // 允许的请求头
+    credentials: true // 允许发送认证信息（cookies等）
   })
   app.use(cookieParser())
   app.setGlobalPrefix('api')
