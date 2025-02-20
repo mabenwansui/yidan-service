@@ -36,7 +36,7 @@ export function ImgInterceptor() {
       destination: (req, file, cb) => cb(null, UPLOAD_DEST.MAIN_IMG),
       filename: (req, file, cb) => {
         const hash = crypto.createHash('sha256')
-        const fileName = generateUuid(16) + '.' + suffixMapping[file.mimetype]
+        const fileName = generateUuid() + '.' + suffixMapping[file.mimetype]
         cb(null, fileName)
         const { stream } = file
         stream.on('data', (chunk) => hash.update(chunk))

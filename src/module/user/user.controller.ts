@@ -18,15 +18,9 @@ export class UserController {
     return await this.userService.createAdmin(createDto)
   }
 
-  @UseGuards(JwtAdminGuard)
   @Post('get-user-info')
+  @UseGuards(JwtAdminGuard)
   async getUserInfo(@Req() request) {
     return await this.userService.getUserInfo(request.user as JwtPayload)
   }
-
-  // @UseGuards(JwtAdminGuard)
-  // @Post('get-user-info-by-id')
-  // async getUserInfoById(@Body() getUserInfoByIdDto: GetUserInfoByIdDto) {
-  //   return await this.userService.findById(getUserInfoByIdDto.id)
-  // }
 }

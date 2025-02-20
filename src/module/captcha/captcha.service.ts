@@ -21,7 +21,7 @@ export class CaptchaService {
   }
   verifyCaptcha(key: string, captchaValue: string) {
     const captchaText = captchaStore.get(key)
-    if (!captchaText || captchaText.toLowerCase() !== captchaValue.toLowerCase()) {
+    if (!captchaText || captchaText?.toLowerCase() !== captchaValue?.toLowerCase()) {
       throw new HttpException(ERROR_MESSAGE.CAPTCHA_ERROR, ERROR_MESSAGE.CAPTCHA_ERROR.status)
     }
     return {

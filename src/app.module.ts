@@ -3,7 +3,7 @@ import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { MongooseModule } from '@nestjs/mongoose'
 import { TransformResponseInterceptor } from '@/common/interceptors/transformResponse.interceptor'
-import { CommodityModule } from '@/module/commodity/commodity.module'
+import { CommodityGroupModule } from '@/module/commodity-group/commodity-group.module'
 import { HttpExceptionFilter } from '@/common/exceptionfilters/http.exceptionfilter'
 import { UserModule } from '@/module/user/user.module'
 import { AuthModule } from '@/module/auth/auth.module'
@@ -41,7 +41,7 @@ const mongooseModuleOptions = {
         dotfiles: 'allow'
       }
     }),
-    CommodityModule,
+    CommodityGroupModule,
     UserModule,
     AuthModule,
     CaptchaModule,

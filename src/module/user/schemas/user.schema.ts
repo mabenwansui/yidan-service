@@ -7,7 +7,7 @@ export type UserDocument = HydratedDocument<User>
 
 @Schema()
 export class User implements IUser {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   username: string
 
   @Prop()
@@ -16,10 +16,10 @@ export class User implements IUser {
   @Prop({ required: true })
   role: ROLE
 
-  @Prop()
+  @Prop({ required: true, unique: true })
   id: string
 
-  @Prop()
+  @Prop({ unique: true, sparse: true })
   email?: string
 
   @Prop()
