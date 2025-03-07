@@ -1,4 +1,4 @@
-import { CreateCommodityDto } from './createCommodity.dto'
+import { CreateCommodityDto } from './create-commodity.dto'
 export class CommodityCreatedResponseDto extends CreateCommodityDto {
   id: string
   createdAt: Date

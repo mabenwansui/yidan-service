@@ -30,7 +30,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           break
         case 400:
           customCode = ERROR_CODE.BAD_REQUEST_DTO
-          customMessage = `请求参数错误, ${message}`
+          customMessage = `请求参数错误, ${Array.isArray(message) ? message[0] : message}`
           break
         case 413:
           if (exception.name === 'PayloadTooLargeException') {

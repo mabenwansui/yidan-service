@@ -11,8 +11,8 @@ export class JwtAdminGuard extends AuthGuard('jwt-admin') {
   handleRequest(err, user): any {
     if (err || !user) {
       throw new HttpException(
-        ERROR_MESSAGE.AUTH_CHECK_FAILED,
-        ERROR_MESSAGE.AUTH_CHECK_FAILED.status
+        ERROR_MESSAGE.AUTH_CHECK_ERROR,
+        ERROR_MESSAGE.AUTH_CHECK_ERROR.status
       )
     }
     return user

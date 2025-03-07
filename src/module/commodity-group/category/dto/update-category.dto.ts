@@ -10,5 +10,5 @@ export class UpdateCategoryDto {
   /** 类别名称 */
   @IsNotEmpty({ message: '类别不能为空' })
   @MaxLength(maxTagLength, { message: `类别不能超过${maxTagLength}个字` })
-  name: string
+  title: string
 }

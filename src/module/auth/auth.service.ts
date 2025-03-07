@@ -82,8 +82,8 @@ export class AuthService {
       }
     }
     throw new HttpException(
-      ERROR_MESSAGE.AUTH_REFRESH_CHECK_FAILED,
-      ERROR_MESSAGE.AUTH_REFRESH_CHECK_FAILED.status
+      ERROR_MESSAGE.AUTH_REFRESH_CHECK_ERROR,
+      ERROR_MESSAGE.AUTH_REFRESH_CHECK_ERROR.status
     )
   }
 

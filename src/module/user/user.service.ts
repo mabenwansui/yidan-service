@@ -56,8 +56,8 @@ export class UserService {
     } catch (error) {
       console.error(error)
       throw new HttpException(
-        ERROR_MESSAGE.CREATE_USER_FAILED,
-        ERROR_MESSAGE.CREATE_USER_FAILED.status
+        ERROR_MESSAGE.CREATE_USER_ERROR,
+        ERROR_MESSAGE.CREATE_USER_ERROR.status
       )
     }
   }

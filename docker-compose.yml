@@ -1,16 +1,23 @@
 services:
-  mongodb:
+  mongo1:
     image: mongo:8.0
-    container_name: service-mongodb
+    container_name: mongo1
     ports:
       - 27017:27017
     volumes:
       - mongo-data:/data/db
-      - ./docker.conf/mongod.conf:/etc/mongod.conf
-      - ./docker.conf/mongodb.confg:/data/configdb
     restart: always
+    command: mongod --replSet rs0 --bind_ip_all
+  mongo2:
+    image: mongo:8.0
+    container_name: mongo2
+    ports:
+      - 27019:27017
+    volumes:
+      - mongo2-data:/data/db
+    restart: always
+    command: mongod --replSet rs0 --bind_ip_all
 volumes:
   mongo-data:
-
-
+  mongo2-data:
 

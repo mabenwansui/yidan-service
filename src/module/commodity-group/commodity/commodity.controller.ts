@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common'
-import { CreateCommodityDto } from './dto/createCommodity.dto'
-import { SearchCommodityDto } from './dto/searchCommodity.dto'
+import { CreateCommodityDto } from './dto/create-commodity.dto'
+import { SearchCommodityDto } from './dto/search-commodity.dto'
 import { CommodityService } from './commodity.service'
-import { UpdateCommodityDto } from './dto/updateCommodity.dto'
+import { UpdateCommodityDto } from './dto/update-commodity.dto'
 import { JwtAdminGuard } from '@/module/auth/jwt-admin.guard'
 
 @Controller('commodity')

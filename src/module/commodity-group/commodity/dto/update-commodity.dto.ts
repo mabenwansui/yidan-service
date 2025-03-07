@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator'
-import { CreateCommodityDto } from './createCommodity.dto'
+import { CreateCommodityDto } from './create-commodity.dto'
 
 export class UpdateCommodityDto extends CreateCommodityDto {
   /** 商品id */

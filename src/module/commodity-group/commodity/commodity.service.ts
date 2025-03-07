@@ -3,12 +3,12 @@ import { generateUuid } from '@/common/utils/generateuuid'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Commodity } from './schemas/commodity.schema'
-import { CreateCommodityDto } from './dto/createCommodity.dto'
-import { SearchCommodityDto } from './dto/searchCommodity.dto'
-import { CommodityCreatedResponseDto } from './dto/commodityCreatedResponse.dto'
-import { CommoditySearchResponseDto } from './dto/commoditySearchResponse.dto'
-import { UpdateCommodityDto } from './dto/updateCommodity.dto'
-import { DeleteCommodityDto } from './dto/deleteCommodity.dto'
+import { CreateCommodityDto } from './dto/create-commodity.dto'
+import { SearchCommodityDto } from './dto/search-commodity.dto'
+import { CommodityCreatedResponseDto } from './dto/commodity-created-response.dto'
+import { CommoditySearchResponseDto } from './dto/commodity-search-response.dto'
+import { UpdateCommodityDto } from './dto/update-commodity.dto'
+import { DeleteCommodityDto } from './dto/delete-commodity.dto'
 
 @Injectable()
 export class CommodityService {
@@ -44,16 +44,12 @@ export class CommodityService {
     let query: any = {}
     if (search) {
       query = {
-        $text: { $text: { $search: search } }
+        name: { $regex: search, $options: 'i' }
       }
     }
     const total = await this.commodityModel.countDocuments(query)
     const skip = (curPage - 1) * pageSize
-    const data = await this.commodityModel
-      .find(query, { score: { $meta: 'textScore' } })
-      .sort({ score: { $meta: 'textScore' } })
-      .skip(skip)
-      .limit(pageSize)
+    const data = await this.commodityModel.find(query).skip(skip).limit(pageSize)
     return {
       total,
       curPage,
@@ -62,6 +58,29 @@ export class CommodityService {
     }
   }
 }
+
+// async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
+//   const { search, curPage, pageSize } = searchCommodity
+//   let query: any = {}
+//   if (search) {
+//     query = {
+//       $text: { $search: search }
+//     }
+//   }
+//   const total = await this.commodityModel.countDocuments(query)
+//   const skip = (curPage - 1) * pageSize
+//   const data = await this.commodityModel
+//     .find(query, { score: { $meta: 'textScore' } })
+//     .sort({ score: { $meta: 'textScore' } })
+//     .skip(skip)
+//     .limit(pageSize)
+//   return {
+//     total,
+//     curPage,
+//     pageSize: pageSize,
+//     list: data
+//   }
+// }
 
 // ;(Object.keys(searchCommodity) as Array<keyof SearchCommodityDto>).forEach((key) => {
 //   if (searchCommodity[key] !== undefined) {

@@ -1,6 +1,6 @@
 import { Controller, Post } from '@nestjs/common'
 import { CaptchaService } from './captcha.service'
-import { VerifyCaptchaDto } from './dto/verifyCaptcha.dto'
+import { VerifyCaptchaDto } from './dto/verify-captcha.dto'
 
 @Controller('captcha')
 export class CaptchaController {

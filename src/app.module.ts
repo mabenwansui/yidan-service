@@ -16,7 +16,7 @@ const mongooseModuleOptions = {
   connectionFactory: (connection) => {
     connection.plugin((schema) => {
       schema.set('toJSON', {
-        versionKey: false,
+        versionKey: true,
         transform: (doc, ret) => {
           const { _id, ...rest } = ret
           return {
