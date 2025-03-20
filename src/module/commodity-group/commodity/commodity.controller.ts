@@ -3,6 +3,7 @@ import { CreateCommodityDto } from './dto/create-commodity.dto'
 import { SearchCommodityDto } from './dto/search-commodity.dto'
 import { CommodityService } from './commodity.service'
 import { UpdateCommodityDto } from './dto/update-commodity.dto'
+import { DeleteCommodityDto } from './dto/delete-commodity.dto'
 import { JwtAdminGuard } from '@/module/auth/jwt-admin.guard'
 
 @Controller('commodity')
@@ -22,7 +23,14 @@ export class CommodityController {
   }
 
   @Post('delete')
-  async delete() {}
+  async delete(@Body() deleteCommodityDto: DeleteCommodityDto) {
+    return await this.commodityService.delete(deleteCommodityDto)
+  }
+
+  @Post('get-info')
+  async getCommodityById(@Body() { id }: { id: string }) {
+    return await this.commodityService.findById(id)
+  }
 
   @Post('search')
   @UseGuards(JwtAdminGuard)

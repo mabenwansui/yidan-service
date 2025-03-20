@@ -31,15 +31,16 @@ export class CreateCommodityDto {
   tags?: [string]
 
   /** 原价 */
-  @IsNumber({}, { message: '原价必须是数字' })
   @Min(0, { message: '原价不能为负数' })
+  @IsNumber({}, { message: '原价必须是数字' })
+  @Type(() => Number)
   @IsOptional()
   originalPrice?: number
 
   /** 现价 */
-  @IsNotEmpty({ message: '商品价格不能为空' })
-  @Type(() => Number)
   @IsNumber({ allowNaN: false }, { message: '商品价格必须是数字' })
+  @Type(() => Number)
+  @IsNotEmpty({ message: '商品价格不能为空' })
   price: number
 
   /** 商品描述 */

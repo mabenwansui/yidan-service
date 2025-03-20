@@ -39,8 +39,12 @@ export class CommodityService {
     return await this.commodityModel.deleteOne(deleteCommodityDto)
   }
 
+  async findById(id: string) {
+    return (await this.commodityModel.findById(id)).populate('category', 'title')
+  }
+
   async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
-    const { search, curPage, pageSize } = searchCommodity
+    const { search, curPage = 1, pageSize = 30 } = searchCommodity
     let query: any = {}
     if (search) {
       query = {
@@ -48,15 +52,43 @@ export class CommodityService {
       }
     }
     const total = await this.commodityModel.countDocuments(query)
-    const skip = (curPage - 1) * pageSize
-    const data = await this.commodityModel.find(query).skip(skip).limit(pageSize)
+    const data = await this.commodityModel.aggregate([
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: 'id',
+          as: "categoryInfo"    // 结果数组字段
+        }
+      },
+      {
+        $unwind: {
+          path: "$categoryInfo",
+          preserveNullAndEmptyArrays: true  // 保持空数组，避免文档丢失
+        }          
+      },
+      {
+        $project: {
+          _id: 0,
+          id: 1,
+          name: 1,
+          category: "$categoryInfo.title",  // 提取分类名称
+          imgNames: 1,
+          originalPrice: 1,
+          price: 1,
+          description: 1,
+          tags: 1,
+          updatedAt: 1
+        }
+      }      
+    ]).skip((curPage - 1) * pageSize).limit(pageSize)
     return {
       total,
       curPage,
       pageSize: pageSize,
       list: data
     }
-  }
+  }  
 }
 
 // async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
