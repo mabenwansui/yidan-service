@@ -4,6 +4,9 @@ export class SearchCommodityDto {
   @IsOptional()
   search?: string // 搜索关键字
 
+  @IsOptional()
+  category?: string // 分类
+
   @IsNumber({}, { message: '页码必须是数字' })
   @IsOptional()
   curPage?: number // 页码

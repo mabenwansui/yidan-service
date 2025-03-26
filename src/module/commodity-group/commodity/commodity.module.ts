@@ -7,6 +7,7 @@ import { CommodityService } from './commodity.service'
 @Module({
   imports: [MongooseModule.forFeature([{ name: Commodity.name, schema: CommoditySchema }])],
   controllers: [CommodityController],
-  providers: [CommodityService]
+  providers: [CommodityService],
+  exports: [CommodityService]
 })
 export class CommodityModule {}

@@ -9,6 +9,7 @@ import { UserModule } from '@/module/user/user.module'
 import { AuthModule } from '@/module/auth/auth.module'
 import { CaptchaModule } from '@/module/captcha/captcha.module'
 import { FileModule } from '@/module/file/file.module'
+import { MockModule } from '@/module/mock/mock.module'
 
 import config from '@/config'
 
@@ -45,7 +46,8 @@ const mongooseModuleOptions = {
     UserModule,
     AuthModule,
     CaptchaModule,
-    FileModule
+    FileModule,
+    MockModule
   ],
   providers: [
     {

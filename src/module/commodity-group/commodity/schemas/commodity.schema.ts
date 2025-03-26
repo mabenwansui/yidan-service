@@ -5,9 +5,6 @@ export type CommodityDocument = HydratedDocument<Commodity>
 
 @Schema()
 export class Commodity {
-  @Prop({ required: true, unique: true })
-  id: string // 商品ID
-
   @Prop({ required: true })
   name: string // 名称
 

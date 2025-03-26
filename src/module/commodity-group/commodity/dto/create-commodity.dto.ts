@@ -20,13 +20,12 @@ export class CreateCommodityDto {
   name: string
 
   /** 商品标签 */
-  @IsArray({ message: '商品标签必须是数组' })
-  @ArrayMaxSize(maxTitleLength, { message: `商品标签不能超过${maxTitleLength}个` })
-  @IsString({ each: true, message: '商品标签必须是字符串' })
   @MaxLength(maxTitleLength, {
     each: true,
     message: `商品标签长度不能超过${maxTitleLength}个字`
   })
+  @IsString({ each: true, message: '商品标签必须是字符串' })
+  @IsArray({ message: '商品标签必须是数组' })
   @IsOptional()
   tags?: [string]
 
@@ -77,6 +76,7 @@ export class CreateCommodityDto {
   /** 已售 */
   @IsNumber({}, { message: '已售必须是数字' })
   @Min(0, { message: '已售不能为负数' })
+  @Type(() => Number)
   @IsOptional()
   soldCount?: number
 }

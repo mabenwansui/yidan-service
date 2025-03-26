@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { generateUuid } from '@/common/utils/generateuuid'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Commodity } from './schemas/commodity.schema'
@@ -9,6 +8,8 @@ import { CommodityCreatedResponseDto } from './dto/commodity-created-response.dt
 import { CommoditySearchResponseDto } from './dto/commodity-search-response.dto'
 import { UpdateCommodityDto } from './dto/update-commodity.dto'
 import { DeleteCommodityDto } from './dto/delete-commodity.dto'
+
+const selectForm = 'id name category imgNames originalPrice price description tags soldCount'
 
 @Injectable()
 export class CommodityService {
@@ -21,7 +22,6 @@ export class CommodityService {
     const date = new Date()
     const result = await this.commodityModel.create({
       ...createCommodityDto,
-      id: generateUuid(),
       createdAt: date,
       updatedAt: date
     })
@@ -29,66 +29,54 @@ export class CommodityService {
   }
 
   async update(updateCommodityDto: UpdateCommodityDto) {
-    return await this.commodityModel.findByIdAndUpdate(updateCommodityDto.id, {
-      ...updateCommodityDto,
+    const { id, ...rest } = updateCommodityDto
+    return await this.commodityModel.findByIdAndUpdate(id, {
+      ...rest,
       updatedAt: new Date()
     })
   }
 
   async delete(deleteCommodityDto: DeleteCommodityDto) {
-    return await this.commodityModel.deleteOne(deleteCommodityDto)
+    const { id } = deleteCommodityDto
+    return await this.commodityModel.findByIdAndDelete(id)
   }
 
   async findById(id: string) {
-    return (await this.commodityModel.findById(id)).populate('category', 'title')
+    return await this.commodityModel.findById(id).select(selectForm).populate('category', 'title')
   }
 
   async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
-    const { search, curPage = 1, pageSize = 30 } = searchCommodity
-    let query: any = {}
+    const { search, category, curPage = 1, pageSize = 30 } = searchCommodity
+    const query: any = {}
     if (search) {
-      query = {
-        name: { $regex: search, $options: 'i' }
-      }
+      query.name = { $regex: search, $options: 'i' }
+    }
+    if (category) {
+      query.category = category
     }
     const total = await this.commodityModel.countDocuments(query)
-    const data = await this.commodityModel.aggregate([
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'category',
-          foreignField: 'id',
-          as: "categoryInfo"    // 结果数组字段
-        }
-      },
-      {
-        $unwind: {
-          path: "$categoryInfo",
-          preserveNullAndEmptyArrays: true  // 保持空数组，避免文档丢失
-        }          
-      },
-      {
-        $project: {
-          _id: 0,
-          id: 1,
-          name: 1,
-          category: "$categoryInfo.title",  // 提取分类名称
-          imgNames: 1,
-          originalPrice: 1,
-          price: 1,
-          description: 1,
-          tags: 1,
-          updatedAt: 1
-        }
-      }      
-    ]).skip((curPage - 1) * pageSize).limit(pageSize)
+    let data: any = await this.commodityModel
+      .find(query)
+      .select(selectForm)
+      .populate('category', 'title')
+      .skip((curPage - 1) * pageSize)
+      .limit(pageSize)
+      .lean()
+    data = data.map((item) => {
+      const { _id, category, ...rest } = item
+      return {
+        id: _id,
+        category: category.title,
+        ...rest
+      }
+    })
     return {
       total,
       curPage,
       pageSize: pageSize,
       list: data
     }
-  }  
+  }
 }
 
 // async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
@@ -130,3 +118,36 @@ export class CommodityService {
 //     }
 //   }
 // })
+// const data = await this.commodityModel
+//   .aggregate([
+//     {
+//       $lookup: {
+//         from: 'categories',
+//         localField: 'category',
+//         foreignField: '_id',
+//         as: 'categoryInfo' // 结果数组字段
+//       }
+//     },
+//     {
+//       $unwind: {
+//         path: '$categoryInfo',
+//         preserveNullAndEmptyArrays: true // 保持空数组，避免文档丢失
+//       }
+//     },
+//     {
+//       $project: {
+//         _id: 0,
+//         id: { $toString: '$_id' },
+//         name: 1,
+//         category: '$categoryInfo.title', // 提取分类名称
+//         imgNames: 1,
+//         originalPrice: 1,
+//         price: 1,
+//         description: 1,
+//         tags: 1,
+//         updatedAt: 1
+//       }
+//     }
+//   ])
+//   .skip((curPage - 1) * pageSize)
+//   .limit(pageSize)

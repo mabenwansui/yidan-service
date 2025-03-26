@@ -1,8 +1,8 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { generateUuid } from '@/common/utils/generateuuid'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
+import { insertAfter } from '@/common/utils/array'
 import logger from '@/common/utils/logger'
 import { Category } from './schemas/category.schema'
 import { CreateCategoryDto } from './dto/create-category.dto'
@@ -17,37 +17,36 @@ import {
   CategoryFoundResponseItem
 } from './dto/category-found-response.dto'
 import { SearchCategoryDto } from './dto/search-category.dto'
-import { insertAfter } from '@/common/utils/array'
+
+type ICategory = Category & { id: string }
 
 @Injectable()
 export class CategoryService {
-  private rootId: string
   constructor(
     @InjectModel(Category.name)
     private readonly categoryModel: Model<Category>
-  ) {
-    this.rootId = '0'
-  }
+  ) {}
   async onApplicationBootstrap() {
     const db = this.categoryModel
     const count = await db.countDocuments()
     if (count === 0) {
-      await this.create({ title: '全部' }, this.rootId)
+      await this.create({ title: '全部' }, true)
     }
   }
 
   async search(query: SearchCategoryDto = {}): Promise<CategoryFoundResponseDto> {
-    const foundDatas = await this.categoryModel.find(query)
+    const foundDatas = (await this.categoryModel.find(query)) as ICategory[]
     if (foundDatas.length === 0) {
       return { list: [] }
     }
-    function transFormData(datas: Array<Category>) {
+    function transFormData(datas: Array<ICategory>) {
       const rootDatas = new Array<string>()
-      const dataMap = new Map<string, Category>()
+      const dataMap = new Map<string, ICategory>()
       datas.forEach((item) => {
-        dataMap.set(item.id, item)
+        const id = item.id
+        dataMap.set(id, item)
         if (item.level === 0) {
-          rootDatas.push(item.id)
+          rootDatas.push(id)
         }
       })
       function fn(arr: Array<string>) {
@@ -67,7 +66,7 @@ export class CategoryService {
 
   async create(
     createCategoryDto: CreateCategoryDto,
-    rootId?: string
+    isRoot: boolean = false
   ): Promise<CategoryCreatedResponseDto> {
     const db = this.categoryModel
     const { title, parentId = '0' } = createCategoryDto
@@ -78,10 +77,10 @@ export class CategoryService {
         ERROR_MESSAGE.COMMODITY_CATEGORY_ALREADY_USED.status
       )
     }
-    const id = rootId ? rootId : generateUuid()
+    let id: string
     let level: number
-    if (!rootId) {
-      const findData = await db.findOne({ id: parentId })
+    if (isRoot === false) {
+      const findData = await db.findById(parentId)
       if (!findData) {
         throw new HttpException(
           ERROR_MESSAGE.CREATE_NOT_FOUND_COMMODITY_CATEGORY_PARENT,
@@ -93,11 +92,9 @@ export class CategoryService {
       const session = await db.startSession()
       session.startTransaction()
       try {
-        await db.updateOne({ id: parentId }, { $addToSet: { childrenIds: id } }, { session })
-        await db.create(
+        const created = await db.create(
           [
             {
-              id,
               title,
               level,
               parentId,
@@ -106,6 +103,8 @@ export class CategoryService {
           ],
           { session }
         )
+        id = created[0]._id.toString()
+        await db.findByIdAndUpdate(parentId, { $addToSet: { childrenIds: id } }, { session })
         await session.commitTransaction()
       } catch (e) {
         await session.abortTransaction()
@@ -123,13 +122,13 @@ export class CategoryService {
       }
     } else {
       level = 0
-      await db.create({
-        id,
+      const data = await db.create({
         title,
         level,
         parentId,
         childrenIds: []
       })
+      id = data._id.toString()
     }
     return {
       id,
@@ -140,20 +139,15 @@ export class CategoryService {
   }
 
   async update(updateCategoryDto: UpdateCategoryDto): Promise<CategoryUpdatedResponseItem> {
+    const db = this.categoryModel
     const { id, title } = updateCategoryDto
-    if (id === this.rootId) {
-      throw new HttpException(
-        ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR,
-        ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR.status
-      )
-    }
-    const result = await this.categoryModel.findOneAndUpdate({ id }, { $set: { title } })
-    if (result) {
+    const doc = await db.findByIdAndUpdate(id, { $set: { title } })
+    if (doc) {
       return {
-        id: result.id,
-        title: result.title,
-        parentId: result.parentId,
-        level: result.level
+        id: doc.id,
+        title: doc.title,
+        parentId: doc.parentId,
+        level: doc.level
       }
     } else {
       throw new HttpException(
@@ -166,19 +160,13 @@ export class CategoryService {
   async delete(deleteCategoryDto: DeleteCategoryDto) {
     const db = this.categoryModel
     const { id } = deleteCategoryDto
-    if (id === this.rootId) {
-      throw new HttpException(
-        ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR,
-        ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR.status
-      )
-    }
-    const { parentId } = await db.findOne({ id })
+    const { parentId } = await db.findById(id)
     const session = await db.startSession()
     session.startTransaction()
     try {
-      await db.updateOne({ id: parentId }, { $pull: { childrenIds: id } })
-      const { deletedCount } = await this.categoryModel.deleteOne(deleteCategoryDto)
-      if (deletedCount > 0) {
+      await db.findByIdAndUpdate(parentId, { $pull: { childrenIds: id } })
+      const deleteDoc = await db.findByIdAndDelete(id)
+      if (deleteDoc) {
         await session.commitTransaction()
         return {}
       } else {
@@ -204,14 +192,15 @@ export class CategoryService {
   }
 
   async sort(sortCategoryDto: SortCategoryDto): Promise<CategorySortedResponseDto> {
+    const db = this.categoryModel
     const { id, targetId, isGap } = sortCategoryDto
-    if (id === this.rootId || (targetId === '0' && isGap === true)) {
+    const doc = await db.findById(id)
+    if (doc.level === 0 || (targetId === '0' && isGap === true)) {
       throw new HttpException(
         ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR,
         ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR.status
       )
     }
-    const db = this.categoryModel
     const dbData = await db.find({})
     const data = dbData.find((item) => item.id === id)
     const targetData = dbData.find((item) => item.id === targetId)
@@ -221,35 +210,32 @@ export class CategoryService {
         // 同级排序
         let insertArr = parentData.childrenIds.filter((item) => item !== data.id)
         insertArr = insertAfter(insertArr, targetId, data.id)
-        await db.updateOne({ id: parentData.id }, { $set: { childrenIds: insertArr } })
+        await db.findByIdAndUpdate(parentData, { $set: { childrenIds: insertArr } })
       } else {
         // parent.childrenIds 删除子级id
-        await db.updateOne({ id: data.parentId }, { $pull: { childrenIds: data.id } })
+        await db.findByIdAndUpdate(data.parentId, { $pull: { childrenIds: data.id } })
         // 更新当前节点的父级id
-        await db.updateOne(
-          { id: data.id },
-          { $set: { parentId: targetData.parentId, level: targetData.level } }
-        )
+        await db.findByIdAndUpdate(data.id, {
+          $set: { parentId: targetData.parentId, level: targetData.level }
+        })
         // 向新父级的childrenIds插入当前节点id
         // if (targetData.parentId !== '0') {
         // debugger
         const insertArr = insertAfter(parentData.childrenIds, targetId, id)
-        await db.updateOne({ id: targetData.parentId }, { $set: { childrenIds: insertArr } })
+        await db.findByIdAndUpdate(targetData.parentId, { $set: { childrenIds: insertArr } })
         // }
       }
     } else {
       // parent.childrenIds 删除子级id
-      await db.updateOne({ id: data.parentId }, { $pull: { childrenIds: data.id } })
+      await db.findByIdAndUpdate(data.parentId, { $pull: { childrenIds: data.id } })
       // 更新当前节点的父级id
-      await db.updateOne(
-        { id: data.id },
-        { $set: { parentId: targetId, level: targetData.level + 1 } }
-      )
+      await db.findByIdAndUpdate(data.id, {
+        $set: { parentId: targetId, level: targetData.level + 1 }
+      })
       // 修改父级的childrenIds数组
-      await db.updateOne(
-        { id: targetId },
-        { $push: { childrenIds: { $each: [id], $position: 0 } } }
-      )
+      await db.findByIdAndUpdate(targetId, {
+        $push: { childrenIds: { $each: [id], $position: 0 } }
+      })
     }
     return {}
   }

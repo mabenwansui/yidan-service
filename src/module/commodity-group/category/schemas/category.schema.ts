@@ -1,13 +1,12 @@
+import { HttpException } from '@nestjs/common'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
+import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 
 export type CommodityCategoryDocument = HydratedDocument<Category>
 
 @Schema()
 export class Category {
-  @Prop({ required: true })
-  id: string // 分类ID
-
   @Prop({ required: true, unique: true })
   title: string // 名称
 
@@ -22,3 +21,15 @@ export class Category {
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category)
+CategorySchema.pre(['deleteOne', 'findOneAndDelete'], async function (next) {
+  const doc = await this.model.findOne(this.getQuery())
+  if (doc && doc.level === 0) {
+    return next(
+      new HttpException(
+        ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR,
+        ERROR_MESSAGE.UPDATE_COMMODITY_CATEGORY_ROOT_ERROR.status
+      )
+    )
+  }
+  return next()
+})
