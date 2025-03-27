@@ -84,8 +84,8 @@ export class UserService {
   }
 
   async getUserInfo(jwtPayload: JwtPayload): Promise<UserFoundOneResponseDto> {
-    const { name } = jwtPayload
-    const { id, username, email, role } = await this.userModel.findOne({ username: name })
+    const { sub: userId } = jwtPayload
+    const { id, username, email, role } = await this.userModel.findOne({ id: userId })
     return {
       id,
       username,

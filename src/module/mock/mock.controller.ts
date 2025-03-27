@@ -7,7 +7,6 @@ export class MockController {
   constructor(private readonly mockService: MockService) {}
   @Post('create-commodity-data')
   async createCategory() {
-    debugger
     this.mockService.createCommodityData(new CreateLaoxiangjiDto())
   }
 }

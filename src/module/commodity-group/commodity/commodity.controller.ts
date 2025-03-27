@@ -23,11 +23,13 @@ export class CommodityController {
   }
 
   @Post('delete')
+  @UseGuards(JwtAdminGuard)
   async delete(@Body() deleteCommodityDto: DeleteCommodityDto) {
     return await this.commodityService.delete(deleteCommodityDto)
   }
 
   @Post('get-info')
+  @UseGuards(JwtAdminGuard)
   async getCommodityById(@Body() { id }: { id: string }) {
     return await this.commodityService.findById(id)
   }
