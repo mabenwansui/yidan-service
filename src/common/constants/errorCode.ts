@@ -21,7 +21,9 @@ const USER_ERROR_CODE = {
   /** 创建用户失败, 服务器内部错误，请联系管理员 */
   CREATE_USER_ERROR: '11106',
   /** 用户名已存在 */
-  USER_ALREADY_USED: '11107'
+  USER_ALREADY_USED: '11107',
+  /** 用户不存在 */
+  USER_NOT_FOUND: '11108',
 }
 
 const FILE_ERROR_CODE = {

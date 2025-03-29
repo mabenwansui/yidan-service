@@ -10,7 +10,7 @@ import { ROLE } from '@/common/constants/role'
 interface AuthorizationParams {
   username: string
   id: string
-  role: ROLE
+  role: ROLE[]
 }
 
 interface CreateAuthParams {
@@ -27,12 +27,12 @@ export class BaseService {
     public jwtService: JwtService
   ) {}
 
-  async getRefreshToken(authKey: string): Promise<string> {
+  async refreshToken(authKey: string): Promise<string> {
     const result = await this.authModel.findOne({ key: authKey })
     if (result) {
       const { userId, userName, expiresIn } = result
       if (Date.now() <= expiresIn.getTime()) {
-        const token = await this.createToken({ username: userName, id: userId, role: ROLE.ADMIN })
+        const token = await this.createToken({ username: userName, id: userId, role: [ROLE.ADMIN] })
         return token
       }
     }              
@@ -42,7 +42,7 @@ export class BaseService {
     )
   }
 
-  public async createRefreshToken(params: CreateAuthParams): Promise<string> {
+  public async createAuthKey(params: CreateAuthParams): Promise<string> {
     const { userId, userName, expiresIn } = params
     const result = await this.authModel.findOne({ userId })
     let key: string

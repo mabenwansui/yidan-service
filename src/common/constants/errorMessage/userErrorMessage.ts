@@ -36,5 +36,10 @@ export const USER_ERROR_MESSAGE = {
     status: HttpStatus.CONFLICT,
     code: ERROR_CODE.USER_ALREADY_USED,
     message: '用户名已存在'
+  },
+  USER_NOT_FOUND: {
+    status: HttpStatus.NOT_FOUND,
+    code: ERROR_CODE.USER_NOT_FOUND,
+    message: '用户不存在, 请重新登录'
   }
 }

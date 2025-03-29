@@ -4,5 +4,5 @@ export class UserFoundOneResponseDto implements User {
   id: string
   username: string
   email?: string
-  role: ROLE
+  role: ROLE[]
 }

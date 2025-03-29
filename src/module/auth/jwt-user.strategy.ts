@@ -5,14 +5,10 @@ import { AuthService } from './service/auth.service'
 import { JwtPayload } from './interface/jwt-payload.interface'
 
 @Injectable()
-export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt-admin') {
+export class JwtUserStrategy extends PassportStrategy(Strategy, 'jwt-user') {
   constructor(private authService: AuthService) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (req) => {
-          return req?.cookies.at
-        }
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_CONSTANTS_SECRET
     })

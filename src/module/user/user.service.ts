@@ -13,9 +13,7 @@ import { UserFoundOneResponseDto } from './dto/user-found-response.dto'
 import { CaptchaService } from '@/module/captcha/captcha.service'
 import { JwtPayload } from '@/module/auth/interface/jwt-payload.interface'
 
-interface Role {
-  role: ROLE
-}
+const selectUserInfo = 'id username email role'
 
 @Injectable()
 export class UserService {
@@ -25,8 +23,21 @@ export class UserService {
     private readonly captchaService: CaptchaService
   ) {}
 
-  private async create(createDto: CreateDto & Role): Promise<UserCreatedResponseDto> {
-    const { username, password, ...rest } = createDto
+  async createUser(createUserDto: CreateUserDto): Promise<UserCreatedResponseDto> {
+    const { id } = await this.userModel.create({
+      id: generateUuid(),
+      ...createUserDto
+    })
+    return { id }
+  }
+
+  async createAdmin(createAdminDto: CreateAdminDto): Promise<UserCreatedResponseDto> {
+    const { captchaKey, captchaVal, ...rest } = createAdminDto
+    const captcha = this.captchaService.verifyCaptcha(captchaKey, captchaVal)
+    if (!captcha) {
+      throw new HttpException(ERROR_MESSAGE.CAPTCHA_ERROR, ERROR_MESSAGE.CAPTCHA_ERROR.status)
+    }
+    const { username, password } = rest
     const isUnique = await this.userModel.findOne({ username })
     if (isUnique) {
       throw new HttpException(
@@ -36,25 +47,16 @@ export class UserService {
     }
     try {
       const _password = await pwdEncrypt(password)
-      const date = new Date()
       const dto = {
-        id: generateUuid(16),
-        createdAt: date,
-        updatedAt: date,
+        ...rest,
+        id: generateUuid(),
         username,
         password: _password,
-        ...rest
+        role: [ROLE.ADMIN]
       }
-      const result = await this.userModel.create(dto)
-      return {
-        id: result.id,
-        username: result.username,
-        email: result.email,
-        phoneNumber: result.phoneNumber,
-        role: result.role
-      }
+      const { id } = await this.userModel.create(dto)
+      return { id }
     } catch (error) {
-      console.error(error)
       throw new HttpException(
         ERROR_MESSAGE.CREATE_USER_ERROR,
         ERROR_MESSAGE.CREATE_USER_ERROR.status
@@ -62,72 +64,53 @@ export class UserService {
     }
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserCreatedResponseDto> {
-    const dto = {
-      ...createUserDto,
-      role: ROLE.USER
-    }
-    return await this.create(dto)
-  }
-
-  async createAdmin(createAdminDto: CreateAdminDto): Promise<UserCreatedResponseDto> {
-    const { captchaKey, captchaVal, ...rest } = createAdminDto
-    const captcha = this.captchaService.verifyCaptcha(captchaKey, captchaVal)
-    if (!captcha) {
-      throw new HttpException(ERROR_MESSAGE.CAPTCHA_ERROR, ERROR_MESSAGE.CAPTCHA_ERROR.status)
-    }
-    const dto = {
-      ...rest,
-      role: ROLE.ADMIN
-    }
-    return await this.create(dto)
-  }
-
   async getUserInfo(jwtPayload: JwtPayload): Promise<UserFoundOneResponseDto> {
     const { sub: userId } = jwtPayload
-    const { id, username, email, role } = await this.userModel.findOne({ id: userId })
-    return {
-      id,
-      username,
-      email,
-      role
+    const doc = await this.userModel.findOne({ id: userId }).select(selectUserInfo)
+    if (!doc) {
+      throw new HttpException(ERROR_MESSAGE.USER_NOT_FOUND, ERROR_MESSAGE.USER_NOT_FOUND.status)
     }
-  }
-  // private async findByUsername(username: string): Promise<UserFoundOneResponseDto> {
-  //   const { id, username: _username, email, role } = await this.userModel.findOne({ username })
-  //   return {
-  //     id,
-  //     username: _username,
-  //     email,
-  //     role,
-  //   }
-  // }
-  async findAllInfoByUsername(username: string) {
-    return await this.userModel.findOne({ username })
+    return doc
   }
 
-  async findById(id: string): Promise<UserFoundOneResponseDto> {
-    return await this.userModel.findById({ id })
+  async _findOne(query: Object) {
+    return await this.userModel.findOne(query)
   }
 }
 
-// async findByUsername(username: FindUserByNameDto['username']): Promise<User> {
-//   return this.userModel.findOne({ username })
-// }
-
-// async update(id: string, updateUserDto: CreateUserDto): Promise<User> {
-
-// }
-
-// async update(id: string, updateCatDto: UpdateCatDto): Promise<Cat> {
-//   return this.catModel
-//     .findByIdAndUpdate({ _id: id }, updateCatDto, { new: true })
-//     .exec();
-// }
-
-// async delete(id: string): Promise<Commodity> {
-//   const deletedCat = await this.catModel
-//     .findByIdAndDelete({ _id: id })
-//     .exec();
-//   return deletedCat;
+// private async create(createDto: CreateDto & Role): Promise<UserCreatedResponseDto> {
+//   const { username, password, ...rest } = createDto
+//   const isUnique = await this.userModel.findOne({ username })
+//   if (isUnique) {
+//     throw new HttpException(
+//       ERROR_MESSAGE.USER_ALREADY_USED,
+//       ERROR_MESSAGE.USER_ALREADY_USED.status
+//     )
+//   }
+//   try {
+//     const _password = await pwdEncrypt(password)
+//     const date = new Date()
+//     const dto = {
+//       id: generateUuid(16),
+//       createdAt: date,
+//       updatedAt: date,
+//       username,
+//       password: _password,
+//       ...rest
+//     }
+//     const result = await this.userModel.create(dto)
+//     return {
+//       id: result.id,
+//       username: result.username,
+//       email: result.email,
+//       phoneNumber: result.phoneNumber,
+//       role: result.role
+//     }
+//   } catch (error) {
+//     console.error(error)
+//     throw new HttpException(
+//       ERROR_MESSAGE.CREATE_USER_ERROR,
+//       ERROR_MESSAGE.CREATE_USER_ERROR.status
+//     )
+//   }
 // }

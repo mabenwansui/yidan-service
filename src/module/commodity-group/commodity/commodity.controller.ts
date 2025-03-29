@@ -5,6 +5,7 @@ import { CommodityService } from './commodity.service'
 import { UpdateCommodityDto } from './dto/update-commodity.dto'
 import { DeleteCommodityDto } from './dto/delete-commodity.dto'
 import { JwtAdminGuard } from '@/module/auth/jwt-admin.guard'
+import { JwtUserGuard } from '@/module/auth/jwt-user.guard'
 
 @Controller('commodity')
 export class CommodityController {
@@ -37,6 +38,12 @@ export class CommodityController {
   @Post('search')
   @UseGuards(JwtAdminGuard)
   async search(@Body() searchCommodityDto: SearchCommodityDto) {
+    return await this.commodityService.search(searchCommodityDto)
+  }
+
+  @Post('list')
+  @UseGuards(JwtUserGuard)
+  async list(@Body() searchCommodityDto: SearchCommodityDto) {
     return await this.commodityService.search(searchCommodityDto)
   }
 }

@@ -5,8 +5,11 @@ import { User as IUser } from '../interface/user.interface'
 
 export type UserDocument = HydratedDocument<User>
 
-@Schema()
+@Schema({ timestamps: true })
 export class User implements IUser {
+  @Prop({ required: true, unique: true })
+  id: string
+
   @Prop({ required: true, unique: true })
   username: string
 
@@ -14,22 +17,16 @@ export class User implements IUser {
   password: string
 
   @Prop({ required: true })
-  role: ROLE
+  role: ROLE[]
 
-  @Prop({ required: true, unique: true })
-  id: string
+  @Prop({ unique: true, sparse: true })
+  openidMpWx: string
 
   @Prop({ unique: true, sparse: true })
   email?: string
 
-  @Prop()
+  @Prop({ unique: true, sparse: true })
   phoneNumber?: string
-
-  @Prop({ default: Date.now })
-  createdAt?: Date
-
-  @Prop({ default: Date.now })
-  updatedAt?: Date
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

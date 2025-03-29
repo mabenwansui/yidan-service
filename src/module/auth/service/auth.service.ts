@@ -47,21 +47,19 @@ export class AuthService extends BaseService {
     const now = Date.now()
     const { id } = userInfo
     const expiresIn = new Date(now + COOKIE_EXPIRE_TIME)
-    const token = await this.createToken({ username, id, role: ROLE.ADMIN })
+    const token = await this.createToken({ username, id, role: [ROLE.ADMIN] })
     response?.cookie(
       COOKIE_KEY.AUTH_TOKEN,
       token,
       cookieOptions({
         expires: new Date(now + AUTH_EXPIRE_TIME)
       })
-    )    
-    const refreshKey = await this.createRefreshToken(
-      {
-        userId: id,
-        userName: username,
-        expiresIn
-      }
     )
+    const refreshKey = await this.createAuthKey({
+      userId: id,
+      userName: username,
+      expiresIn
+    })
     response?.cookie(
       COOKIE_KEY.REFRESH_TOKEN,
       refreshKey,
@@ -77,7 +75,7 @@ export class AuthService extends BaseService {
   }
 
   public async refreshAuth(authKey: string, response: Response) {
-    const token = await this.getRefreshToken(authKey)
+    const token = await this.refreshToken(authKey)
     const now = Date.now()
     response?.cookie(
       COOKIE_KEY.AUTH_TOKEN,
@@ -85,7 +83,7 @@ export class AuthService extends BaseService {
       cookieOptions({
         expires: new Date(now + AUTH_EXPIRE_TIME)
       })
-    )    
+    )
     return {
       status: 'ok'
     } as const
@@ -95,13 +93,13 @@ export class AuthService extends BaseService {
     username: string,
     password: string
   ): Promise<Pick<UserFoundOneResponseDto, 'id' | 'username'> | null> {
-    const userInfo = await this.userService.findAllInfoByUsername(username)
-    if (!userInfo) {
+    const userDoc = await this.userService._findOne({ username })
+    if (!userDoc) {
       return null
     }
-    const compareResult = await bcrypt.compare(password, userInfo.password)
+    const compareResult = await bcrypt.compare(password, userDoc.password)
     if (!compareResult) return null
-    const { username: name, id } = userInfo
+    const { username: name, id } = userDoc
     return {
       id,
       username: name
