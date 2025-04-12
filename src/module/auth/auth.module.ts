@@ -8,9 +8,9 @@ import { AuthService } from './service/auth.service'
 import { MpAuthService } from './service/mp-auth.service'
 import { AuthController } from './auth.controller'
 import { UserModule } from '@/module/user/user.module'
-import { JwtAdminStrategy } from './jwt-admin.strategy'
-import { JwtUserStrategy } from './jwt-user.strategy'
-
+import { JwtAuthStrategy } from './guard/jwt-auth.strategy'
+import { JwtAuthGuard } from './guard/jwt-auth.guard'
+import { RoleAuthGuard } from './guard/role-auth.guard'
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { JwtUserStrategy } from './jwt-user.strategy'
       signOptions: { expiresIn: '1d' }
     })
   ],
-  providers: [JwtAdminStrategy, JwtUserStrategy, AuthService, MpAuthService],
+  providers: [JwtAuthStrategy, JwtAuthGuard, RoleAuthGuard, AuthService, MpAuthService],
   controllers: [AuthController],
   exports: [AuthService]
 })

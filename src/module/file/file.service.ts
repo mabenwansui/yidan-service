@@ -50,6 +50,6 @@ export class FileService {
   }
 
   private async create(file: Omit<File, 'createdAt'>) {
-    return await this.fileModel.create({ ...file, createdAt: new Date() })
+    return await this.fileModel.create({ ...file })
   }
 }

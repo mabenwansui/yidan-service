@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument } from 'mongoose'
+import { CommodityInterface } from '../interface/commodity.interface'
 
 export type CommodityDocument = HydratedDocument<Commodity>
 
-@Schema()
-export class Commodity {
+@Schema({ timestamps: true })
+export class Commodity implements Omit<CommodityInterface, 'categoryId'> {
   @Prop({ required: true })
   name: string // 名称
 
@@ -13,6 +14,9 @@ export class Commodity {
 
   @Prop({ type: [String], default: [] })
   imgNames?: [string] // 图片
+
+  @Prop()
+  coverImageUrl?: string // 封面图
 
   @Prop()
   originalPrice?: number // 原价
@@ -34,12 +38,6 @@ export class Commodity {
 
   @Prop()
   soldCount?: number // 已售
-
-  @Prop()
-  createdAt?: Date // 创建时间
-
-  @Prop()
-  updatedAt?: Date // 更新时间
 }
 
 export const CommoditySchema = SchemaFactory.createForClass(Commodity)

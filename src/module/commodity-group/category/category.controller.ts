@@ -1,43 +1,49 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common'
-import { JwtAdminGuard } from '@/module/auth/jwt-admin.guard'
+import { Auth } from '@/module/auth/guard/auth.decorator'
+import { ROLE } from '@/common/constants/role'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 import { DeleteCategoryDto } from './dto/delete-category.dto'
-import { SearchCategoryDto } from './dto/search-category.dto'
 import { SortCategoryDto } from './dto/sort-category.dto'
 import { CategoryService } from '../category/category.service'
 
 @Controller('commodity/category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
-
-  @UseGuards(JwtAdminGuard)
+  /** 管理员 */
+  @Auth(ROLE.ADMIN)
   @Post('create')
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto)
   }
 
-  @UseGuards(JwtAdminGuard)
+  @Auth(ROLE.ADMIN)
   @Post('update')
   async update(@Body() updateCategoryDto: UpdateCategoryDto) {
     return await this.categoryService.update(updateCategoryDto)
   }
 
-  @UseGuards(JwtAdminGuard)
+  @Auth(ROLE.ADMIN)
   @Post('delete')
   async delete(@Body() deleteCategoryDto: DeleteCategoryDto) {
     return await this.categoryService.delete(deleteCategoryDto)
   }
 
-  @UseGuards(JwtAdminGuard)
-  @Post('list')
-  async search(@Body() searchCategoryDto: SearchCategoryDto = {}) {
-    return await this.categoryService.search(searchCategoryDto)
-  }
-
-  @UseGuards(JwtAdminGuard)
+  @Auth(ROLE.ADMIN)
   @Post('sort')
   async sort(@Body() sortCategoryDto: SortCategoryDto) {
     return await this.categoryService.sort(sortCategoryDto)
+  }
+
+  @Auth(ROLE.ADMIN, ROLE.USER)
+  @Post('list')
+  async list() {
+    return await this.categoryService.list()
+  }
+
+  @Auth(ROLE.ADMIN)
+  @Post('form-list')
+  async formList() {
+    return await this.categoryService.formList()
   }
 }

@@ -16,7 +16,6 @@ import {
   CategoryFoundResponseDto,
   CategoryFoundResponseItem
 } from './dto/category-found-response.dto'
-import { SearchCategoryDto } from './dto/search-category.dto'
 
 type ICategory = Category & { id: string }
 
@@ -34,7 +33,7 @@ export class CategoryService {
     }
   }
 
-  async search(query: SearchCategoryDto = {}): Promise<CategoryFoundResponseDto> {
+  private async search(query: any = {}): Promise<CategoryFoundResponseDto> {
     const foundDatas = (await this.categoryModel.find(query)) as ICategory[]
     if (foundDatas.length === 0) {
       return { list: [] }
@@ -62,6 +61,17 @@ export class CategoryService {
       return fn(rootDatas)
     }
     return { list: transFormData(foundDatas) }
+  }
+
+  /** 包含顶级分类 - 全部 */
+  async formList(): Promise<CategoryFoundResponseDto> {
+    return await this.search()
+  }
+
+  /** 不返回顶级分类 - 全部 */
+  async list(): Promise<CategoryFoundResponseDto> {
+    const { list } = await this.search()
+    return { list: list[0]?.children || [] }
   }
 
   async create(

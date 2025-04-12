@@ -4,7 +4,7 @@ import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
-export class JwtUserGuard extends AuthGuard('jwt-user') {
+export class JwtAuthGuard extends AuthGuard('jwt-auth') {
   constructor(private reflector: Reflector) {
     super()
   }

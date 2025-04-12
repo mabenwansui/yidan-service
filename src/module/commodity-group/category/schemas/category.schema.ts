@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 
-export type CommodityCategoryDocument = HydratedDocument<Category>
+export type CategoryDocument = HydratedDocument<Category>
 
 @Schema()
 export class Category {

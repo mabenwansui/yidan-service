@@ -2,9 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 import { fileType } from '../interface/file.interface'
 
-export type CommodityDocument = HydratedDocument<File>
+export type FileDocument = HydratedDocument<File>
 
-@Schema()
+@Schema({ timestamps: true })
 export class File {
   @Prop({ required: true })
   name: string
@@ -17,9 +17,6 @@ export class File {
 
   @Prop({ required: true })
   size: number // 图片大小，单位为字节
-
-  @Prop({ required: true })
-  createdAt: Date // 创建时间
 }
 
 export const FileSchema = SchemaFactory.createForClass(File)

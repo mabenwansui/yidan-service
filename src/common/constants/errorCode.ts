@@ -14,6 +14,9 @@ const USER_ERROR_CODE = {
   AUTH_CHECK_ERROR: '11102',
   /** 权限校验失败, 请重新登录 */
   AUTH_REFRESH_CHECK_ERROR: '11103',
+  // 没有权限访问
+  AUTH_NOT_PERMISSION: '11110',
+
   /** 验证码已过期 */
   CAPTCHA_NOT_FOUND: '11104',
   /** 验证码错误, 请重新输入 */

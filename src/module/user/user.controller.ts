@@ -1,8 +1,9 @@
-import { Post, Controller, UseGuards, Body, Req } from '@nestjs/common'
+import { Post, Controller, Body, Req } from '@nestjs/common'
 import { CreateAdminDto } from './dto/create.dto'
 import { UserService } from './user.service'
-import { JwtAdminGuard } from '@/module/auth/jwt-admin.guard'
 import { JwtPayload } from '@/module/auth/interface/jwt-payload.interface'
+import { ROLE } from '@/common/constants/role'
+import { Auth } from '@/module/auth/guard/auth.decorator'
 
 @Controller('user')
 export class UserController {
@@ -13,8 +14,8 @@ export class UserController {
     return await this.userService.createAdmin(createDto)
   }
 
+  @Auth(ROLE.ADMIN)
   @Post('get-user-info')
-  @UseGuards(JwtAdminGuard)
   async getUserInfo(@Req() request) {
     return await this.userService.getUserInfo(request.user as JwtPayload)
   }

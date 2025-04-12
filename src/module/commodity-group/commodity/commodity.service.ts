@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { WithMongoId } from '@/common/types'
 import { Commodity } from './schemas/commodity.schema'
 import { CreateCommodityDto } from './dto/create-commodity.dto'
 import { SearchCommodityDto } from './dto/search-commodity.dto'
@@ -19,21 +20,15 @@ export class CommodityService {
   ) {}
 
   async create(createCommodityDto: CreateCommodityDto): Promise<CommodityCreatedResponseDto> {
-    const date = new Date()
     const result = await this.commodityModel.create({
-      ...createCommodityDto,
-      createdAt: date,
-      updatedAt: date
+      ...createCommodityDto
     })
     return result as unknown as CommodityCreatedResponseDto
   }
 
   async update(updateCommodityDto: UpdateCommodityDto) {
     const { id, ...rest } = updateCommodityDto
-    return await this.commodityModel.findByIdAndUpdate(id, {
-      ...rest,
-      updatedAt: new Date()
-    })
+    return await this.commodityModel.findByIdAndUpdate(id, { ...rest })
   }
 
   async delete(deleteCommodityDto: DeleteCommodityDto) {
@@ -55,26 +50,30 @@ export class CommodityService {
       query.category = category
     }
     const total = await this.commodityModel.countDocuments(query)
-    let data: any = await this.commodityModel
+    const data = await this.commodityModel
       .find(query)
       .select(selectForm)
-      .populate('category', 'title')
-      .skip((curPage - 1) * pageSize)
+      .populate('category', 'id, title' )
+      .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
       .lean()
-    data = data.map((item) => {
+    const _data = data.map((item) => {
       const { _id, category, ...rest } = item
+      item.coverImageUrl = item.coverImageUrl || item.imgNames[0]
       return {
         id: _id,
-        category: category.title,
+        commodityId: _id,
+        // 通过populate返回的category是一个对象, 里面包含_id和title
+        category: (category as unknown as WithMongoId<{ title: string }>).title,
+        categoryId: (category as unknown as WithMongoId<{ title: string }>)._id,
         ...rest
       }
-    })
+    })    
     return {
       total,
       curPage,
       pageSize: pageSize,
-      list: data
+      list: _data as any
     }
   }
 }

@@ -1,7 +1,7 @@
-import { Commodity } from '../schemas/commodity.schema'
+import { CommodityInterface } from '../interface/commodity.interface'
 
 export class CommoditySearchResponseDto {
-  list: Commodity[]
+  list: CommodityInterface[]
   pageSize: number
   curPage: number
   total: number

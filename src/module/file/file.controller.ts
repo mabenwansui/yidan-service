@@ -1,5 +1,6 @@
 import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Req } from '@nestjs/common'
-import { JwtAdminGuard } from '@/module/auth/jwt-admin.guard'
+import { Auth } from '@/module/auth/guard/auth.decorator'
+import { ROLE } from '@/common/constants/role'
 import { ImgInterceptor } from './interceptor/img.interceptor'
 import { FileService } from './file.service'
 
@@ -7,9 +8,9 @@ import { FileService } from './file.service'
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @Post('upload/img')
-  @UseGuards(JwtAdminGuard)
   @UseInterceptors(ImgInterceptor())
+  @Auth(ROLE.ADMIN)
+  @Post('upload/img')
   async upload(@Req() request, @UploadedFile() file: Express.Multer.File) {
     return await this.fileService.upload(file)
   }

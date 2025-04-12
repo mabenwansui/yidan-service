@@ -14,7 +14,7 @@ export class User implements IUser {
   username: string
 
   @Prop()
-  password: string
+  password?: string
 
   @Prop({ required: true })
   role: ROLE[]

@@ -29,7 +29,7 @@ export class MpAuthService extends BaseService {
     let username: string
     let role: ROLE[]
     if (!userDoc) {
-      role = [ROLE.USER_MP_WX]
+      role = [ROLE.USER]
       username = `wx_${generateUuid()}`
       const { id } = await this.userService.createUser({
         username,
