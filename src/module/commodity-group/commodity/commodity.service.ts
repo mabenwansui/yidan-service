@@ -41,7 +41,7 @@ export class CommodityService {
   }
 
   async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
-    const { search, category, curPage = 1, pageSize = 30 } = searchCommodity
+    const { search, category, curPage, pageSize } = searchCommodity
     const query: any = {}
     if (search) {
       query.name = { $regex: search, $options: 'i' }

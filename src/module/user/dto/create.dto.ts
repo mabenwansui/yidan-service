@@ -1,4 +1,4 @@
-import { User } from '../interface/user.interface'
+import { UserInterface } from '../interface/user.interface'
 import { ROLE } from '@/common/constants/role'
 import { MaxLength, MinLength, IsNotEmpty, IsString, IsOptional } from 'class-validator'
 
@@ -10,7 +10,7 @@ const minUserPwdLength = 6
 const userTitle = '用户名'
 const pwdTitle = '密码'
 
-export class CreateDto implements Omit<User, 'id' | 'role'> {
+export class CreateDto implements Omit<UserInterface, 'id' | 'role'> {
   @IsNotEmpty({ message: `${userTitle}不能为空` })
   @IsString()
   @MaxLength(maxUsernameLength, { message: `${userTitle}长度不能超过${maxUsernameLength}` })

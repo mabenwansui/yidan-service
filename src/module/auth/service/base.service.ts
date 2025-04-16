@@ -6,6 +6,7 @@ import { Auth } from '../schemas/auth.schemas'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { generateUuid } from '@/common/utils/generateUuid'
 import { ROLE } from '@/common/constants/role'
+import { UserService } from '@/module/user/user.service'
 
 interface AuthorizationParams {
   username: string
@@ -24,6 +25,7 @@ export class BaseService {
   constructor(
     @InjectModel(Auth.name)
     public readonly authModel: Model<Auth>,
+    public userService: UserService,
     public jwtService: JwtService
   ) {}
 
@@ -32,7 +34,8 @@ export class BaseService {
     if (result) {
       const { userId, userName, expiresIn } = result
       if (Date.now() <= expiresIn.getTime()) {
-        const token = await this.createToken({ username: userName, id: userId, role: [ROLE.ADMIN] })
+        const doc = await this.userService._findOne({ id: userId })
+        const token = await this.createToken({ username: userName, id: userId, role: doc.role })
         return token
       }
     }              

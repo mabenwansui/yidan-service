@@ -46,10 +46,7 @@ export enum PAYMENT_STATUS {
   FAILED = 'failed'
 }
 
-export type Commodity = Pick<
-  CommodityInterface,
-  'categoryId' | 'price' | 'coverImageUrl' | 'description' | 'name'
-> & { quantity: number }
+export type Commodity = Pick<CommodityInterface, 'categoryId' | 'price'> & { quantity: number }
 
 export interface OrderInterface {
   // 唯一ID，必需

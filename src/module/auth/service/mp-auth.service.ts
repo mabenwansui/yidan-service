@@ -15,11 +15,11 @@ export class MpAuthService extends BaseService {
   constructor(
     @InjectModel(Auth.name)
     public readonly authModel: Model<Auth>,
-    private userService: UserService,
+    public userService: UserService,
     public jwtService: JwtService,
     private readonly httpService: HttpService
   ) {
-    super(authModel, jwtService)
+    super(authModel, userService, jwtService)
   }
 
   public async loginMpWx(code: string) {

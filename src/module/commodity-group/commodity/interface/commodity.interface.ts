@@ -1,6 +1,8 @@
+import { Category } from '@/module/commodity-group/category/schemas/category.schema'
+
 export interface CommodityInterface {
   name: string; // 名称
-  category?: string; // 分类
+  category?: Partial<Category>; // 分类
   categoryId?: string
   imgNames?: string[]; // 图片
   coverImageUrl?: string; // 封面图片

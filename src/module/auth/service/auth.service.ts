@@ -10,7 +10,6 @@ import { UserFoundOneResponseDto } from '@/module/user/dto/user-found-response.d
 import { LoginAuthDto } from '../dto/login-auth.dto'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { COOKIE_KEY } from '@/common/constants/cookie'
-import { ROLE } from '@/common/constants/role'
 import { BaseService } from './base.service'
 
 const COOKIE_EXPIRE_TIME = 1e3 * 60 * 60 * 24 * 7 // 7 days
@@ -32,10 +31,10 @@ export class AuthService extends BaseService {
   constructor(
     @InjectModel(Auth.name)
     public readonly authModel: Model<Auth>,
-    private userService: UserService,
+    public userService: UserService,
     public jwtService: JwtService
   ) {
-    super(authModel, jwtService)
+    super(authModel, userService, jwtService)
   }
 
   async adminLogin(loginAuthDto: LoginAuthDto, response: Response) {
@@ -45,9 +44,9 @@ export class AuthService extends BaseService {
       throw new HttpException(ERROR_MESSAGE.LOGIN_FAILURE, ERROR_MESSAGE.LOGIN_FAILURE.status)
     }
     const now = Date.now()
-    const { id } = userInfo
+    const { id, role } = userInfo
     const expiresIn = new Date(now + COOKIE_EXPIRE_TIME)
-    const token = await this.createToken({ username, id, role: [ROLE.ADMIN] })
+    const token = await this.createToken({ username, id, role })
     response?.cookie(
       COOKIE_KEY.AUTH_TOKEN,
       token,
@@ -92,17 +91,13 @@ export class AuthService extends BaseService {
   private async validateUser(
     username: string,
     password: string
-  ): Promise<Pick<UserFoundOneResponseDto, 'id' | 'username'> | null> {
+  ): Promise<UserFoundOneResponseDto | null> {
     const userDoc = await this.userService._findOne({ username })
     if (!userDoc) {
       return null
     }
     const compareResult = await bcrypt.compare(password, userDoc.password)
     if (!compareResult) return null
-    const { username: name, id } = userDoc
-    return {
-      id,
-      username: name
-    }
+    return userDoc
   }
 }

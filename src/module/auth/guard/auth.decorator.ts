@@ -5,7 +5,7 @@ import { ROLE } from '@/common/constants/role';
 
 export function Auth(...roles: ROLE[]) {
   return applyDecorators(
-    SetMetadata('roles', roles),
+    SetMetadata('roles', roles || []),
     UseGuards(JwtAuthGuard, RoleAuthGuard)
   );
 }

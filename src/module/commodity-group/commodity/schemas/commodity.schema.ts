@@ -1,16 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { HydratedDocument } from 'mongoose'
+import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { CommodityInterface } from '../interface/commodity.interface'
 
 export type CommodityDocument = HydratedDocument<Commodity>
 
 @Schema({ timestamps: true })
-export class Commodity implements Omit<CommodityInterface, 'categoryId'> {
+export class Commodity implements Omit<CommodityInterface, 'categoryId' | 'category'> {
   @Prop({ required: true })
   name: string // 名称
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Category' })
-  category?: string // 分类
+  category?: Types.ObjectId // 分类
 
   @Prop({ type: [String], default: [] })
   imgNames?: [string] // 图片

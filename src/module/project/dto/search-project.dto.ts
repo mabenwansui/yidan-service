@@ -1,16 +1,19 @@
 import { IsOptional } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 
-export class SearchCommodityDto extends PageBaseDto {
+export class SearchProjectDto extends PageBaseDto {
   @IsOptional()
-  search?: string // 搜索关键字
+  name?: string
 
   @IsOptional()
-  category?: string // 分类
+  owner?: string
+
+  @IsOptional()
+  city?: string
 
   constructor() {
     super()
     this.curPage = 1
-    this.pageSize = 20
+    this.pageSize = 100
   }
 }

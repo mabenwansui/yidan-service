@@ -27,6 +27,12 @@ const USER_ERROR_CODE = {
   USER_ALREADY_USED: '11107',
   /** 用户不存在 */
   USER_NOT_FOUND: '11108',
+  /** 超级管理员账户不能删除 */
+  DELETE_SUPER_ADMIN_ERROR: '11109',
+  /** 删除用户失败 */
+  DELETE_USER_ERROR: '11110',
+  /** 更新失败 */
+  UPDATE_USER_ERROR: '11111',
 }
 
 const FILE_ERROR_CODE = {
