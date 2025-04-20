@@ -1,5 +1,5 @@
-import { CreateCategoryDto } from '@/module/commodity-group/category/dto/create-category.dto'
-import { CreateCommodityDto } from '@/module/commodity-group/commodity/dto/create-commodity.dto'
+import { CreateCategoryDto } from '@/module/commodity/category/dto/create-category.dto'
+import { CreateCommodityDto } from '@/module/commodity/commodity/dto/create-commodity.dto'
 
 class CreateCategory extends CreateCategoryDto {
   dependencies?: CreateCommodityDto[]

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { MockController } from './mock.controller'
 import { MockService } from './mock.service'
-import { CommodityGroupModule } from '@/module/commodity-group/commodity-group.module'
+import { CommodityModule } from '@/module/commodity/commodity.module'
 
 @Module({
-  imports: [CommodityGroupModule],
+  imports: [CommodityModule],
   controllers: [MockController],
   providers: [MockService]
 })

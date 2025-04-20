@@ -1,37 +1,37 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { Project } from './schemas/project.schema'
-import { ProjectCreatedResponseDto } from './dto/project-created-response.dto'
-import { CreateProjectDto } from './dto/create-project.dto'
-import { UpdateProjectDto } from './dto/update-project.dto'
-import { SearchProjectDto } from './dto/search-project.dto'
+import { Store } from './schemas/store.schema'
+import { StoreCreatedResponseDto } from './dto/store-store-response.dto'
+import { CreateStoreDto } from './dto/create-store.dto'
+import { UpdateStoreDto } from './dto/update-store.dto'
+import { SearchStoreDto } from './dto/search-store.dto'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
 
 @Injectable()
-export class ProjectService {
+export class StoreService {
   constructor(
-    @InjectModel(Project.name)
-    private readonly ProjectModel: Model<Project>
+    @InjectModel(Store.name)
+    private readonly StoreModel: Model<Store>
   ) {}
-  async create(params: CreateProjectDto): Promise<ProjectCreatedResponseDto> {
-    const { id } = await this.ProjectModel.create(params)
+  async create(params: CreateStoreDto): Promise<StoreCreatedResponseDto> {
+    const { id } = await this.StoreModel.create(params)
     return { id }
   }
 
-  async update(params: UpdateProjectDto) {
+  async update(params: UpdateStoreDto) {
     const { id, ...rest } = params
-    await this.ProjectModel.findByIdAndUpdate(id, rest)
+    await this.StoreModel.findByIdAndUpdate(id, rest)
   }
 
   async delete(id: string) {
-    return await this.ProjectModel.findByIdAndDelete(id)
+    return await this.StoreModel.findByIdAndDelete(id)
   }
 
-  async search(params: SearchProjectDto) {
-    const db = this.ProjectModel
+  async search(params: SearchStoreDto) {
+    const db = this.StoreModel
     const { name, owner, city, curPage, pageSize } = params
     const query: any = {}
     if (name) {

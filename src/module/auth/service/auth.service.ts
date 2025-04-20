@@ -73,6 +73,15 @@ export class AuthService extends BaseService {
     }
   }
 
+  async logout(userId: string, response: Response) {
+    response?.clearCookie(COOKIE_KEY.AUTH_TOKEN)
+    response?.clearCookie(COOKIE_KEY.REFRESH_TOKEN)
+    await this.authModel.deleteOne({ userId })
+    return {
+      status: 'ok'
+    }
+  }
+
   public async refreshAuth(authKey: string, response: Response) {
     const token = await this.refreshToken(authKey)
     const now = Date.now()

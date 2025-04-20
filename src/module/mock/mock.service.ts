@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { CategoryService } from '@/module/commodity-group/category/category.service'
-import { CommodityService } from '@/module/commodity-group/commodity/commodity.service'
+import { CategoryService } from '@/module/commodity/category/category.service'
+import { CommodityService } from '@/module/commodity/commodity/commodity.service'
 import { CreateLaoxiangjiDto } from './dto/create-laoxiangji.dto'
 
 @Injectable()

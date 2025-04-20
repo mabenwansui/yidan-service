@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
 
-export interface ProjectInterface {
+export interface StoreInterface {
   /** 项目名称，必须且唯一 */
   name: string
   /** 项目负责人，存储用户的 ObjectId 数组 */

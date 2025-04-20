@@ -9,17 +9,14 @@ export class UserUpdateDto implements Partial<UserInterface> {
   @IsOptional()
   username?: string
 
-  @IsEnum(ROLE, { each: true })
-  @IsArray()
-  @IsOptional()
-  role?: ROLE[]
-
-  @IsOptional()
   @IsEmail()
+  @IsOptional()
   email?: string
 
   @IsOptional()
-  @IsPhoneNumber()
+  avatarUrl?: string
+
+  @IsOptional()
   phoneNumber?: string
 
   @IsOptional()

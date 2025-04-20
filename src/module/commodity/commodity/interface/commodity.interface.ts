@@ -1,4 +1,4 @@
-import { Category } from '@/module/commodity-group/category/schemas/category.schema'
+import { Category } from '@/module/commodity/category/schemas/category.schema'
 
 export interface CommodityInterface {
   name: string; // 名称

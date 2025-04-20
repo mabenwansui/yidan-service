@@ -1,9 +1,9 @@
-import { ProjectInterface } from '../interface/project.interface'
+import { StoreInterface } from '../interface/store.interface'
 import { Types } from 'mongoose';
-import { IsString, IsArray, IsOptional, IsObject, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsString, IsArray, IsOptional, IsObject, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateProjectDto implements ProjectInterface {
+export class CreateStoreDto implements StoreInterface {
   /** 项目名称，必须且唯一 */
   @IsString()
   @IsNotEmpty()

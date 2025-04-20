@@ -1,7 +1,7 @@
 import { IsOptional } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 
-export class SearchProjectDto extends PageBaseDto {
+export class SearchStoreDto extends PageBaseDto {
   @IsOptional()
   name?: string
 

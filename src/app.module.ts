@@ -3,7 +3,7 @@ import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { MongooseModule } from '@nestjs/mongoose'
 import { TransformResponseInterceptor } from '@/common/interceptors/transformResponse.interceptor'
-import { CommodityGroupModule } from '@/module/commodity-group/commodity-group.module'
+import { CommodityModule } from '@/module/commodity/commodity.module'
 import { HttpExceptionFilter } from '@/common/exceptionfilters/http.exceptionfilter'
 import { UserModule } from '@/module/user/user.module'
 import { AuthModule } from '@/module/auth/auth.module'
@@ -12,6 +12,7 @@ import { FileModule } from '@/module/file/file.module'
 import { MockModule } from '@/module/mock/mock.module'
 import { CartModule } from '@/module/cart/cart.module'
 import { OrderModule } from '@/module/order/order.module'
+import { MapModule } from '@/module/map/map.module'
 import { ConfigModule } from '@nestjs/config'
 
 import config from '@/config'
@@ -49,8 +50,9 @@ const mongooseModuleOptions = {
     UserModule,
     AuthModule,
     CaptchaModule,
-    CommodityGroupModule,
+    CommodityModule,
     CartModule,
+    MapModule,
     OrderModule,
     FileModule,
     MockModule

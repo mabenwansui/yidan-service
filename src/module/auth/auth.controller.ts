@@ -1,4 +1,6 @@
-import { Controller, Post, Body, Res } from '@nestjs/common'
+import { Controller, Post, Body, Res, Req } from '@nestjs/common'
+import { Auth } from '@/module/auth/guard/auth.decorator'
+import { ROLE } from '@/common/constants/role'
 import { Response } from 'express'
 import { AuthService } from './service/auth.service'
 import { MpAuthService } from './service/mp-auth.service'
@@ -15,6 +17,12 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginAuthDto: LoginAuthDto, @Res({ passthrough: true }) response: Response) {
     return await this.authService.adminLogin(loginAuthDto, response)
+  }
+
+  @Auth(ROLE.ADMIN, ROLE.STAFF)
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response, @Req() request) {
+    return await this.authService.logout(request.user.sub, response)
   }
 
   @Post('refresh-auth')

@@ -17,6 +17,9 @@ export class User implements UserInterface {
   nickname?: string
 
   @Prop()
+  avatarUrl?: string
+
+  @Prop()
   password?: string
 
   @Prop({ required: true })

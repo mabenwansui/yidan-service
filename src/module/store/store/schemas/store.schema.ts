@@ -1,11 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
-import { ProjectInterface } from '../interface/project.interface'
+import { StoreInterface } from '../interface/store.interface'
 
-export type ProjectDocument = HydratedDocument<Project>
+export type StoreDocument = HydratedDocument<Store>
+export enum OPEN_STATUS {
+  OPEN = 'open',
+  CLOSE = 'close'
+}
 
 @Schema({ timestamps: true })
-export class Project implements ProjectInterface {
+export class Store implements StoreInterface {
   @Prop({ required: true, unique: true })
   name: string
 
@@ -28,10 +32,13 @@ export class Project implements ProjectInterface {
   address?: string
 
   @Prop()
+  open?: OPEN_STATUS.OPEN | OPEN_STATUS.CLOSE
+
+  @Prop()
   location?: {
     lat: number
     lng: number
   }
 }
 
-export const ProjectSchema = SchemaFactory.createForClass(Project)
+export const StoreSchema = SchemaFactory.createForClass(Store)

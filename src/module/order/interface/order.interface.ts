@@ -1,4 +1,4 @@
-import { CommodityInterface } from '@/module/commodity-group/commodity/interface/commodity.interface'
+import { CommodityInterface } from '@/module/commodity/commodity/interface/commodity.interface'
 
 export enum ORDER_TYPE {
   /** 堂食 */

@@ -109,10 +109,9 @@ export class UserService {
     }
   }
 
-  async update(params: UserUpdateDto) {
-    const { id, ...rest } = params
+  async update(id: string, params: UserUpdateDto) {
     try {
-      await this.userModel.updateOne({ id }, { ...rest })
+      await this.userModel.updateOne({ id }, params)
       return {
         status: 'ok'
       }
