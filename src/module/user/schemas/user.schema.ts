@@ -13,7 +13,7 @@ export class User implements UserInterface {
   @Prop({ required: true, unique: true })
   username: string
 
-  @Prop()
+  @Prop({ unique: true })
   nickname?: string
 
   @Prop()
@@ -36,3 +36,4 @@ export class User implements UserInterface {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
+UserSchema.index({ nickname: 'text' });

@@ -24,7 +24,7 @@ export class UserController {
   }
 
   @Auth()
-  @Post('search-admin')
+  @Post('search-all')
   async searchAdmin(@Body() searchAdminDto: SearchAdminDto) {
     const { role, ...rest } = searchAdminDto
     const _role = role ? role.filter((item) => item !== ROLE.SUPER_ADMIN) : [ROLE.ADMIN, ROLE.STAFF]
@@ -35,7 +35,7 @@ export class UserController {
   }
 
   @Auth(ROLE.ADMIN)
-  @Post('search-staff')
+  @Post('search')
   async searchStaff(@Body() searchAdminDto: SearchStaffDto) {
     return await this.userService.search({
       role: [ROLE.STAFF],

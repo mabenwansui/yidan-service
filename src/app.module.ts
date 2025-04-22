@@ -13,6 +13,7 @@ import { MockModule } from '@/module/mock/mock.module'
 import { CartModule } from '@/module/cart/cart.module'
 import { OrderModule } from '@/module/order/order.module'
 import { MapModule } from '@/module/map/map.module'
+import { StoreModule } from '@/module/store/store.module'
 import { ConfigModule } from '@nestjs/config'
 
 import config from '@/config'
@@ -52,6 +53,7 @@ const mongooseModuleOptions = {
     CaptchaModule,
     CommodityModule,
     CartModule,
+    StoreModule,
     MapModule,
     OrderModule,
     FileModule,

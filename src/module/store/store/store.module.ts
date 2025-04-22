@@ -9,4 +9,4 @@ import { StoreService } from './store.service'
   controllers: [StoreController],
   providers: [StoreService],
 })
-export class CartModule {}
+export class StoreModule {}

@@ -3,10 +3,6 @@ import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { StoreInterface } from '../interface/store.interface'
 
 export type StoreDocument = HydratedDocument<Store>
-export enum OPEN_STATUS {
-  OPEN = 'open',
-  CLOSE = 'close'
-}
 
 @Schema({ timestamps: true })
 export class Store implements StoreInterface {
@@ -16,7 +12,7 @@ export class Store implements StoreInterface {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
   owner?: Types.ObjectId[] // 项目负责人
 
-  @Prop()
+  @Prop({ type: [String] })
   imgNames?: string[] // 图片
 
   @Prop()
@@ -31,10 +27,10 @@ export class Store implements StoreInterface {
   @Prop()
   address?: string
 
-  @Prop()
-  open?: OPEN_STATUS.OPEN | OPEN_STATUS.CLOSE
+  @Prop({ type: Boolean })
+  open?: boolean // 营业状态
 
-  @Prop()
+  @Prop({ type: { lat: Number, lng: Number } })
   location?: {
     lat: number
     lng: number

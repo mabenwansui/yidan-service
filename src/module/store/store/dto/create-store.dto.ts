@@ -41,9 +41,9 @@ export class CreateStoreDto implements StoreInterface {
   address?: string;
 
   /** 项目地理位置，包含纬度和经度，可选字段 */
-  @Type(() => Object)
-  @ValidateNested()
-  @IsObject()
+  // @Type(() => Object)
+  // @ValidateNested()
+  // @IsObject()
   @IsOptional()
   location?: {
     lat: number;

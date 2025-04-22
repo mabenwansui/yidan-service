@@ -41,6 +41,7 @@ export class CommodityService {
   }
 
   async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
+    const db = this.commodityModel
     const { search, category, curPage, pageSize } = searchCommodity
     const query: any = {}
     if (search) {
@@ -49,11 +50,11 @@ export class CommodityService {
     if (category) {
       query.category = category
     }
-    const total = await this.commodityModel.countDocuments(query)
-    const data = await this.commodityModel
+    const total = await db.countDocuments(query)
+    const data = await db
       .find(query)
       .select(selectForm)
-      .populate('category', 'id, title' )
+      .populate('category', 'id, title')
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
       .lean()
@@ -68,7 +69,7 @@ export class CommodityService {
         categoryId: (category as unknown as WithMongoId<{ title: string }>)._id,
         ...rest
       }
-    })    
+    })
     return {
       total,
       curPage,
