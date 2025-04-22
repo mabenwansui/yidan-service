@@ -6,6 +6,7 @@ import { StoreCreatedResponseDto } from './dto/store-store-response.dto'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
 import { SearchStoreDto } from './dto/search-store.dto'
+import { selectForm as selectUserForm } from '@/common/constants/user'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -43,11 +44,11 @@ export class StoreService {
     const total = await db.countDocuments(query)
     const data = await db
       .find(query)
-      .select('id name owner imgNames coverImageUrl description city address location')
-      .populate('owner', 'id, username, nickname')
+      .select('id name owner imgNames coverImageUrl description city address open location')
+      .populate('owner', selectUserForm)
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
-      .lean()
+      
     // const _data = data.map((item) => {
     //   const { _id, category, ...rest } = item
     //   item.coverImageUrl = item.coverImageUrl || item.imgNames[0]

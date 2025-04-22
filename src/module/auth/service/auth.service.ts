@@ -44,7 +44,8 @@ export class AuthService extends BaseService {
       throw new HttpException(ERROR_MESSAGE.LOGIN_FAILURE, ERROR_MESSAGE.LOGIN_FAILURE.status)
     }
     const now = Date.now()
-    const { id, role } = userInfo
+    const { _id, role } = userInfo
+    const id = _id.toString()
     const expiresIn = new Date(now + COOKIE_EXPIRE_TIME)
     const token = await this.createToken({ username, id, role })
     response?.cookie(

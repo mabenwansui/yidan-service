@@ -1,5 +1,6 @@
 import { IsOptional } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
+import { City } from '@/common/types/city'
 
 export class SearchStoreDto extends PageBaseDto {
   @IsOptional()
@@ -9,7 +10,7 @@ export class SearchStoreDto extends PageBaseDto {
   owner?: string
 
   @IsOptional()
-  city?: string
+  city?: City
 
   constructor() {
     super()

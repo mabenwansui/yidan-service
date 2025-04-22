@@ -1,7 +1,6 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { generateUuid } from '@/common/utils/generateuuid'
 import { pwdEncrypt } from '@/common/utils/pwdEncrypt'
 import { ROLE } from '@/common/constants/role'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
@@ -12,8 +11,7 @@ import { UserCreatedResponseDto } from './dto/user-created-response.dto'
 import { UserFoundOneResponseDto } from './dto/user-found-response.dto'
 import { UserUpdateDto } from './dto/user-update.dto'
 import logger from '@/common/utils/logger'
-
-const selectUserInfo = 'id username nickname email phoneNumber role'
+import { selectForm } from '@/common/constants/user'
 
 @Injectable()
 export class UserService {
@@ -24,10 +22,7 @@ export class UserService {
   ) {}
 
   async createUser(params: CreateUserDto): Promise<UserCreatedResponseDto> {
-    const { id } = await this.userModel.create({
-      id: generateUuid(),
-      ...params
-    })
+    const { id } = await this.userModel.create(params)
     return { id }
   }
 
@@ -49,7 +44,6 @@ export class UserService {
       const _password = await pwdEncrypt(password)
       const dto = {
         ...rest,
-        id: generateUuid(),
         username,
         password: _password,
         role: [ROLE.STAFF]
@@ -64,8 +58,8 @@ export class UserService {
     }
   }
 
-  async getUserInfo(userId: string): Promise<UserFoundOneResponseDto> {
-    const doc = await this.userModel.findOne({ id: userId }).select(selectUserInfo)
+  async getUserInfo(id: string): Promise<UserFoundOneResponseDto> {
+    const doc = await this.userModel.findById(id).select(selectForm)
     if (!doc) {
       throw new HttpException(ERROR_MESSAGE.USER_NOT_FOUND, ERROR_MESSAGE.USER_NOT_FOUND.status)
     }
@@ -84,7 +78,7 @@ export class UserService {
     const { id, username, nickname, role, curPage, pageSize } = params
     const query: any = {}
     if (id) {
-      query.id = id
+      query._id = id
     }
     if (username) {
       query.name = { $regex: username, $options: 'i' }
@@ -111,7 +105,7 @@ export class UserService {
 
   async update(id: string, params: UserUpdateDto) {
     try {
-      await this.userModel.updateOne({ id }, params)
+      await this.userModel.findByIdAndUpdate(id, params)
       return {
         status: 'ok'
       }
@@ -125,7 +119,7 @@ export class UserService {
   }
 
   async delete(id: string) {
-    const doc = await this.userModel.findOne({ id })
+    const doc = await this.userModel.findById(id)
     if (doc.role.includes(ROLE.ADMIN)) {
       throw new HttpException(
         ERROR_MESSAGE.DELETE_SUPER_ADMIN_ERROR,

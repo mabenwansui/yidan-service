@@ -1,0 +1,1 @@
+export const selectForm = 'username avatarUrl nickname email phoneNumber role'

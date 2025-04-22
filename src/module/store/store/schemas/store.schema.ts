@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { StoreInterface } from '../interface/store.interface'
+import { City } from '@/common/types/city'
+import { CityDto } from '@/common/dto/city.dto'
 
 export type StoreDocument = HydratedDocument<Store>
 
@@ -21,13 +23,13 @@ export class Store implements StoreInterface {
   @Prop()
   description?: string
 
-  @Prop()
-  city?: string
+  @Prop({ type: [CityDto] })
+  city?: City
 
   @Prop()
   address?: string
 
-  @Prop({ type: Boolean })
+  @Prop({ type: Boolean, default: false })
   open?: boolean // 营业状态
 
   @Prop({ type: { lat: Number, lng: Number } })

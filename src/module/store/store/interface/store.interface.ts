@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { City } from '@/common/types/city'
 
 export interface StoreInterface {
   /** 项目名称，必须且唯一 */
@@ -12,7 +13,7 @@ export interface StoreInterface {
   /** 项目描述，可选字段 */
   description?: string
   /** 项目所在城市，可选字段 */
-  city?: string
+  city?: City
   /** 项目地址，可选字段 */
   address?: string
   /** 项目地理位置，包含纬度和经度，可选字段 */

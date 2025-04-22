@@ -7,7 +7,7 @@ export type UserDocument = HydratedDocument<User>
 
 @Schema({ timestamps: true })
 export class User implements UserInterface {
-  @Prop({ required: true, unique: true })
+  @Prop()
   id: string
 
   @Prop({ required: true, unique: true })
