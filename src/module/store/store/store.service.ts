@@ -25,10 +25,16 @@ export class StoreService {
   async update(params: UpdateStoreDto) {
     const { id, ...rest } = params
     await this.StoreModel.findByIdAndUpdate(id, rest)
+    return {
+      status: 'ok'
+    }    
   }
 
   async delete(id: string) {
-    return await this.StoreModel.findByIdAndDelete(id)
+    await this.StoreModel.findByIdAndDelete(id)
+    return {
+      status: 'ok'
+    }
   }
 
   async search(params: SearchStoreDto) {
@@ -47,20 +53,7 @@ export class StoreService {
       .select('id name owner imgNames coverImageUrl description city address open location')
       .populate('owner', selectUserForm)
       .skip(Math.max(curPage - 1, 0) * pageSize)
-      .limit(pageSize)
-      
-    // const _data = data.map((item) => {
-    //   const { _id, category, ...rest } = item
-    //   item.coverImageUrl = item.coverImageUrl || item.imgNames[0]
-    //   return {
-    //     id: _id,
-    //     commodityId: _id,
-    //     // 通过populate返回的category是一个对象, 里面包含_id和title
-    //     category: (category as unknown as WithMongoId<{ title: string }>).title,
-    //     categoryId: (category as unknown as WithMongoId<{ title: string }>)._id,
-    //     ...rest
-    //   }
-    // })
+      .limit(pageSize)      
     return {
       total,
       curPage,

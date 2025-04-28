@@ -3,10 +3,13 @@ import { PageBaseDto } from '@/common/dto/page-base.dto'
 
 export class SearchCommodityDto extends PageBaseDto {
   @IsOptional()
-  search?: string // 搜索关键字
+  id?: string
 
   @IsOptional()
-  category?: string // 分类
+  name?: string
+
+  @IsOptional()
+  categoryId?: string // 分类
 
   constructor() {
     super()

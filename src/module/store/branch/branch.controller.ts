@@ -4,6 +4,7 @@ import { ROLE } from '@/common/constants/role'
 import { BranchService } from './branch.service'
 import { CreateBranchDto } from './dto/create-branch.dto'
 import { SearchBranchDto } from './dto/search-branch.dto'
+import { DeleteBranchDto } from './dto/delete-branch.dto'
 
 @Controller('branch')
 export class BranchController {
@@ -21,16 +22,16 @@ export class BranchController {
   //   return await this.branchService.update(updateStoreDto)
   // }
 
-  // @Auth()
-  // @Post('delete')
-  // async delete(@Body() deleteStoreDto: DeleteStoreDto) {
-  //   const { id } = deleteStoreDto
-  //   return await this.branchService.delete(id)
-  // }
+  @Auth()
+  @Post('delete')
+  async delete(@Body() deleteStoreDto: DeleteBranchDto) {
+    const { id } = deleteStoreDto
+    return await this.branchService.delete(id)
+  }
 
   @Auth(ROLE.ADMIN)
-  @Post('search')
+  @Post('search-commodity')
   async search(@Body() searchBranchDto: SearchBranchDto) {
-    return await this.branchService.search(searchBranchDto)
+    return await this.branchService.searchCommodity(searchBranchDto)
   }
 }

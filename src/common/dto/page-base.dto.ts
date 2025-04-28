@@ -5,6 +5,10 @@ export class PageBaseDto {
   @IsOptional()
   curPage?: number // 页码
 
+  @IsNumber({}, { message: '总页数必须是数字' })
+  @IsOptional()
+  total?: number // 总页数
+
   @IsNumber({}, { message: '每页展示数量必须是数字' })
   @IsOptional()
   pageSize?: number // 每页数量

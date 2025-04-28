@@ -10,7 +10,7 @@ export class Commodity implements Omit<CommodityInterface, 'categoryId' | 'categ
   name: string // 名称
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Category' })
-  category?: Types.ObjectId // 分类
+  category?: CommodityInterface['category'] // 分类
 
   @Prop({ type: [String], default: [] })
   imgNames?: [string] // 图片

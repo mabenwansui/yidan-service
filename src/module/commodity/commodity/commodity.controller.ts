@@ -1,11 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common'
-import { CreateCommodityDto } from './dto/create-commodity.dto'
-import { SearchCommodityDto } from './dto/search-commodity.dto'
-import { CommodityService } from './commodity.service'
-import { UpdateCommodityDto } from './dto/update-commodity.dto'
-import { DeleteCommodityDto } from './dto/delete-commodity.dto'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
+import { CommodityService } from './commodity.service'
+import { CreateCommodityDto } from './dto/create-commodity.dto'
+import { SearchCommodityDto } from './dto/search-commodity.dto'
+import { UpdateCommodityDto } from './dto/update-commodity.dto'
+import { DeleteCommodityDto } from './dto/delete-commodity.dto'
+import { FoundCommodityDto } from './dto/found-commodity.dto'
 
 
 @Controller('commodity')
@@ -32,8 +33,9 @@ export class CommodityController {
 
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('get-info')
-  async getCommodityById(@Body() { id }: { id: string }) {
-    return await this.commodityService.findById(id)
+  async getCommodityById(@Body() foundCommodityDto: FoundCommodityDto) {
+    const { id } = foundCommodityDto
+    return await this.commodityService.getInfo(id)
   }
 
   @Auth(ROLE.ADMIN, ROLE.USER)

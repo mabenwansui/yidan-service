@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { BranchInterface } from '../interface/branch.interface'
+import { Store } from '@/module/store/store/schemas/store.schema'
+import { Commodity } from '@/module/commodity/commodity/schemas/commodity.schema'
 
 export type BranchDocument = HydratedDocument<Branch>
 export enum OPEN_STATUS {
@@ -9,18 +11,18 @@ export enum OPEN_STATUS {
 }
 
 @Schema({ timestamps: true })
-export class Branch implements BranchInterface {
+export class Branch implements Omit<BranchInterface, 'store' | 'commodity'> {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Store' })
-  storeId: string
+  store: Store
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Commodity' })
-  commodityId: string
+  commodity: Commodity
 
   @Prop({ type: Number })
-  stockConunt?: number
+  stockConunt?: number // 库存数量
 
   @Prop({ type: Number })
-  soldCount?: number
+  soldCount?: number // 已售数量
 
   @Prop({ type: Number })
   price?: number
