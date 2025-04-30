@@ -4,6 +4,7 @@ import { ROLE } from '@/common/constants/role'
 import { BranchService } from './branch.service'
 import { CreateBranchDto } from './dto/create-branch.dto'
 import { SearchBranchDto } from './dto/search-branch.dto'
+import { UpdateBranchDto } from './dto/update-branch.dto'
 import { DeleteBranchDto } from './dto/delete-branch.dto'
 
 @Controller('branch')
@@ -16,11 +17,11 @@ export class BranchController {
     return await this.branchService.create(createBranchDto)
   }
 
-  // @Auth()
-  // @Post('update')
-  // async update(@Body() updateStoreDto: UpdateStoreDto) {
-  //   return await this.branchService.update(updateStoreDto)
-  // }
+  @Auth(ROLE.ADMIN)
+  @Post('update')
+  async update(@Body() updateStoreDto: UpdateBranchDto) {
+    return await this.branchService.update(updateStoreDto)
+  }
 
   @Auth()
   @Post('delete')

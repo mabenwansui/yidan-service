@@ -2,17 +2,18 @@ import { IsOptional, IsString, IsBoolean } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 
 export class SearchBranchDto extends PageBaseDto {
-  @IsString()
   @IsOptional()
   storeId?: string
 
-  @IsString()
   @IsOptional()
   commodityId?: string
 
   @IsBoolean()
   @IsOptional()
   isOnShelf: boolean
+
+  @IsOptional()
+  categoryId?: string
 
   constructor() {
     super()

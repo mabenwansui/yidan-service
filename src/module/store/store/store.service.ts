@@ -7,6 +7,7 @@ import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
 import { SearchStoreDto } from './dto/search-store.dto'
 import { selectForm as selectUserForm } from '@/common/constants/user'
+import { PAGE_SIZE } from '@/common/constants/page'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -27,7 +28,7 @@ export class StoreService {
     await this.StoreModel.findByIdAndUpdate(id, rest)
     return {
       status: 'ok'
-    }    
+    }
   }
 
   async delete(id: string) {
@@ -39,7 +40,7 @@ export class StoreService {
 
   async search(params: SearchStoreDto) {
     const db = this.StoreModel
-    const { name, owner, city, curPage, pageSize } = params
+    const { name, owner, city, curPage, pageSize = PAGE_SIZE } = params
     const query: any = {}
     if (name) {
       query.name = { $regex: name, $options: 'i' }
@@ -53,7 +54,7 @@ export class StoreService {
       .select('id name owner imgNames coverImageUrl description city address open location')
       .populate('owner', selectUserForm)
       .skip(Math.max(curPage - 1, 0) * pageSize)
-      .limit(pageSize)      
+      .limit(pageSize)
     return {
       total,
       curPage,
