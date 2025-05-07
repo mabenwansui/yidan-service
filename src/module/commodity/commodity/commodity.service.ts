@@ -8,7 +8,7 @@ import { CommodityCreatedResponseDto } from './dto/commodity-created-response.dt
 import { CommoditySearchResponseDto } from './dto/commodity-search-response.dto'
 import { UpdateCommodityDto } from './dto/update-commodity.dto'
 import { DeleteCommodityDto } from './dto/delete-commodity.dto'
-import { CommodityInterface } from './interface/commodity.interface'
+import { PAGE_SIZE } from '@/common/constants/page'
 
 const selectForm = 'id name category imgNames originalPrice price description tags soldCount'
 
@@ -42,7 +42,7 @@ export class CommodityService {
 
   async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
     const db = this.commodityModel
-    const { id, name, categoryId, curPage, pageSize } = searchCommodity
+    const { id, name, categoryId, curPage = 1, pageSize = PAGE_SIZE } = searchCommodity
     const query: any = {}
     if (name) {
       query.name = { $regex: name, $options: 'i' }
@@ -57,7 +57,8 @@ export class CommodityService {
     const data = await db
       .find(query)
       .select(selectForm)
-      .populate('category', 'id, title')
+      .sort({ createdAt: -1 })
+      .populate('category', 'id, title')      
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
     return {
@@ -68,4 +69,3 @@ export class CommodityService {
     }
   }
 }
-

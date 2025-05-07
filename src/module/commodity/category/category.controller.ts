@@ -1,6 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
+import { FoundCategoryDto } from './dto/found-category.dto'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
 import { DeleteCategoryDto } from './dto/delete-category.dto'
@@ -36,14 +37,13 @@ export class CategoryController {
   }
 
   @Auth(ROLE.ADMIN, ROLE.USER)
-  @Post('list')
-  async list() {
-    return await this.categoryService.list()
-  }
-
-  @Auth(ROLE.ADMIN)
   @Post('form-list')
-  async formList() {
-    return await this.categoryService.formList()
+  async list(@Body() foundCategoryDto: FoundCategoryDto) {
+    const { hasRootCategory } = foundCategoryDto
+    if (hasRootCategory === true) {
+      return await this.categoryService.formList()
+    } else {
+      return await this.categoryService.list()
+    }
   }
 }

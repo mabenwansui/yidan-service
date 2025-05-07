@@ -28,7 +28,7 @@ export class Branch implements Omit<BranchInterface, 'store' | 'commodity'> {
   price?: number
 
   @Prop({ type: Boolean })
-  isOnShelf?: boolean
+  isOnShelf: boolean
 }
 
 export const BranchSchema = SchemaFactory.createForClass(Branch)

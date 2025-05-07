@@ -27,4 +27,8 @@ export class CreateBranchDto {
   @IsBoolean()
   @IsOptional()
   isOnShelf?: boolean
+
+  constructor() {
+    this.isOnShelf = false
+  }
 }

@@ -1,6 +1,6 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
 import { Branch } from './schemas/branch.schema'
 import { CreateBranchDto } from './dto/create-branch.dto'
@@ -28,7 +28,7 @@ export class BranchService {
     return { id }
   }
   async update(params: UpdateBranchDto) {
-    const { id, commodityId, storeId, ...rest } = params
+    const { id, commodityId, storeId, ...rest } = params    
     await this.branchModel.findByIdAndUpdate(id, {
       commodity: commodityId,
       store: storeId,
@@ -39,7 +39,7 @@ export class BranchService {
   async delete(id: string) {
     return await this.branchModel.findByIdAndDelete(id)
   }
-  async searchCommodity(params: SearchBranchDto): Promise<BranchSearchedResponseDto> {
+  async searchCommodity2(params: SearchBranchDto): Promise<BranchSearchedResponseDto> {
     const db = this.branchModel
     const {
       curPage = 1,
@@ -66,7 +66,7 @@ export class BranchService {
         match: { category: categoryId },
         populate: {
           path: 'category',
-          select: 'title'          
+          select: 'title'
         }
       })
       .sort({ createdAt: -1 })
@@ -80,6 +80,76 @@ export class BranchService {
       curPage,
       pageSize: pageSize,
       list: _data as any
+    }
+  }
+
+  async searchCommodity(params: SearchBranchDto): Promise<BranchSearchedResponseDto> {
+    const db = this.branchModel
+    const {
+      curPage = 1,
+      pageSize = PAGE_SIZE,
+      storeId,
+      commodityId,
+      categoryId,
+      isOnShelf
+    } = params
+
+    const pipeline: any = [
+      {
+        $match: {
+          ...(storeId && { store: new Types.ObjectId(storeId) }),
+          ...(commodityId && { commodity: new Types.ObjectId(commodityId) }),
+          ...((isOnShelf !== undefined) && { isOnShelf })
+        }
+      },
+      {
+        $lookup: {
+          from: 'commodities',
+          localField: 'commodity',
+          foreignField: '_id',
+          as: 'commodity'
+        }
+      },
+      { $unwind: '$commodity' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'commodity.category',
+          foreignField: '_id',
+          as: 'commodity.category'
+        }
+      },
+      { $unwind: { path: '$commodity.category', preserveNullAndEmptyArrays: true } },
+      ...(categoryId
+        ? [{ $match: { 'commodity.category._id': new Types.ObjectId(categoryId) } }]
+        : []),
+      { $sort: { createdAt: -1 } },     
+      { $skip: Math.max(curPage - 1, 0) * pageSize },
+      { $limit: pageSize },
+      {
+        $project: {
+          'commodity.id': '$commodity._id',
+          'commodity.name': 1,
+          'commodity.category.title': 1,
+          'commodity.category.id': '$commodity.category._id',
+          id: '$_id',
+          _id: 0,
+          stockConunt: 1,
+          soldCount: 1,
+          price: 1,
+          isOnShelf: 1
+        }
+      }      
+    ]
+    const [data, total] = await Promise.all([
+      db.aggregate(pipeline),
+      db.countDocuments(pipeline[0].$match)
+    ])
+    return {
+      total,
+      curPage,
+      pageSize,
+      list: data as any
     }
   }
 }

@@ -14,7 +14,7 @@ export class OrderController {
     return await this.orderService.createOrder(createDto, request.user.sub)
   }
 
-  // @Auth(ROLE.ADMIN, ROLE.USER) // 假设这里需要认证，可根据实际情况调整
+  // @Auth(ROLE.ADMIN, ROLE.USER)
   // @Post('list')
   // async getOrderInfo(@Req() request) {
   //   const orderId = request.query.orderId // 假设通过查询参数传递订单ID
