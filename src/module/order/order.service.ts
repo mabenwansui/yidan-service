@@ -6,12 +6,14 @@ import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { ORDER_TYPE } from './interface/order.interface'
 import { Order } from './schemas/order.schema'
 import { CreateOrderDto } from './dto/create-order.dto'
+import { MessageService } from '@/module/message/message.service'
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name)
-    private readonly orderModel: Model<Order>
+    private readonly orderModel: Model<Order>,
+    private readonly messageService: MessageService
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string): Promise<any> {
@@ -27,6 +29,13 @@ export class OrderService {
     }
     const { id } = await this.orderModel.create(dto)
     return { id }
+  }
+
+  async test() {
+    this.messageService.emitNewMessage({
+      maben: '1',
+      ben: 'ben2'
+    })
   }
 
   // async getOrderInfo(orderId: string): Promise<OrderFoundOneResponseDto> {

@@ -11,9 +11,10 @@ import { CaptchaModule } from '@/module/captcha/captcha.module'
 import { FileModule } from '@/module/file/file.module'
 import { MockModule } from '@/module/mock/mock.module'
 import { CartModule } from '@/module/cart/cart.module'
-import { OrderModule } from '@/module/order/order.module'
 import { MapModule } from '@/module/map/map.module'
 import { StoreModule } from '@/module/store/store.module'
+import { OrderModule } from '@/module/order/order.module'
+import { MessageModule } from '@/module/message/message.module'
 import { ConfigModule } from '@nestjs/config'
 
 import config from '@/config'
@@ -57,6 +58,7 @@ const mongooseModuleOptions = {
     MapModule,
     OrderModule,
     FileModule,
+    MessageModule,
     MockModule
   ],
   providers: [

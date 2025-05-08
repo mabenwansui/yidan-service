@@ -14,6 +14,11 @@ export class OrderController {
     return await this.orderService.createOrder(createDto, request.user.sub)
   }
 
+  @Post('test')
+  async test() {
+    return await this.orderService.test()
+  }
+
   // @Auth(ROLE.ADMIN, ROLE.USER)
   // @Post('list')
   // async getOrderInfo(@Req() request) {
