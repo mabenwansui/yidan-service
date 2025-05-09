@@ -2,11 +2,11 @@ import { Post, Controller, Body, Req } from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
 import { UserService } from './user.service'
-import { CreateAdminDto } from './dto/create.dto'
+import { CreateAdminDto } from './dto/create-user.dto'
 import { SearchAdminDto, SearchStaffDto } from './dto/search-admin.dto'
-import { UserUpdateRoleDto } from './dto/user-update.dto'
-import { UserDeleteDto } from './dto/user-delete.dto'
-import { UserUpdateDto } from './dto/user-update.dto'
+import { UserUpdateRoleDto } from './dto/update-user.dto'
+import { DeleteUserDto } from './dto/delete-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 
 @Controller('user')
 export class UserController {
@@ -45,7 +45,7 @@ export class UserController {
 
   @Auth(ROLE.ADMIN, ROLE.STAFF, ROLE.USER)
   @Post('update')
-  async update(@Body() userUpdateRoleDto: UserUpdateDto, @Req() request) {
+  async update(@Body() userUpdateRoleDto: UpdateUserDto, @Req() request) {
     return await this.userService.update(request.user.sub, userUpdateRoleDto)
   }
 
@@ -57,7 +57,7 @@ export class UserController {
 
   @Auth()
   @Post('delete')
-  async delete(@Body() userDeleteDto: UserDeleteDto) {
+  async delete(@Body() userDeleteDto: DeleteUserDto) {
     const { id } = userDeleteDto
     await this.userService.delete(id)
   }

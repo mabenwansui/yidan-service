@@ -1,8 +1,9 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
+import cookie from '@fastify/cookie'
 import { AppModule } from './app.module'
 import config from '@/config'
-import * as cookieParser from 'cookie-parser'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -11,20 +12,30 @@ const tslKey = fs.readFileSync(path.resolve('./certificates/localhost-key.pem'))
 const tslCrt = fs.readFileSync(path.resolve('./certificates/localhost.pem'))
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions: {
-      key: tslKey,
-      cert: tslCrt
-    }
-    // logger: ['error', 'warn', 'log', 'debug', 'verbose', ]
-  })
+  const httpsOptions = {
+    key: tslKey,
+    cert: tslCrt
+  }
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({
+      http2: true,
+      https: httpsOptions
+    })
+  )
   app.enableCors({
     origin: corsOrigin, // 允许来自 origin 的请求
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'POST'], // 允许的 HTTP 方法
     allowedHeaders: ['Content-Type', 'Authorization', 'credentials', 'X-Requested-With'], // 允许的请求头
     credentials: true // 允许发送认证信息（cookies等）
+  })  
+  app.useStaticAssets({
+    root: path.resolve('.uploadStorage'),
+    prefix: '/file',
+    cacheControl: true,
+    dotfiles: 'allow'
   })
-  app.use(cookieParser())
+  await app.register(cookie)  
   app.setGlobalPrefix('api')
   app.useGlobalPipes(new ValidationPipe())
   await app.listen(process.env.PORT ?? port, domain)

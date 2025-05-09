@@ -6,10 +6,10 @@ import { ROLE } from '@/common/constants/role'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { CaptchaService } from '@/module/captcha/captcha.service'
 import { User } from './schemas/user.schema'
-import { CreateUserDto, CreateAdminDto } from './dto/create.dto'
+import { CreateUserDto, CreateAdminDto } from './dto/create-user.dto'
 import { UserCreatedResponseDto } from './dto/user-created-response.dto'
 import { UserFoundOneResponseDto } from './dto/user-found-response.dto'
-import { UserUpdateDto } from './dto/user-update.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 import logger from '@/common/utils/logger'
 import { selectForm } from '@/common/constants/user'
 
@@ -103,7 +103,7 @@ export class UserService {
     }
   }
 
-  async update(id: string, params: UserUpdateDto) {
+  async update(id: string, params: UpdateUserDto) {
     try {
       await this.userModel.findByIdAndUpdate(id, params)
       return {

@@ -2,7 +2,7 @@ import { UserInterface } from '../interface/user.interface'
 import { IsOptional, IsNotEmpty, IsEmail, IsPhoneNumber, IsArray, IsEnum } from 'class-validator'
 import { ROLE } from '@/common/constants/role'
 
-export class UserUpdateDto implements Partial<UserInterface> {
+export class UpdateUserDto implements Partial<UserInterface> {
   @IsNotEmpty()
   id: string
 

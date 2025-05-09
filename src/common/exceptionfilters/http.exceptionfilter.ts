@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common'
-import { Response } from 'express'
+import { FastifyReply } from 'fastify'
 import { ERROR_CODE } from '@/common/constants/errorCode'
 import { ERROR_MESSAGE } from '../constants/errorMessage'
 
@@ -18,7 +18,7 @@ interface ErrorResponse {
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
-    const response = ctx.getResponse<Response>()
+    const response = ctx.getResponse<FastifyReply>()
     const errorResponse = exception.getResponse() as CustomErrorResponse | ErrorResponse
     const { statusCode, message } = errorResponse as ErrorResponse
     let customCode: string
@@ -47,7 +47,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       customCode = code
       customMessage = message
     }
-    response.status(HttpStatus.OK).json({
+    response.status(HttpStatus.OK).send({
       flag: 0,
       msg: Array.isArray(customMessage) ? customMessage[0] : customMessage,
       code: customCode

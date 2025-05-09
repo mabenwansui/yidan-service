@@ -1,14 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Types } from 'mongoose'
-import { UserInterface } from '@/module/user/interface/user.interface'
+import mongoose, { Types } from 'mongoose'
+import { Base, MessageType, OrderMessage, DefaultMessage } from '../interface/message.interface'
 
 @Schema({ timestamps: true })
 export class Message {
   @Prop({ required: true })
-  content: string
+  type: string
+
+  @Prop({ required: true })
+  title: string
+
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  content?: any
 
   @Prop({ required: true, type: Types.ObjectId, ref: 'user' })
-  sender: UserInterface | { id: 'system', nickname: '系统消息' }
+  sender: Base['sender']
 
   @Prop({ required: true })
   receiverId: string

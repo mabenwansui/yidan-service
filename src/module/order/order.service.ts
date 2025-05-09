@@ -17,7 +17,6 @@ export class OrderService {
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string): Promise<any> {
-    debugger
     const { remark } = createOrderDto
     const dto = {
       id: generateUuid(),
@@ -27,15 +26,15 @@ export class OrderService {
       userId,
       orderType: ORDER_TYPE.DINE_IN
     }
-    const { id } = await this.orderModel.create(dto)
-    return { id }
+    const order = await this.orderModel.create(dto)
+    return { id: order.id }
   }
 
-  async test() {
-    this.messageService.emitNewMessage({
-      maben: '1',
-      ben: 'ben2'
-    })
+  async updateOrder(): Promise<any> {
+    // this.messageService.emitNewMessage({
+    //   title: '我是标题',
+    //   message: '这是内容'
+    // })
   }
 
   // async getOrderInfo(orderId: string): Promise<OrderFoundOneResponseDto> {

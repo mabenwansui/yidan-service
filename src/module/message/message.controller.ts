@@ -12,7 +12,6 @@ export class MessageController {
 
   @Sse('sse')
   async messageEvent() {
-    console.log('sse')
     return this.messageService.getEventStream()
   }
 }

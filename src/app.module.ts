@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core'
-import { ServeStaticModule } from '@nestjs/serve-static'
 import { MongooseModule } from '@nestjs/mongoose'
 import { TransformResponseInterceptor } from '@/common/interceptors/transformResponse.interceptor'
 import { CommodityModule } from '@/module/commodity/commodity.module'
@@ -16,7 +15,6 @@ import { StoreModule } from '@/module/store/store.module'
 import { OrderModule } from '@/module/order/order.module'
 import { MessageModule } from '@/module/message/message.module'
 import { ConfigModule } from '@nestjs/config'
-
 import config from '@/config'
 
 const mongooseModuleOptions = {
@@ -41,14 +39,6 @@ const mongooseModuleOptions = {
   imports: [
     ConfigModule.forRoot(),
     ...config.dbs.map((item) => MongooseModule.forRoot(item.uri, mongooseModuleOptions)),
-    ServeStaticModule.forRoot({
-      rootPath: '.uploadStorage',
-      serveRoot: '/file',
-      serveStaticOptions: {
-        cacheControl: true,
-        dotfiles: 'allow'
-      }
-    }),
     UserModule,
     AuthModule,
     CaptchaModule,

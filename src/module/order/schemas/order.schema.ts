@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { HydratedDocument } from 'mongoose'
+import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { OrderInterface, ORDER_STATUS, ORDER_TYPE, PAYMENT_TYPE, PAYMENT_STATUS, Commodity } from '../interface/order.interface'
 
 export type OrderDocument = HydratedDocument<Order>
@@ -9,11 +9,8 @@ export class Order implements OrderInterface {
   @Prop({ required: true, unique: true })
   id: string
 
-  @Prop({ required: true })
-  title: string
-
-  @Prop({ required: true, unique: true })
-  userId: string
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: string
 
   @Prop({ type: String, enum: ORDER_TYPE, required: true })
   orderType: ORDER_TYPE
@@ -40,26 +37,12 @@ export class Order implements OrderInterface {
   table_number?: string // 桌号
 
   @Prop()
-  contact?: string // 联系人
-
-  @Prop()
-  phone?: string // 联系电话
-
-  @Prop()
   completedAt?: Date // 完成时间
 
   @Prop()
   remark?: string // 备注
   
-  @Prop({ 
-    type: [{
-      categoryId: { type: String, required: true },
-      price: { type: Number, required: true },
-      coverImageUrl: { type: String, required: true },
-      quantity: { type: Number, required: true }      
-    }], 
-    required: true 
-  })
+  @Prop({required: true, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Commodity' }] })
   commoditys: Commodity[]
 }
 

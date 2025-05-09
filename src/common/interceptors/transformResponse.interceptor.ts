@@ -7,13 +7,14 @@ import {
 } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Response } from 'express'
+import { FastifyReply } from 'fastify'
 
 @Injectable()
 export class TransformResponseInterceptor<T> implements NestInterceptor<T, any> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp()
-    const response = ctx.getResponse<Response>()
+    const response = ctx.getResponse<FastifyReply>()
+    // response?.raw?.removeHeader('connection')
 
     // 设置状态码为200
     response.status(HttpStatus.OK)
