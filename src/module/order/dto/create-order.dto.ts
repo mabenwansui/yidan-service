@@ -1,67 +1,28 @@
-import {
-  MaxLength,
-  IsNotEmpty,
-  IsArray,
-  ValidateNested,
-  IsNumber,
-  Min,
-  IsOptional
-} from 'class-validator'
+import { IsNotEmpty, IsArray, ValidateNested, IsOptional, IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
-import { presets } from '@/common/constants/valid'
+import { OrderInterface } from '../interface/order.interface'
 
-const { maxDescriptionLength } = presets
-import {
-  OrderInterface,
-  ORDER_TYPE,
-  PAYMENT_TYPE,
-  Commodity
-} from '../interface/order.interface'
-import { CommodityDto } from './commodity.dto'
-
-export class CreateOrderDto implements OrderInterface {
-  /**
-   * 订单类型，必需
-   */
+export class CommodityDto {
   @IsNotEmpty()
-  orderType: ORDER_TYPE
+  commodityId: string;
 
-  /**
-   * 优惠金额，可选
-   */
-  @Min(0)
   @IsNumber()
-  @IsOptional()
-  discountAmount?: number
-
-  /**
-   * 支付类型，必需
-   */
   @IsNotEmpty()
-  paymentType: PAYMENT_TYPE
+  quantity: number
+}
 
-  /**
-   * 桌号，可选
-   */
+export class CreateOrderDto implements Pick<OrderInterface, 'table_number'> {
+  /** 店铺 */
+  @IsNotEmpty()
+  storeId: string
+
+  /** 桌号 */
   @IsOptional()
   table_number?: string
-
-  /**
-   * 完成时间，可选
-   */
-  @IsOptional()
-  completedAt?: Date
-
-  /**
-   * 备注，可选
-   */
-  @MaxLength(maxDescriptionLength)
-  @IsOptional()
-  remark?: string
 
   @ValidateNested({ each: true })
   @Type(() => CommodityDto)
   @IsArray()
-  @IsOptional()
-  commoditys: Commodity[]
+  @IsNotEmpty()
+  commoditys: CommodityDto[]
 }

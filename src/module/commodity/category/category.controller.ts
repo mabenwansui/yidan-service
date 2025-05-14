@@ -38,12 +38,17 @@ export class CategoryController {
 
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('form-list')
-  async list(@Body() foundCategoryDto: FoundCategoryDto) {
+  async formList(@Body() foundCategoryDto: FoundCategoryDto) {
     const { hasRootCategory } = foundCategoryDto
     if (hasRootCategory === true) {
       return await this.categoryService.formList()
     } else {
       return await this.categoryService.list()
     }
+  }
+
+  @Post('list')
+  async list() {
+    return await this.categoryService.list()
   }
 }

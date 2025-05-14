@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common'
 import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core'
 import { MongooseModule } from '@nestjs/mongoose'
+import { ConfigModule } from '@nestjs/config'
+import config from '@/config'
 import { TransformResponseInterceptor } from '@/common/interceptors/transformResponse.interceptor'
-import { CommodityModule } from '@/module/commodity/commodity.module'
 import { HttpExceptionFilter } from '@/common/exceptionfilters/http.exceptionfilter'
+import { CommodityModule } from '@/module/commodity/commodity.module'
 import { UserModule } from '@/module/user/user.module'
 import { AuthModule } from '@/module/auth/auth.module'
 import { CaptchaModule } from '@/module/captcha/captcha.module'
@@ -14,8 +16,10 @@ import { MapModule } from '@/module/map/map.module'
 import { StoreModule } from '@/module/store/store.module'
 import { OrderModule } from '@/module/order/order.module'
 import { MessageModule } from '@/module/message/message.module'
-import { ConfigModule } from '@nestjs/config'
-import config from '@/config'
+import { CouponModule } from '@/module/coupon/coupon.module'
+import { AddressModule } from '@/module/address/address.module'
+
+
 
 const mongooseModuleOptions = {
   connectionFactory: (connection) => {
@@ -39,16 +43,18 @@ const mongooseModuleOptions = {
   imports: [
     ConfigModule.forRoot(),
     ...config.dbs.map((item) => MongooseModule.forRoot(item.uri, mongooseModuleOptions)),
+    MapModule,
+    FileModule,
+    MessageModule,
     UserModule,
     AuthModule,
+    StoreModule,
     CaptchaModule,
     CommodityModule,
     CartModule,
-    StoreModule,
-    MapModule,
     OrderModule,
-    FileModule,
-    MessageModule,
+    CouponModule,
+    AddressModule,
     MockModule
   ],
   providers: [

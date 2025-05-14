@@ -1,5 +1,4 @@
 import { StoreInterface } from '../interface/store.interface'
-import { Types } from 'mongoose'
 import {
   IsString,
   IsArray,
@@ -11,7 +10,7 @@ import { Type } from 'class-transformer'
 import { City } from '@/common/types/city'
 import { CityDto } from '@/common/dto/city.dto'
 
-export class CreateStoreDto implements StoreInterface {
+export class CreateStoreDto implements Omit<StoreInterface, 'owner'> {
   /** 项目名称，必须且唯一 */
   @IsString()
   @IsNotEmpty()
@@ -24,7 +23,7 @@ export class CreateStoreDto implements StoreInterface {
   /** 项目负责人，存储用户的 ObjectId 数组 */
   @IsArray()
   @IsOptional()
-  owner?: Types.ObjectId[]
+  owner?: string[]
 
   /** 图片名称数组，可选字段 */
   @IsString({ each: true })

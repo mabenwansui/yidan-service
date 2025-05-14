@@ -1,4 +1,8 @@
 import { CommodityInterface } from '@/module/commodity/commodity/interface/commodity.interface'
+import { UserInterface } from '@/module/user/interface/user.interface'
+import { CouponInterface } from '@/module/coupon/interface/coupon.interface'
+import { StoreInterface } from '@/module/store/store/interface/store.interface'
+import { Types } from 'mongoose'
 
 export enum ORDER_TYPE {
   /** 堂食 */
@@ -12,7 +16,7 @@ export enum ORDER_TYPE {
 export enum ORDER_STATUS {
   /** 待支付 */
   PENDING = 'pending',
-  /** 处理中 */
+  /** 处理中, 出餐中 */
   PROCESSING = 'processing',
   /** 待取餐 */
   READY = 'ready',
@@ -46,37 +50,56 @@ export enum PAYMENT_STATUS {
   FAILED = 'failed'
 }
 
-export type Commodity = Pick<CommodityInterface, 'category' | 'price'> & { quantity: number }
+export type storePopulate = StoreInterface
+export type userPopulate = Pick<UserInterface, 'nickname' | 'phoneNumber'>
+export type couponPopulate = CouponInterface
+export type commodityPopulate = Pick<
+  CommodityInterface,
+  'name' | 'category' | 'originalPrice' | 'price' | 'coverImageUrl'
+> & {
+  quantity: number
+}
 
 export interface OrderInterface {
-  // 唯一ID，必需
-  id?: string
-  // 用户ID，必需且唯一
-  userId?: string
-  // 订单类型，必需
-  orderType: ORDER_TYPE
-  // 订单状态
+  /** 展示给用户的订单ID, 未使用主键, 避免ID过长或安全问题 */
+  orderId?: string
+
+  /** 用户信息 */
+  user?: Types.ObjectId
+
+  /** 店铺 */
+  store: Types.ObjectId
+
+  /** 订单类型 */
+  orderType?: ORDER_TYPE
+
+  /** 订单状态 */
   orderStatus?: ORDER_STATUS
-  // 总金额，必需
-  amount?: number
-  // 优惠金额，可选
-  discountAmount?: number
-  // 实际支付金额，必需
+
+  /** 优惠券 */
+  coupon?: Types.ObjectId[]
+
+  /** 原始总金额(购物车所有商品的总价) */
+  originalAmount: number
+
+  /** 实际支付金额 */
   actualAmount?: number
-  // 支付类型，必需
-  paymentType: PAYMENT_TYPE
-  // 支付状态，可选
+
+  /** 支付类型 */
+  paymentType?: PAYMENT_TYPE
+
+  /** 支付状态 */
   paymentStatus?: PAYMENT_STATUS
-  // 桌号，可选
+
+  /** 桌号 */
   table_number?: string
-  // 联系人，可选
-  contact?: string
-  // 联系电话，可选
-  phone?: string
-  // 完成时间，可选
+
+  /** 完成时间 */
   completedAt?: Date
-  // 备注，可选
+
+  /** 备注 */
   remark?: string
 
-  commoditys: Commodity[]
+  /** 商品信息 */
+  commoditys: { id: Types.ObjectId; quantity: number }[]
 }

@@ -43,7 +43,7 @@ export class MessageService {
       type: MessageType.ORDER,
       title: '您有新的订单',
       content: order,
-      receiverId: order.userId,
+      receiverId: '',
       sender: { id: 'system' }
     }
     const { createdAt } = await this.create(data)

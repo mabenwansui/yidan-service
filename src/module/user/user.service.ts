@@ -22,8 +22,8 @@ export class UserService {
   ) {}
 
   async createUser(params: CreateUserDto): Promise<UserCreatedResponseDto> {
-    const { id } = await this.userModel.create(params)
-    return { id }
+    const { _id } = await this.userModel.create(params)
+    return { id: _id.toString() }
   }
 
   async createAdmin(params: CreateAdminDto): Promise<UserCreatedResponseDto> {

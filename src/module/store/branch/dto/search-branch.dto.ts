@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsBoolean } from 'class-validator'
+import { IsOptional, IsBoolean } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 
 export class SearchBranchDto extends PageBaseDto {

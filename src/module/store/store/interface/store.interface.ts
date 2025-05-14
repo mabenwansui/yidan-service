@@ -1,5 +1,8 @@
-import { Types } from 'mongoose'
 import { City } from '@/common/types/city'
+import { UserInterface } from '@/module/user/interface/user.interface'
+import { Types } from 'mongoose'
+
+export type ownerPopulate = UserInterface[]
 
 export interface StoreInterface {
   /** 项目名称，必须且唯一 */

@@ -1,9 +1,13 @@
 import { CommodityInterface } from '@/module/commodity/commodity/interface/commodity.interface'
 import { StoreInterface } from '@/module/store/store/interface/store.interface'
+import { Types } from 'mongoose'
+
+export type storePopulate = StoreInterface[]
+export type commodityPopulate = CommodityInterface[]
 
 export interface BranchInterface {
-  store: StoreInterface
-  commodity: CommodityInterface
+  store: Types.ObjectId
+  commodity: Types.ObjectId
   stockConunt?: number // 库存
   soldCount?: number // 已售
   price?: number // 现价  

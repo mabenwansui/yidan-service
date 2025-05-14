@@ -14,12 +14,12 @@ export class CartService {
     private readonly CartModel: Model<Cart>
   ) {}
 
-  async change(params: ChangeCartDto, userId: string): Promise<ResponseCartDto> {
+  async update(changeCartDto: ChangeCartDto, userId: string): Promise<ResponseCartDto> {
     const db = this.CartModel
-    const { commodityId, quantity } = params
+    const { commodityId, quantity } = changeCartDto
     const doc = await db.findOne({ userId })
     if (doc) {
-      const listIndex = doc.list.findIndex((item) => item.commodityId.toString() === commodityId)
+      const listIndex = doc.list.findIndex((item) => item.commodity.toString() === commodityId)
       if (listIndex > -1) {
         if (quantity <= 0) {
           doc.list.splice(listIndex, 1)
@@ -27,21 +27,25 @@ export class CartService {
           doc.list[listIndex].quantity = quantity
         }
       } else if (quantity > 0) {
-        doc.list.push({ commodityId, quantity })
+        doc.list.push({ commodity: commodityId, quantity })
       }
       await doc.save()
     } else if (quantity > 0) {
       await db.create({
         userId,
-        list: [{ commodityId, quantity }]
+        list: [{ commodity: commodityId, quantity }]
       })
     }
     return {}
   }
 
+  async delete(userId: string) {
+    return await this.CartModel.findOneAndDelete({ userId })
+  }
+
   async getList(userId: string) {
-    const db = this.CartModel
-    const doc = (await db.findOne({ userId })).populate('list.commodityId', '-__v')
-    return doc
+    return await this.CartModel.findOne({ userId })
+      .select('list')
+      .populate('list.commodity', '-__v')
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { HttpService } from '@nestjs/axios'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { firstValueFrom } from 'rxjs'
 import { generateUuid } from '@/common/utils/generateUuid'
 import { ROLE } from '@/common/constants/role'
@@ -38,7 +38,7 @@ export class MpAuthService extends BaseService {
       })
       userId = id
     } else {
-      userId = userDoc.id
+      userId = userDoc._id.toString()
       role = userDoc.role
       username = userDoc.username
     }

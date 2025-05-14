@@ -11,14 +11,14 @@ export class Cart {
   @Prop({
     type: [
       {
-        commodityId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Commodity' },
+        commodity: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Commodity' },
         quantity: { type: Number, required: true }
       }
     ],
     default: []
   })
   list: {
-    commodityId: string
+    commodity: string
     quantity?: number
   }[]
 }

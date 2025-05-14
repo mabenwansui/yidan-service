@@ -1,5 +1,6 @@
 import { Body, Controller, Post, Req } from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
+import { ROLE } from '@/common/constants/role'
 import { StoreService } from './store.service'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
@@ -29,7 +30,7 @@ export class StoreController {
     return await this.storeService.delete(id)
   }
 
-  @Auth()
+  @Auth(ROLE.USER, ROLE.ADMIN)
   @Post('search')
   async search(@Body() searchStoreDto: SearchStoreDto) {
     return await this.storeService.search(searchStoreDto)

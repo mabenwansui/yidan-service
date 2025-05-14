@@ -58,14 +58,31 @@ export class CommodityService {
       .find(query)
       .select(selectForm)
       .sort({ createdAt: -1 })
-      .populate('category', 'id, title')      
+      .populate('category', 'id, title')
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
+
     return {
       total,
       curPage,
       pageSize: pageSize,
       list: data
+      // list: data.map((item)=> {
+      //   const { _id, category, ...rest } = item
+      //   const { _id: categoryId, ...categoryRest } = category as any
+      //   return {
+      //     ...rest,
+      //     category: {
+      //       categoryId,
+      //       ...categoryRest
+      //     },
+      //     commodityId: _id
+      //   }
+      // }) as unknown as CommoditySearchResponseDto['list']
     }
+  }
+
+  async _find(query: any) {
+    return await this.commodityModel.find(query)
   }
 }
