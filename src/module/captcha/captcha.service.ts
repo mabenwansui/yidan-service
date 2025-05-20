@@ -31,6 +31,6 @@ export class CaptchaService {
 }
 
 // throw new HttpException(
-//   ERROR_MESSAGE.CAPTCHA_ERROR.message,
+//   ERROR_MESSAGE.CAPTCHA_ERROR,
 //   ERROR_MESSAGE.CAPTCHA_ERROR.status,
 // )

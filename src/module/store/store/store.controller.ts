@@ -30,6 +30,12 @@ export class StoreController {
     return await this.storeService.delete(id)
   }
 
+  @Auth()
+  @Post('get-near')
+  async getNear(@Body() getBranchDto) {
+    
+  }
+
   @Auth(ROLE.USER, ROLE.ADMIN)
   @Post('search')
   async search(@Body() searchStoreDto: SearchStoreDto) {

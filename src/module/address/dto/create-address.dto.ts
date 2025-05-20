@@ -1,18 +1,17 @@
 import { IsBoolean, IsOptional, IsNotEmpty } from 'class-validator'
 import { AddressInterface } from '../interface/address.interface'
+import { AddressDto } from '@/common/dto/address.dto'
 
-export class CreateAddressDto implements Omit<AddressInterface, 'userId'>  {
+
+export class CreateAddressDto extends AddressDto {
   @IsNotEmpty()
-  receiver: string
+  contactName: string
 
   @IsNotEmpty()
-  city: string
+  sex: AddressInterface['sex']
 
   @IsNotEmpty()
   title: string
-
-  @IsNotEmpty()
-  address: string
 
   @IsNotEmpty()
   phoneNumber: string

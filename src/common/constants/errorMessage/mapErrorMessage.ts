@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common'
-import { ERROR_CODE } from '@/common/constants/errorCode'
+import { ERROR_CODE } from '@/common/constants/errorMessage/commonCode'
 
 export const MAP_ERROR_MESSAGE = {
   GET_DISTRICT_CHILDREN_ERROR: {

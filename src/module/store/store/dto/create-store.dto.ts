@@ -1,11 +1,5 @@
 import { StoreInterface } from '../interface/store.interface'
-import {
-  IsString,
-  IsArray,
-  IsOptional,
-  IsNotEmpty,  
-  IsBoolean
-} from 'class-validator'
+import { IsString, IsArray, IsOptional, IsNotEmpty, IsBoolean } from 'class-validator'
 import { Type } from 'class-transformer'
 import { City } from '@/common/types/city'
 import { CityDto } from '@/common/dto/city.dto'
@@ -45,7 +39,6 @@ export class CreateStoreDto implements Omit<StoreInterface, 'owner'> {
   @IsOptional()
   address?: string
 
-  
   @IsBoolean()
   @IsOptional()
   open?: boolean // 营业状态
@@ -55,8 +48,5 @@ export class CreateStoreDto implements Omit<StoreInterface, 'owner'> {
   // @ValidateNested()
   // @IsObject()
   @IsOptional()
-  location?: {
-    lat: number
-    lng: number
-  }
+  location?: StoreInterface['location']
 }

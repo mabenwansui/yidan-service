@@ -32,11 +32,13 @@ export class Store implements StoreInterface {
   @Prop({ type: Boolean, default: false })
   open?: boolean // 营业状态
 
-  @Prop({ type: { lat: Number, lng: Number } })
-  location?: {
-    lat: number
-    lng: number
-  }
+  @Prop({
+    type: { type: String, enum: ['Point'] },
+    coordinates: { type: [Number] }
+  })
+  location?: { type: 'Point'; coordinates: [number, number] }
 }
 
 export const StoreSchema = SchemaFactory.createForClass(Store)
+
+StoreSchema.index({ location: '2dsphere' }, { name: 'StoreLocationIndex' })

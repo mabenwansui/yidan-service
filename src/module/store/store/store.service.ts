@@ -1,13 +1,14 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
+import { selectForm as selectUserForm } from '@/common/constants/user'
+import { PAGE_SIZE } from '@/common/constants/page'
 import { Model } from 'mongoose'
 import { Store } from './schemas/store.schema'
 import { StoreCreatedResponseDto } from './dto/store-created-response.dto'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
 import { SearchStoreDto } from './dto/search-store.dto'
-import { selectForm as selectUserForm } from '@/common/constants/user'
-import { PAGE_SIZE } from '@/common/constants/page'
+import { GetClosestStoreDto } from './dto/get-closest-store.dto'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -36,6 +37,23 @@ export class StoreService {
     return {
       status: 'ok'
     }
+  }
+
+  async getNearOne(getClosestStoreDto: GetClosestStoreDto) {
+    // const { latitude, longitude } = getClosestStoreDto
+    // 利用 MongoDB 的地理空间查询来找到最近的店铺
+    // const result = await this.StoreModel.findOne({
+    //   location: {
+    //     $near: {
+    //       $geometry: {
+    //         type: "Point",
+    //         coordinates: [longitude, latitude]
+    //       }
+    //     }
+    //   }
+    // });
+
+    // return result;
   }
 
   async search(params: SearchStoreDto) {

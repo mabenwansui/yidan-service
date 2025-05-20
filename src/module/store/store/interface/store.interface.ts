@@ -4,6 +4,11 @@ import { Types } from 'mongoose'
 
 export type ownerPopulate = UserInterface[]
 
+export interface LocationPoint {
+  type: 'Point'
+  coordinates: [number, number]
+}
+
 export interface StoreInterface {
   /** 项目名称，必须且唯一 */
   name: string
@@ -20,8 +25,5 @@ export interface StoreInterface {
   /** 项目地址，可选字段 */
   address?: string
   /** 项目地理位置，包含纬度和经度，可选字段 */
-  location?: {
-    lat: number
-    lng: number
-  }
+  location?: LocationPoint
 }

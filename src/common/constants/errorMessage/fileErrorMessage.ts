@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common'
-import { ERROR_CODE } from '@/common/constants/errorCode'
+import { ERROR_CODE } from '@/common/constants/errorMessage/commonCode'
 
 export const FILE_ERROR_MESSAGE = {
   UPLOAD_IMAGE_MIMETYPE_ERROR: {

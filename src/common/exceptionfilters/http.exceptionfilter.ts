@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
-import { ERROR_CODE } from '@/common/constants/errorCode'
+import { ERROR_CODE } from '@/common/constants/errorMessage/commonCode'
 import { ERROR_MESSAGE } from '../constants/errorMessage'
 
 interface CustomErrorResponse {
