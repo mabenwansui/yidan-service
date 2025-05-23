@@ -1,15 +1,10 @@
-import { City } from '@/common/types/city'
-import { UserInterface } from '@/module/user/interface/user.interface'
 import { Types } from 'mongoose'
+import { AddressLocationInterface } from '@/common/types/address.interface'
+import { UserInterface } from '@/module/user/interface/user.interface'
 
-export type ownerPopulate = UserInterface[]
+export type OwnerPopulate = UserInterface
 
-export interface LocationPoint {
-  type: 'Point'
-  coordinates: [number, number]
-}
-
-export interface StoreInterface {
+export interface StoreInterface extends AddressLocationInterface {  
   /** 项目名称，必须且唯一 */
   name: string
   /** 项目负责人，存储用户的 ObjectId 数组 */
@@ -20,10 +15,4 @@ export interface StoreInterface {
   coverImageUrl?: string
   /** 项目描述，可选字段 */
   description?: string
-  /** 项目所在城市，可选字段 */
-  city?: City
-  /** 项目地址，可选字段 */
-  address?: string
-  /** 项目地理位置，包含纬度和经度，可选字段 */
-  location?: LocationPoint
 }

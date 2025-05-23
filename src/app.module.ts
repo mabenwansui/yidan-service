@@ -19,8 +19,6 @@ import { MessageModule } from '@/module/message/message.module'
 import { CouponModule } from '@/module/coupon/coupon.module'
 import { AddressModule } from '@/module/address/address.module'
 
-
-
 const mongooseModuleOptions = {
   connectionFactory: (connection) => {
     connection.plugin((schema) => {
@@ -42,7 +40,7 @@ const mongooseModuleOptions = {
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ...config.dbs.map((item) => MongooseModule.forRoot(item.uri, mongooseModuleOptions)),
+    ...config.dbs.map((item) => MongooseModule.forRoot(item.uri)),
     MapModule,
     FileModule,
     MessageModule,

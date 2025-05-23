@@ -1,13 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { StoreInterface } from '../interface/store.interface'
-import { City } from '@/common/types/city'
-import { CityDto } from '@/common/dto/city.dto'
+import { AddressSchemas } from '@/common/schemas/address.schemas'
 
 export type StoreDocument = HydratedDocument<Store>
 
 @Schema({ timestamps: true })
-export class Store implements StoreInterface {
+export class Store extends AddressSchemas implements Omit<StoreInterface, 'lon' | 'lat'> {
   @Prop({ required: true, unique: true })
   name: string
 
@@ -23,20 +22,11 @@ export class Store implements StoreInterface {
   @Prop()
   description?: string
 
-  @Prop({ type: [CityDto] })
-  city?: City
-
-  @Prop()
-  address?: string
-
   @Prop({ type: Boolean, default: false })
   open?: boolean // 营业状态
 
-  @Prop({
-    type: { type: String, enum: ['Point'] },
-    coordinates: { type: [Number] }
-  })
-  location?: { type: 'Point'; coordinates: [number, number] }
+  @Prop({ required: true })
+  details: string
 }
 
 export const StoreSchema = SchemaFactory.createForClass(Store)

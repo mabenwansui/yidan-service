@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UseInterceptors,
+  SerializeOptions,
+  ClassSerializerInterceptor
+} from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
 import { StoreService } from './store.service'
@@ -6,6 +14,7 @@ import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
 import { DeleteStoreDto } from './dto/delete-store.dto'
 import { SearchStoreDto } from './dto/search-store.dto'
+import { SearchResponse } from './dto/store-found-response.dto'
 
 @Controller('store')
 export class StoreController {
@@ -32,10 +41,13 @@ export class StoreController {
 
   @Auth()
   @Post('get-near')
-  async getNear(@Body() getBranchDto) {
-    
-  }
+  async getNear(@Body() getBranchDto) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({
+    // strategy: 'excludeAll',
+    type: SearchResponse
+  })
   @Auth(ROLE.USER, ROLE.ADMIN)
   @Post('search')
   async search(@Body() searchStoreDto: SearchStoreDto) {

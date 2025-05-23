@@ -1,9 +1,9 @@
 import { IsBoolean, IsOptional, IsNotEmpty } from 'class-validator'
 import { AddressInterface } from '../interface/address.interface'
-import { AddressDto } from '@/common/dto/address.dto'
+import { AddressLocationDto } from '@/common/dto/address.dto'
 
 
-export class CreateAddressDto extends AddressDto {
+export class CreateAddressDto extends AddressLocationDto {
   @IsNotEmpty()
   contactName: string
 

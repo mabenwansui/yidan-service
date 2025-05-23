@@ -50,7 +50,10 @@ export class AddressController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll', type: SearchAddressResponseDto })
+  @SerializeOptions({
+    strategy: 'excludeAll',
+    type: SearchAddressResponseDto
+  })
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('list')
   async getList(@Req() request) {

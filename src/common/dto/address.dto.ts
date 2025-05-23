@@ -1,40 +1,28 @@
 import { Prop } from '@nestjs/mongoose'
 import { Expose } from 'class-transformer'
-import { LocationPoint, AddressInterface } from '@/common/types/address'
+import { AddressLocationInterface } from '@/common/types/address.interface'
 
-class LocationPointDto implements LocationPoint {
-  @Prop({ required: true, type: Number })
-  type: 'Point'
-  @Prop({ required: true, type: [Number] })
-  coordinates: [number, number]
-}
-
-class LocationPointResponseDto implements LocationPoint {
-  @Expose()
-  type: 'Point'
-
-  @Expose()
-  coordinates: [number, number]
-}
-
-export class AddressDto implements AddressInterface {
+export class AddressLocationDto implements AddressLocationInterface {
   @Prop()
   city?: string
 
   @Prop({ required: true })
   poiName: string
 
-  @Prop({ required: true, type: Number })
+  @Prop({ required: true })
   poiAddress: string
 
-  @Prop({ required: true, type: Number })
+  @Prop({ required: true })
   details: string
 
-  @Prop({ type: LocationPointDto })
-  location?: LocationPoint
+  @Prop({ required: true })
+  lon: number
+
+  @Prop({ required: true })
+  lat: number
 }
 
-export class AddressResponseDto implements AddressInterface {
+export class AddressResponseDto implements AddressLocationInterface {
   @Expose()
   city?: string
 
@@ -48,5 +36,8 @@ export class AddressResponseDto implements AddressInterface {
   details: string
 
   @Expose()
-  location?: LocationPointResponseDto
+  lon: number
+
+  @Expose()
+  lat: number
 }

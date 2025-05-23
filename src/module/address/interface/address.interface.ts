@@ -1,11 +1,7 @@
-import { AddressInterface as AddressInterfaceBase } from '@/common/types/address'
+import { AddressLocationInterface } from '@/common/types/address.interface'
+import { SexType } from '@/common/types/user.interface'
 
-export enum SexType {
-  male = 'male',
-  female = 'female'
-}
-
-export interface AddressInterface extends AddressInterfaceBase {
+export interface AddressInterface extends AddressLocationInterface {
   id?: string
   /** 用户 ID，必填 */
   userId: string

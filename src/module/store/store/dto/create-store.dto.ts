@@ -1,16 +1,14 @@
 import { StoreInterface } from '../interface/store.interface'
 import { IsString, IsArray, IsOptional, IsNotEmpty, IsBoolean } from 'class-validator'
-import { Type } from 'class-transformer'
-import { City } from '@/common/types/city'
-import { CityDto } from '@/common/dto/city.dto'
+import { AddressLocationDto } from '@/common/dto/address.dto'
 
-export class CreateStoreDto implements Omit<StoreInterface, 'owner'> {
-  /** 项目名称，必须且唯一 */
+export class CreateStoreDto extends AddressLocationDto implements Omit<StoreInterface, 'owner'> {
+  /** 项目名称 */
   @IsString()
   @IsNotEmpty()
   name: string
 
-  /** 项目描述，可选字段 */
+  /** 项目描述 */
   @IsOptional()
   description?: string
 
@@ -19,7 +17,7 @@ export class CreateStoreDto implements Omit<StoreInterface, 'owner'> {
   @IsOptional()
   owner?: string[]
 
-  /** 图片名称数组，可选字段 */
+  /** 图片名称 */
   @IsString({ each: true })
   @IsArray()
   @IsOptional()
@@ -29,24 +27,7 @@ export class CreateStoreDto implements Omit<StoreInterface, 'owner'> {
   @IsOptional()
   coverImageUrl?: string
 
-  /** 项目所在城市，可选字段 */
-  @Type(() => CityDto)
-  @IsArray()
-  @IsOptional()
-  city?: City
-
-  /** 项目地址，可选字段 */
-  @IsOptional()
-  address?: string
-
   @IsBoolean()
   @IsOptional()
   open?: boolean // 营业状态
-
-  /** 项目地理位置，包含纬度和经度，可选字段 */
-  // @Type(() => Object)
-  // @ValidateNested()
-  // @IsObject()
-  @IsOptional()
-  location?: StoreInterface['location']
 }

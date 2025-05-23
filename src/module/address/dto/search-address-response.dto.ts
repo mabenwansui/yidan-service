@@ -1,12 +1,8 @@
 import { Expose, Type } from 'class-transformer'
-import { CreateAddressDto } from './create-address.dto'
-
-class AddressItem extends CreateAddressDto {
-  @Expose()
-  id?: string
-}
+import { FoundAddressResponseDto } from './found-address-response.dto'
 
 export class SearchAddressResponseDto {
   @Expose()
-  list: AddressItem[]
+  @Type(() => FoundAddressResponseDto)
+  list: FoundAddressResponseDto[]
 }
