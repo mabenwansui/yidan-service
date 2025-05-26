@@ -10,10 +10,12 @@ import {
 } from 'class-validator'
 import { Type } from 'class-transformer'
 import { presets } from '@/common/constants/valid'
+import { OmitType } from '@nestjs/mapped-types'
+import { Commodity } from '../schemas/commodity.schema'
 
 const { maxTitleLength, maxDescriptionLength } = presets
 
-export class CreateCommodityDto {
+export class CreateCommodityDto extends OmitType(Commodity, ['category']) {
   /** 商品名称 */
   @IsNotEmpty({ message: '商品名称不能为空' })
   @MaxLength(maxTitleLength, { message: `商品名称不能超过${maxTitleLength}个字` })
@@ -36,12 +38,6 @@ export class CreateCommodityDto {
   @IsOptional()
   originalPrice?: number
 
-  /** 现价 */
-  @IsNumber({ allowNaN: false }, { message: '商品价格必须是数字' })
-  @Type(() => Number)
-  @IsNotEmpty({ message: '商品价格不能为空' })
-  price: number
-
   /** 商品描述 */
   @MaxLength(presets.maxDescriptionLength, {
     message: `商品描述不能超过${maxDescriptionLength}个字`
@@ -52,7 +48,7 @@ export class CreateCommodityDto {
   /** 商品分类 */
   @IsString({ message: '商品分类必须是字符串' })
   @IsOptional()
-  category?: string
+  categoryId?: string
 
   /** 商品详情 */
   @IsString({ message: '商品详情必须是字符串' })
@@ -67,15 +63,19 @@ export class CreateCommodityDto {
   @IsOptional()
   imgNames?: [string]
 
+  /** 商品封面图 */
+  @IsOptional()
+  coverImageUrl?: string
+
   /** 商品库存 */
-  @IsNumber({}, { message: '商品库存必须是数字' })
   @Min(0, { message: '商品库存不能为负数' })
+  @IsNumber({}, { message: '商品库存必须是数字' })
   @IsOptional()
   stockConunt?: number
 
   /** 已售 */
-  @IsNumber({}, { message: '已售必须是数字' })
   @Min(0, { message: '已售不能为负数' })
+  @IsNumber({}, { message: '已售必须是数字' })
   @Type(() => Number)
   @IsOptional()
   soldCount?: number

@@ -2,17 +2,17 @@ import { Expose } from 'class-transformer'
 import { IsNumber, IsOptional } from 'class-validator'
 
 export class PageBaseDto {
-  @IsNumber({}, { message: '页码必须是数字' })
+  @IsNumber()
   @IsOptional()
-  curPage?: number // 页码
+  curPage?: number
 
-  @IsNumber({}, { message: '总页数必须是数字' })
+  @IsNumber()
   @IsOptional()
-  total?: number // 总页数
+  total?: number
 
-  @IsNumber({}, { message: '每页展示数量必须是数字' })
+  @IsNumber()
   @IsOptional()
-  pageSize?: number // 每页数量
+  pageSize?: number
 
   constructor() {
     this.curPage = 1

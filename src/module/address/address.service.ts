@@ -7,9 +7,7 @@ import { WithMongoId } from '@/common/types/mongo.interface'
 import { Address } from './schemas/address.schema'
 import { CreateAddressDto } from './dto/create-address.dto'
 import { UpdateAddressDto } from './dto/update-address.dto'
-import { SearchAddressResponseDto } from './dto/search-address-response.dto'
-import { FoundAddressResponseDto } from './dto/found-address-response.dto'
-import { CreateAddressResponseDto } from './dto/create-address-response.dto'
+import { AddressFoundOneResponseDto, AddressSearchResponseDto } from './dto/address-found-response.dto'
 
 @Controller('address')
 export class AddressService {
@@ -30,19 +28,18 @@ export class AddressService {
   private formatResponse(item: WithMongoId<Address>) {
     const { location, _id, ...rest } = item
     const [lon, lat] = location.coordinates
-    return { lon, lat, id: _id.toString(), ...rest }
+    return { lon, lat, ...rest }
   }
 
   async create(
     createAddressDto: CreateAddressDto,
     userId: string
-  ): Promise<CreateAddressResponseDto> {
+  ) {
     try {
-      const { _id } = await this.addressModel.create({
+      return await this.addressModel.create({
         ...this.formatLocation<CreateAddressDto>(createAddressDto),
         userId: userId
       })
-      return { id: _id.toString() }
     } catch (e) {
       logger.error(e)
       throw new HttpException(
@@ -74,7 +71,7 @@ export class AddressService {
         ERROR_MESSAGE.UPDATE_ADDRESS_ERROR,
         ERROR_MESSAGE.UPDATE_ADDRESS_ERROR.status
       )
-    return { status: 'ok' }
+    return {}
   }
 
   async delete(id: string, userId: string) {
@@ -84,15 +81,15 @@ export class AddressService {
         ERROR_MESSAGE.DELETE_ADDRESS_ERROR,
         ERROR_MESSAGE.DELETE_ADDRESS_ERROR.status
       )
-    return { status: 'ok' }
+    return {}
   }
 
-  async getInfo(id: string, userId: string): Promise<FoundAddressResponseDto> {
+  async getInfo(id: string, userId: string): Promise<AddressFoundOneResponseDto> {
     const doc = await this.addressModel.findOne({ _id: id, userId }).lean()
     return this.formatResponse(doc)
   }
 
-  async search(query: any): Promise<SearchAddressResponseDto> {
+  async search(query: any): Promise<AddressSearchResponseDto> {
     const doc = await this.addressModel.find(query).sort({ createdAt: -1 }).lean()
     return {
       list: doc.map(item => this.formatResponse(item))

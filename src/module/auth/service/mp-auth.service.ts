@@ -1,8 +1,8 @@
+import { Model } from 'mongoose'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { HttpService } from '@nestjs/axios'
-import { Model, Types } from 'mongoose'
 import { firstValueFrom } from 'rxjs'
 import { generateUuid } from '@/common/utils/generateUuid'
 import { ROLE } from '@/common/constants/role'
@@ -29,13 +29,12 @@ export class MpAuthService extends BaseService {
     let username: string
     let role: ROLE[]
     if (!userDoc) {
-      role = [ROLE.USER]
       username = `wx_${generateUuid()}`
-      const { id } = await this.userService.createUser({
+      const { id, role:_role } = await this.userService.createUser({
         username,
         openidMpWx: openid,
-        role
       })
+      role = _role
       userId = id
     } else {
       userId = userDoc._id.toString()
@@ -71,12 +70,4 @@ export class MpAuthService extends BaseService {
     const { openid, errcode } = data
     return openid
   }
-
-  // public async refreshAuth(authKey: string, response: Response) {
-  //   const token = await this.getRefreshToken(authKey)
-  //   const now = Date.now()
-  //   return {
-  //     status: 'ok'
-  //   } as const
-  // }
 }

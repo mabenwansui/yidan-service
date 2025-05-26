@@ -1,38 +1,51 @@
-import { Body, Controller, Post, Req } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Post,
+  UseInterceptors,
+  SerializeOptions,
+  ClassSerializerInterceptor
+} from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
 import { BranchService } from './branch.service'
 import { CreateBranchDto } from './dto/create-branch.dto'
-import { SearchBranchDto } from './dto/search-branch.dto'
+import { SearchBranchDto } from './dto/find-branch.dto'
 import { UpdateBranchDto } from './dto/update-branch.dto'
 import { DeleteBranchDto } from './dto/delete-branch.dto'
+import { BranchSearchedResponseDto } from './dto/branch-found-response.dto'
+import { BranchCreatedResponseDto } from './dto/branch-created-response.dto'
 
 @Controller('branch')
 export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: BranchCreatedResponseDto }) 
   @Auth()
   @Post('create')
-  async create(@Body() createBranchDto: CreateBranchDto) {
+  async create(@Body() createBranchDto: CreateBranchDto): Promise<BranchCreatedResponseDto> {
     return await this.branchService.create(createBranchDto)
   }
 
   @Auth(ROLE.ADMIN)
   @Post('update')
-  async update(@Body() updateStoreDto: UpdateBranchDto) {
+  async update(@Body() updateStoreDto: UpdateBranchDto): Promise<Record<never, never>> {
     return await this.branchService.update(updateStoreDto)
   }
 
   @Auth()
   @Post('delete')
-  async delete(@Body() deleteStoreDto: DeleteBranchDto) {
+  async delete(@Body() deleteStoreDto: DeleteBranchDto): Promise<Record<never, never>> {
     const { id } = deleteStoreDto
     return await this.branchService.delete(id)
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: BranchSearchedResponseDto })
   @Auth(ROLE.ADMIN)
   @Post('search-commodity')
-  async search(@Body() searchBranchDto: SearchBranchDto) {
+  async search(@Body() searchBranchDto: SearchBranchDto): Promise<BranchSearchedResponseDto> {
     return await this.branchService.searchCommodity(searchBranchDto)
   }
 }

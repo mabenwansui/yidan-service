@@ -2,11 +2,11 @@ import { HttpException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { Auth } from '../schemas/auth.schemas'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { generateUuid } from '@/common/utils/generateUuid'
 import { ROLE } from '@/common/constants/role'
 import { UserService } from '@/module/user/user.service'
+import { Auth } from '../schemas/auth.schemas'
 
 interface AuthorizationParams {
   username: string

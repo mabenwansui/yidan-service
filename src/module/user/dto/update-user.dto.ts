@@ -1,8 +1,19 @@
-import { UserInterface } from '../interface/user.interface'
-import { IsOptional, IsNotEmpty, IsEmail, IsPhoneNumber, IsArray, IsEnum } from 'class-validator'
+import {
+  IsOptional,
+  IsNotEmpty,
+  IsEmail,
+  IsArray,
+  IsEnum,
+  MaxLength,
+  MinLength,
+  Matches
+} from 'class-validator'
 import { ROLE } from '@/common/constants/role'
+import { User } from '../schemas/user.schema'
+import { OmitType, PartialType } from '@nestjs/mapped-types'
+import { pwdReg, maxUserPwdLength, minUserPwdLength } from './create-user.dto'
 
-export class UpdateUserDto implements Partial<UserInterface> {
+export class UpdateUserDto extends PartialType(OmitType(User, ['role', 'openidMpWx'])) {
   @IsNotEmpty()
   id: string
 
@@ -22,10 +33,12 @@ export class UpdateUserDto implements Partial<UserInterface> {
   @IsOptional()
   nickname?: string
 
+  @Matches(pwdReg)
+  @MaxLength(maxUserPwdLength)
+  @MinLength(minUserPwdLength)
   @IsOptional()
   password?: string
 }
-
 
 export class UserUpdateRoleDto {
   @IsNotEmpty()
@@ -34,5 +47,5 @@ export class UserUpdateRoleDto {
   @IsEnum(ROLE, { each: true })
   @IsArray()
   @IsOptional()
-  role: ROLE[]  
+  role: ROLE[]
 }

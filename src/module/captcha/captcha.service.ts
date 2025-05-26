@@ -19,14 +19,12 @@ export class CaptchaService {
       data
     }
   }
-  verifyCaptcha(key: string, captchaValue: string) {
+  verifyCaptcha(key: string, captchaValue: string): Record<never, never> {
     const captchaText = captchaStore.get(key)
     if (!captchaText || captchaText?.toLowerCase() !== captchaValue?.toLowerCase()) {
       throw new HttpException(ERROR_MESSAGE.CAPTCHA_ERROR, ERROR_MESSAGE.CAPTCHA_ERROR.status)
     }
-    return {
-      status: 'ok'
-    }
+    return {}
   }
 }
 

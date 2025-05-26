@@ -4,9 +4,10 @@ import { Model, Types } from 'mongoose'
 import { Observable, Subject } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Message } from './schemas/message.schema'
-import { CreateOrderMessageDto } from './dto/create-order-message.dto'
-import { Message as MessageData, MessageType } from './interface/message.interface'
-import { OrderInterface } from '@/module/order/interface/order.interface'
+import { CreateMessageDto } from './dto/create-message.dto'
+import { MessageFoundOneResponseDto } from './dto/message-found-response.dto'
+import { MessageCreatedResponseDto } from './dto/message-created-response.dto'
+import { SenderType, MessageType } from './schemas/message.schema'
 
 @Injectable()
 export class MessageService {
@@ -18,40 +19,34 @@ export class MessageService {
     this.getEventStream()
   }
 
-  emitNewMessage(message: MessageData) {
+  private emitNewMessage(message: MessageFoundOneResponseDto) {
     this.subject.next(message)
   }
 
+  private async create(createMessageDto: CreateMessageDto) {
+    return await this.messageModel.create(createMessageDto)
+  }
+
+  async createOrderSystemMessage(content: CreateMessageDto['content']) {
+    // const data = {
+    //   type: MessageType.ORDER,
+    //   title: '您有新的订单',
+    //   content,
+    //   receiverId: '',
+    //   senderType: SenderType.SYSTEM,
+    //   // sender: { id: 'system' }
+    // }
+    // const doc = await this.create(data)
+    // 得再查一次user
+    // this.emitNewMessage(doc)
+  }  
+
   getEventStream(): Observable<any> {
-    return this.subject.asObservable().pipe(
-      map((message: MessageData) => {
-        return message
-      })
-    )
+    return this.subject.asObservable().pipe(map((message: MessageFoundOneResponseDto) => message))
   }
 
   async getUnReadTotal() {
     return await this.messageModel.countDocuments({ isRead: false })
-  }
-
-  async create(createMessageDto: CreateOrderMessageDto) {
-    return await this.messageModel.create(createMessageDto)
-  }
-
-  async createOrderSystemMessage(order: OrderInterface) {
-    const data: CreateOrderMessageDto = {
-      type: MessageType.ORDER,
-      title: '您有新的订单',
-      content: order,
-      receiverId: '',
-      sender: { id: 'system' }
-    }
-    const { createdAt } = await this.create(data)
-    this.emitNewMessage({
-      ...data,
-      isRead: false,
-      createdAt
-    })
   }
 
   async setRead(id: string) {

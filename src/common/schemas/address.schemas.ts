@@ -1,5 +1,4 @@
 import { Prop } from '@nestjs/mongoose'
-import { AddressLocationInterface } from '@/common/types/address.interface'
 
 export class LocationPointSchema {
   @Prop({ required: true, type: String, enum: ['Point'] })
@@ -9,7 +8,7 @@ export class LocationPointSchema {
   coordinates: [number, number]
 }
 
-export class AddressSchemas implements Omit<AddressLocationInterface, 'lon' | 'lat'> {
+export class AddressSchemas {
   @Prop()
   city?: string
 

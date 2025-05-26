@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
-import { BranchInterface } from '../interface/branch.interface'
 
 export type BranchDocument = HydratedDocument<Branch>
 export enum OPEN_STATUS {
@@ -9,12 +8,12 @@ export enum OPEN_STATUS {
 }
 
 @Schema({ timestamps: true })
-export class Branch implements BranchInterface {
+export class Branch {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Store' })
-  store: BranchInterface['store']
+  store: Types.ObjectId
 
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Commodity' })
-  commodity: BranchInterface['commodity']
+  commodity: Types.ObjectId
 
   @Prop({ type: Number })
   stockConunt?: number // 库存数量
@@ -26,16 +25,13 @@ export class Branch implements BranchInterface {
   price?: number
 
   @Prop({ type: Boolean })
-  isOnShelf: boolean
+  isOnShelf?: boolean
 }
 
 export const BranchSchema = SchemaFactory.createForClass(Branch)
 BranchSchema.index({
-  // 为 storeId 创建单字段索引，常用于按店铺筛选分支
   storeId: 1,
-  // 为 commodityId 创建单字段索引，常用于按商品筛选分支
   commodityId: 1,
-  // 为 isOnShelf 和 price 创建复合索引，常用于筛选上架商品并按价格排序
   isOnShelf: 1,
   price: 1
 })

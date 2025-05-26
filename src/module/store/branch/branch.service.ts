@@ -5,9 +5,9 @@ import { PAGE_SIZE } from '@/common/constants/page'
 import { Branch } from './schemas/branch.schema'
 import { CreateBranchDto } from './dto/create-branch.dto'
 import { BranchCreatedResponseDto } from './dto/branch-created-response.dto'
-import { SearchBranchDto } from './dto/search-branch.dto'
+import { SearchBranchDto } from './dto/find-branch.dto'
 import { UpdateBranchDto } from './dto/update-branch.dto'
-import { BranchSearchedResponseDto } from './dto/branch-searched-response.dto'
+import { BranchSearchedResponseDto } from './dto/branch-found-response.dto'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -18,14 +18,13 @@ export class BranchService {
     @InjectModel(Branch.name)
     private readonly branchModel: Model<Branch>
   ) {}
-  async create(params: CreateBranchDto): Promise<BranchCreatedResponseDto> {
+  async create(params: CreateBranchDto) {
     const { commodityId, storeId, ...rest } = params
-    const { id } = await this.branchModel.create({
+    return await this.branchModel.create({
       commodity: commodityId,
       store: storeId,
       ...rest
     })
-    return { id }
   }
   async update(params: UpdateBranchDto) {
     const { id, commodityId, storeId, ...rest } = params    
@@ -34,53 +33,10 @@ export class BranchService {
       store: storeId,
       ...rest
     })
-    return { status: 'ok' }
+    return {}
   }
   async delete(id: string) {
     return await this.branchModel.findByIdAndDelete(id)
-  }
-  async searchCommodity2(params: SearchBranchDto): Promise<BranchSearchedResponseDto> {
-    const db = this.branchModel
-    const {
-      curPage = 1,
-      pageSize = PAGE_SIZE,
-      storeId,
-      commodityId,
-      categoryId,
-      isOnShelf
-    } = params
-    const query = {
-      ...(storeId && { store: storeId }),
-      ...(commodityId && { commodity: commodityId }),
-      // ...(categoryId && { 'commodity.category': categoryId }),
-      ...(isOnShelf !== undefined && { isOnShelf })
-    }
-    // debugger
-    const total = await db.countDocuments(query)
-    const data = await db
-      .find(query)
-      .select('commodity stockConunt soldCount price isOnShelf')
-      .populate({
-        path: 'commodity',
-        select: '-__v -updatedAt -createdAt',
-        match: { category: categoryId },
-        populate: {
-          path: 'category',
-          select: 'title'
-        }
-      })
-      .sort({ createdAt: -1 })
-      .skip(Math.max(curPage - 1, 0) * pageSize)
-      .limit(pageSize)
-    const _data = data.map((item) => {
-      return item
-    })
-    return {
-      total,
-      curPage,
-      pageSize: pageSize,
-      list: _data as any
-    }
   }
 
   async searchCommodity(params: SearchBranchDto): Promise<BranchSearchedResponseDto> {
@@ -132,8 +88,6 @@ export class BranchService {
           'commodity.name': 1,
           'commodity.category.title': 1,
           'commodity.category.id': '$commodity.category._id',
-          id: '$_id',
-          _id: 0,
           stockConunt: 1,
           soldCount: 1,
           price: 1,

@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { PAGE_SIZE } from '@/common/constants/page'
+import { Category } from '@/module/commodity/category/schemas/category.schema'
 import { Commodity } from './schemas/commodity.schema'
 import { CreateCommodityDto } from './dto/create-commodity.dto'
-import { SearchCommodityDto } from './dto/search-commodity.dto'
+import { SearchCommodityDto } from './dto/find-commodity.dto'
 import { CommodityCreatedResponseDto } from './dto/commodity-created-response.dto'
-import { CommoditySearchResponseDto } from './dto/commodity-search-response.dto'
+import { CommoditySearchResponseDto } from './dto/commodity-found-response.dto'
 import { UpdateCommodityDto } from './dto/update-commodity.dto'
 import { DeleteCommodityDto } from './dto/delete-commodity.dto'
-import { PAGE_SIZE } from '@/common/constants/page'
-
-const selectForm = 'id name category imgNames originalPrice price description tags soldCount'
 
 @Injectable()
 export class CommodityService {
@@ -20,8 +19,10 @@ export class CommodityService {
   ) {}
 
   async create(createCommodityDto: CreateCommodityDto): Promise<CommodityCreatedResponseDto> {
+    const { categoryId, ...rest } = createCommodityDto
     const result = await this.commodityModel.create({
-      ...createCommodityDto
+      category: categoryId,
+      ...rest
     })
     return result as unknown as CommodityCreatedResponseDto
   }
@@ -37,7 +38,7 @@ export class CommodityService {
   }
 
   async getInfo(id: string) {
-    return await this.commodityModel.findById(id).select(selectForm).populate('category', 'title')
+    return await this.commodityModel.findById(id).populate<{ category: Category }>('category')
   }
 
   async search(searchCommodity: SearchCommodityDto): Promise<CommoditySearchResponseDto> {
@@ -56,9 +57,8 @@ export class CommodityService {
     const total = await db.countDocuments(query)
     const data = await db
       .find(query)
-      .select(selectForm)
       .sort({ createdAt: -1 })
-      .populate('category', 'id, title')
+      .populate<{ category: Category }>('category')
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
 
@@ -67,18 +67,6 @@ export class CommodityService {
       curPage,
       pageSize: pageSize,
       list: data
-      // list: data.map((item)=> {
-      //   const { _id, category, ...rest } = item
-      //   const { _id: categoryId, ...categoryRest } = category as any
-      //   return {
-      //     ...rest,
-      //     category: {
-      //       categoryId,
-      //       ...categoryRest
-      //     },
-      //     commodityId: _id
-      //   }
-      // }) as unknown as CommoditySearchResponseDto['list']
     }
   }
 

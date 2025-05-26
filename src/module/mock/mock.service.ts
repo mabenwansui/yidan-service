@@ -17,7 +17,7 @@ export class MockService {
       const doc = await this.categoryService.create({ title: item.title, parentId: item.parentId })
       const { dependencies } = item
       for (const child of dependencies) {
-        child.category = doc.id
+        child.categoryId = doc.id
         await this.commodityService.create(child)
       }
     }

@@ -11,10 +11,9 @@ import { DeleteCategoryDto } from './dto/delete-category.dto'
 import { SortCategoryDto } from './dto/sort-category.dto'
 import { CategoryCreatedResponseDto } from './dto/category-created-response.dto'
 import { CategoryUpdatedResponseItem } from './dto/category-updated-response.dto'
-import { CategorySortedResponseDto } from './dto/category-sorted-response.dto'
 import {
-  CategoryFoundResponseDto,
-  CategoryFoundResponseItem
+  CategorySearchResponseDto,
+  CategoryFoundOneResponse
 } from './dto/category-found-response.dto'
 
 type ICategory = Category & { id: string }
@@ -33,7 +32,7 @@ export class CategoryService {
     }
   }
 
-  private async search(query: any = {}): Promise<CategoryFoundResponseDto> {
+  private async search(query: any = {}): Promise<CategorySearchResponseDto> {
     const foundDatas = (await this.categoryModel.find(query)) as ICategory[]
     if (foundDatas.length === 0) {
       return { list: [] }
@@ -51,7 +50,7 @@ export class CategoryService {
       function fn(arr: Array<string>) {
         return arr.map((id) => {
           const { title, childrenIds, parentId, level } = dataMap.get(id)
-          const responseData: CategoryFoundResponseItem = { id, title, parentId, level }
+          const responseData: CategoryFoundOneResponse = { id, title, parentId, level }
           if (childrenIds?.length > 0) {
             responseData.children = fn(childrenIds)
           }
@@ -64,12 +63,12 @@ export class CategoryService {
   }
 
   /** 包含顶级分类 - 全部 */
-  async formList(): Promise<CategoryFoundResponseDto> {
+  async formList(): Promise<CategorySearchResponseDto> {
     return await this.search()
   }
 
   /** 不返回顶级分类 - 全部 */
-  async list(): Promise<CategoryFoundResponseDto> {
+  async list(): Promise<CategorySearchResponseDto> {
     const { list } = await this.search()
     return { list: list[0]?.children || [] }
   }
@@ -201,7 +200,7 @@ export class CategoryService {
     }
   }
 
-  async sort(sortCategoryDto: SortCategoryDto): Promise<CategorySortedResponseDto> {
+  async sort(sortCategoryDto: SortCategoryDto) {
     const db = this.categoryModel
     const { id, targetId, isGap } = sortCategoryDto
     const doc = await db.findById(id)

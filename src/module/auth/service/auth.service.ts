@@ -1,15 +1,14 @@
+import * as bcrypt from 'bcrypt'
 import { HttpException, Injectable } from '@nestjs/common'
-import { Response, CookieOptions } from 'express'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
-import * as bcrypt from 'bcrypt'
+import { Response, CookieOptions } from 'express'
 import { Model } from 'mongoose'
-import { Auth } from '../schemas/auth.schemas'
-import { UserService } from '@/module/user/user.service'
-import { UserFoundOneResponseDto } from '@/module/user/dto/user-found-response.dto'
-import { LoginAuthDto } from '../dto/login-auth.dto'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { COOKIE_KEY } from '@/common/constants/cookie'
+import { UserService } from '@/module/user/user.service'
+import { Auth } from '../schemas/auth.schemas'
+import { LoginAuthDto } from '../dto/login-auth.dto'
 import { BaseService } from './base.service'
 
 const COOKIE_EXPIRE_TIME = 1e3 * 60 * 60 * 24 * 7 // 7 days
@@ -37,7 +36,7 @@ export class AuthService extends BaseService {
     super(authModel, userService, jwtService)
   }
 
-  async adminLogin(loginAuthDto: LoginAuthDto, response: Response) {
+  async adminLogin(loginAuthDto: LoginAuthDto, response: Response): Promise<Record<never, never>> {
     const { username, password } = loginAuthDto
     const userInfo = await this.validateUser(username, password)
     if (!userInfo) {
@@ -68,19 +67,14 @@ export class AuthService extends BaseService {
         httpOnly: false
       })
     )
-    return {
-      status: 'ok',
-      message: '登录成功'
-    }
+    return {}
   }
 
   async logout(userId: string, response: Response) {
     response?.clearCookie(COOKIE_KEY.AUTH_TOKEN)
     response?.clearCookie(COOKIE_KEY.REFRESH_TOKEN)
     await this.authModel.deleteOne({ userId })
-    return {
-      status: 'ok'
-    }
+    return {}
   }
 
   public async refreshAuth(authKey: string, response: Response) {
@@ -93,15 +87,13 @@ export class AuthService extends BaseService {
         expires: new Date(now + AUTH_EXPIRE_TIME)
       })
     )
-    return {
-      status: 'ok'
-    } as const
+    return {}
   }
 
   private async validateUser(
     username: string,
     password: string
-  ): Promise<UserFoundOneResponseDto | null> {
+  ) {
     const userDoc = await this.userService._findOne({ username })
     if (!userDoc) {
       return null

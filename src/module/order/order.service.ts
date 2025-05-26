@@ -3,12 +3,11 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { generateOrderId } from '@/common/utils/generateuuid'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
-import { ORDER_STATUS, PAYMENT_STATUS } from './interface/order.interface'
-import { Order } from './schemas/order.schema'
+import { Order, ORDER_STATUS, ORDER_TYPE, PAYMENT_STATUS, PAYMENT_TYPE } from './schemas/order.schema'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { SubmitOrderDto } from './dto/submit-order.dto'
 import { SearchOrderDto } from './dto/search-order.dto'
-import { getOrderResponseDto } from './dto/get-order-response.dto'
+import { OrderFoundOneResponseDto } from './dto/order-found-response.dto'
 import { MessageService } from '@/module/message/message.service'
 import { CommodityService } from '@/module/commodity/commodity/commodity.service'
 
@@ -28,7 +27,6 @@ export class OrderService {
     return doc.map((item, index) => ({
       name: item.name,
       category: item.category,
-      price: item.price,
       quantity: commodity[index].quantity
     }))
   }
@@ -46,7 +44,7 @@ export class OrderService {
         id: item.commodityId,
         quantity: item.quantity
       })),
-      originalAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0)      
+      // originalAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0)      
     }
     const order = await this.orderModel.create(data)
     return { id: order.id }
@@ -58,8 +56,8 @@ export class OrderService {
     const data = {
       orderStatus: ORDER_STATUS.PROCESSING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
-      originalAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0),
-      actualAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      // originalAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      // actualAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0),
       ...rest
     }
     const order = await this.orderModel.findByIdAndUpdate(orderId, data)
@@ -73,7 +71,7 @@ export class OrderService {
     return await this.orderModel.find(query)
   }
 
-  async getOrder(orderId: string): Promise<getOrderResponseDto> {
+  async getOrder(orderId: string): Promise<OrderFoundOneResponseDto> {
     return (await this.orderModel.findById(orderId)).populate({
       path: 'user',
       select: 'nickname phoneNumber'

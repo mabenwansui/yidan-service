@@ -1,14 +1,17 @@
+import { OmitType, IntersectionType } from '@nestjs/mapped-types'
 import { IsBoolean, IsOptional, IsNotEmpty } from 'class-validator'
-import { AddressInterface } from '../interface/address.interface'
-import { AddressLocationDto } from '@/common/dto/address.dto'
+import { AddressLocationBaseDto } from '@/common/dto/address-base.dto'
+import { Address } from '../schemas/address.schema'
 
-
-export class CreateAddressDto extends AddressLocationDto {
+export class CreateAddressDto extends IntersectionType(
+  AddressLocationBaseDto,
+  OmitType(Address, ['userId'])
+) {
   @IsNotEmpty()
   contactName: string
 
   @IsNotEmpty()
-  sex: AddressInterface['sex']
+  sex: Address['sex']
 
   @IsNotEmpty()
   title: string

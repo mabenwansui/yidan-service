@@ -1,6 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
-import {  } from '../interface/coupon.interface'
+
+export enum CouponType {
+  DISCOUNT = 'DISCOUNT', // 折扣券
+  FIXED = 'FIXED', // 固定金额券
+  FREE_SHIPPING = 'FREE_SHIPPING' // 免运费券
+}
 
 // 定义优惠券文档类型
 export type CouponDocument = HydratedDocument<Coupon>
@@ -18,10 +23,10 @@ export class Coupon {
   discount: number // 折扣比例
 
   @Prop({ required: true })
-  discountFixed: number // 折扣比例  
+  discountFixed: number // 折扣比例
 
-  @Prop({ required: true })
-  type: string // 优惠券类型，如满减、折扣等
+  @Prop({ required: true, type: String, enum: CouponType })
+  type: CouponType // 优惠券类型，如满减、折扣等
 
   @Prop({ required: true })
   minAmount: number // 最低消费金额

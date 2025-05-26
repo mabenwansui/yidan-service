@@ -2,7 +2,7 @@ import { IsOptional, IsString } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 import { ROLE } from '@/common/constants/role'
 
-export class SearchDtoBase extends PageBaseDto {
+export class SearchStaffDto extends PageBaseDto {
   @IsOptional()
   @IsString()
   username?: string
@@ -18,9 +18,8 @@ export class SearchDtoBase extends PageBaseDto {
   }
 }
 
-export class SearchAdminDto extends SearchDtoBase {
+export class SearchAdminDto extends SearchStaffDto {
   @IsOptional()
   role?: ROLE[]
 }
 
-export class SearchStaffDto extends SearchDtoBase {}

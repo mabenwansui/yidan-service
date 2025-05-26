@@ -1,26 +1,26 @@
-import { IsNotEmpty, IsString, IsNumber, Min, IsBoolean, IsOptional } from 'class-validator'
+import { OmitType } from '@nestjs/mapped-types'
+import { IsNotEmpty, IsNumber, Min, IsBoolean, IsOptional } from 'class-validator'
+import { Branch } from '../schemas/branch.schema'
 
-export class CreateBranchDto {
-  @IsString()
+export class CreateBranchDto extends OmitType(Branch, ['store', 'commodity']) {
   @IsNotEmpty()
   storeId: string
 
-  @IsString()
   @IsNotEmpty()
   commodityId: string
 
-  @IsNumber()
   @Min(0)
+  @IsNumber()
   @IsOptional()
   price?: number
 
-  @IsNumber()
   @Min(0)
+  @IsNumber()
   @IsOptional()
   stockConunt?: number
 
-  @IsNumber()
   @Min(0)
+  @IsNumber()
   @IsOptional()
   soldCount?: number
 
@@ -29,6 +29,7 @@ export class CreateBranchDto {
   isOnShelf?: boolean
 
   constructor() {
+    super()
     this.isOnShelf = false
   }
 }

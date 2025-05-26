@@ -4,11 +4,9 @@ import { PAGE_SIZE } from '@/common/constants/page'
 import { WithMongoId } from '@/common/types/mongo.interface'
 import { Model } from 'mongoose'
 import { Store } from './schemas/store.schema'
-import { StoreCreatedResponseDto } from './dto/store-created-response.dto'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
-import { SearchStoreDto } from './dto/search-store.dto'
-import { GetNearStoreDto } from './dto/get-near-store.dto'
+import { SearchStoreDto } from './dto/find-store.dto'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -25,17 +23,14 @@ export class StoreService {
     return { lon, lat, ...rest }
   }
 
-  async create(params: CreateStoreDto): Promise<StoreCreatedResponseDto> {
-    const { id } = await this.StoreModel.create(params)
-    return { id }
+  async create(params: CreateStoreDto) {
+    return await this.StoreModel.create(params)
   }
 
   async update(params: UpdateStoreDto) {
     const { id, ...rest } = params
     await this.StoreModel.findByIdAndUpdate(id, rest)
-    return {
-      status: 'ok'
-    }
+    return {}
   }
 
   async delete(id: string) {
@@ -45,7 +40,7 @@ export class StoreService {
     }
   }
 
-  async getNearOne(getNearStoreDto: GetNearStoreDto) {
+  async getNearOne() {
     // const { latitude, longitude } = getClosestStoreDto
     // 利用 MongoDB 的地理空间查询来找到最近的店铺
     // const result = await this.StoreModel.findOne({

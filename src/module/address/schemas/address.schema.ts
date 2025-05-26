@@ -1,21 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
-import { SexType } from '@/common/types/user.interface'
 import { AddressSchemas } from '@/common/schemas/address.schemas'
-import { AddressInterface } from '../interface/address.interface'
+import { User } from '@/module/user/schemas/user.schema'
 
 export type AddressDocument = HydratedDocument<Address>
 
 @Schema({ timestamps: true })
-export class Address extends AddressSchemas implements Omit<AddressInterface, 'lon' | 'lat'> {
+export class Address extends AddressSchemas {
   @Prop({ required: true })
   userId: string
 
   @Prop({ required: true })
   contactName: string
 
-  @Prop({ required: true, type: String, enum: SexType })
-  sex: AddressInterface['sex']
+  @Prop({ required: true, type: String, enum: User['sex'] })
+  sex: User['sex']
 
   @Prop({ required: true })
   phoneNumber: string
@@ -25,10 +24,7 @@ export class Address extends AddressSchemas implements Omit<AddressInterface, 'l
 
   @Prop({ default: false })
   isDefault: boolean
-
-  @Prop({ required: true })
-  details: string
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address)
-AddressSchema.index({ location: '2dsphere' }, {name: 'AddressLocationIndex'})
+AddressSchema.index({ location: '2dsphere' }, { name: 'AddressLocationIndex' })

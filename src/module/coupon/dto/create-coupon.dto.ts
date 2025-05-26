@@ -1,7 +1,8 @@
+import { OmitType } from '@nestjs/mapped-types'
 import { IsString, IsNumber, IsDate, IsBoolean, IsNotEmpty } from 'class-validator'
-import { CouponInterface, CouponType } from '../interface/coupon.interface'
+import { Coupon } from '../schemas/coupon.schema'
 
-export class CreateCouponDto implements CouponInterface {
+export class CreateCouponDto extends OmitType(Coupon, []) {
   /** 优惠券名称 */
   @IsString()
   @IsNotEmpty()
@@ -14,16 +15,18 @@ export class CreateCouponDto implements CouponInterface {
 
   /** 优惠券折扣 */
   @IsNumber()
+  @IsNotEmpty()
   discount: number
 
   /** 优惠券固定金额 */
-  @IsNumber() 
-  discountFixed?: number  
+  @IsNumber()
+  @IsNotEmpty()
+  discountFixed: number  
 
   /** 优惠券类型 */
   @IsString()
   @IsNotEmpty()
-  type: CouponType
+  type: Coupon['type']
 
   /** 优惠券使用的最小金额 */
   @IsNumber()

@@ -7,8 +7,7 @@ import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { CaptchaService } from '@/module/captcha/captcha.service'
 import { User } from './schemas/user.schema'
 import { CreateUserDto, CreateAdminDto } from './dto/create-user.dto'
-import { UserCreatedResponseDto } from './dto/user-created-response.dto'
-import { UserFoundOneResponseDto } from './dto/user-found-response.dto'
+import { UserFoundOneResponseDto, UserSearchResponseDto } from './dto/user-found-response.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import logger from '@/common/utils/logger'
 import { selectForm } from '@/common/constants/user'
@@ -21,12 +20,14 @@ export class UserService {
     private readonly captchaService: CaptchaService
   ) {}
 
-  async createUser(params: CreateUserDto): Promise<UserCreatedResponseDto> {
-    const { _id } = await this.userModel.create(params)
-    return { id: _id.toString() }
+  async createUser(params: CreateUserDto) {
+    return await this.userModel.create({
+      ...params,
+      role: [ROLE.USER]
+    })
   }
 
-  async createAdmin(params: CreateAdminDto): Promise<UserCreatedResponseDto> {
+  async createAdmin(params: CreateAdminDto) {
     const { captchaKey, captchaVal, ...rest } = params
     const captcha = this.captchaService.verifyCaptcha(captchaKey, captchaVal)
     if (!captcha) {
@@ -48,8 +49,7 @@ export class UserService {
         password: _password,
         role: [ROLE.STAFF]
       }
-      const { id } = await this.userModel.create(dto)
-      return { id }
+      return await this.userModel.create(dto)
     } catch (error) {
       throw new HttpException(
         ERROR_MESSAGE.CREATE_USER_ERROR,
@@ -59,11 +59,12 @@ export class UserService {
   }
 
   async getUserInfo(id: string): Promise<UserFoundOneResponseDto> {
-    const doc = await this.userModel.findById(id).select(selectForm)
-    if (!doc) {
+    try {
+      return await this.userModel.findById(id).select(selectForm)
+    } catch (error) {
+      logger.error(error)
       throw new HttpException(ERROR_MESSAGE.USER_NOT_FOUND, ERROR_MESSAGE.USER_NOT_FOUND.status)
     }
-    return doc
   }
 
   async search(params: {
@@ -73,7 +74,7 @@ export class UserService {
     role?: ROLE[]
     curPage?: number
     pageSize?: number
-  }) {
+  }): Promise<UserSearchResponseDto> {
     const db = this.userModel
     const { id, username, nickname, role, curPage, pageSize } = params
     const query: any = {}
@@ -96,19 +97,16 @@ export class UserService {
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
     return {
-      total,
+      total: total,
       curPage,
       pageSize: pageSize,
       list: data as any
     }
   }
 
-  async update(id: string, params: UpdateUserDto) {
+  async update(id: string, params: UpdateUserDto): Promise<UserFoundOneResponseDto> {
     try {
-      await this.userModel.findByIdAndUpdate(id, params)
-      return {
-        status: 'ok'
-      }
+      return await this.userModel.findByIdAndUpdate(id, params)
     } catch (error) {
       logger.error(error)
       throw new HttpException(
@@ -118,7 +116,7 @@ export class UserService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<Record<never, never>> {
     const doc = await this.userModel.findById(id)
     if (doc.role.includes(ROLE.ADMIN)) {
       throw new HttpException(
@@ -128,9 +126,7 @@ export class UserService {
     }
     try {
       await this.userModel.deleteOne({ id })
-      return {
-        status: 'ok'
-      }
+      return {}
     } catch (error) {
       logger.error(error)
       throw new HttpException(

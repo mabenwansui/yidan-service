@@ -1,43 +1,41 @@
-import { UserInterface } from '../interface/user.interface'
-import { ROLE } from '@/common/constants/role'
-import { MaxLength, MinLength, IsNotEmpty, IsString, IsOptional } from 'class-validator'
+import { PickType } from '@nestjs/mapped-types'
+import { MaxLength, MinLength, IsNotEmpty, IsString, IsOptional, Matches } from 'class-validator'
+import { User } from '../schemas/user.schema'
 
-const maxUsernameLength = 30
-const minUsernameLength = 3
-const maxUserPwdLength = 32
-const minUserPwdLength = 6
+export const maxUsernameLength = 30
+export const minUsernameLength = 3
+export const maxUserPwdLength = 32
+export const minUserPwdLength = 6
 
-const userTitle = '用户名'
-const pwdTitle = '密码'
+export const pwdReg = /^[a-zA-Z0-9_\.@!#$%^&*()\-+=}{[\]|;:'"<>,.?\/]+$/
 
-export class CreateDto implements Omit<UserInterface, 'id' | 'role'> {
-  @IsNotEmpty({ message: `${userTitle}不能为空` })
-  @IsString()
-  @MaxLength(maxUsernameLength, { message: `${userTitle}长度不能超过${maxUsernameLength}` })
-  @MinLength(minUsernameLength, { message: `${userTitle}长度不能少于${minUsernameLength}` })
-  username: string // 用户名
+export class CreateUserDto extends PickType(User, ['username', 'openidMpWx']) {
+  @MaxLength(maxUsernameLength)
+  @MinLength(minUsernameLength)
+  @IsNotEmpty()
+  username: string
 
-  @IsString({ message: '邮箱格式不正确' })
-  @IsOptional()
-  email?: string // 邮箱
-}
-
-export class CreateUserDto extends CreateDto {
   @IsOptional()
   openidMpWx?: string
-  role: ROLE[]
 }
-export class CreateAdminDto extends CreateDto {
-  @IsNotEmpty({ message: `${pwdTitle}不能为空` })
-  @MaxLength(maxUserPwdLength, { message: `${pwdTitle}长度不能超过${maxUserPwdLength}` })
-  @MinLength(minUserPwdLength, { message: `${pwdTitle}长度不能少于${minUserPwdLength}` })
-  password: string // 密码 只能包含字母、数字、下划线、点、@、!、#、$、%、^、&、*、(、)、-、+、=、{、}、[、]、|、;、:、'、"、<、>、?、,、.、/
 
-  @IsString({ message: 'captchaKey不正确' })
+export class CreateAdminDto extends PickType(User, ['username', 'password', 'role']) {
+  @MaxLength(maxUsernameLength)
+  @MinLength(minUsernameLength)
+  @IsNotEmpty()
+  username: string
+
+  @Matches(pwdReg)
+  @MaxLength(maxUserPwdLength)
+  @MinLength(minUserPwdLength)
+  @IsNotEmpty()
+  password: string
+
+  @IsString()
   @IsOptional()
   captchaKey?: string
 
-  @IsString({ message: 'captchaVal不正确' })
+  @IsString()
   @IsOptional()
   captchaVal?: string
 }

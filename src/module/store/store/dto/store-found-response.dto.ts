@@ -1,32 +1,21 @@
 import { Expose, Type, Transform } from 'class-transformer'
-import { Types } from 'mongoose'
-import { OwnerPopulate, StoreInterface } from '../interface/store.interface'
+import { OmitType } from '@nestjs/mapped-types'
 import { PageBaseResponseDto } from '@/common/dto/page-base.dto'
+import { toId } from '@/common/utils/transform'
+import { UserFoundOneResponseDto } from '@/module/user/dto/user-found-response.dto'
+import { Store } from '../schemas/store.schema'
 
-class OwnerPopulateDto implements OwnerPopulate {
+export class StoreFoundOneResponseDto extends OmitType(Store, ['owner']) {
   @Expose()
-  _id: Types.ObjectId
-  @Expose()
-  username?: string
-  @Expose()
-  nickname?: string
-  @Expose()
-  email?: string
-  @Expose()
-  phoneNumber?: string
-}
-
-export class StoreFoundOneResponseDto implements Omit<StoreInterface, 'owner'> {
-  @Expose()
-  @Transform(({ obj }) => obj._id.toString())
+  @Transform(toId)
   id: string
 
   @Expose()
   name: string
 
   @Expose()
-  @Type(() => OwnerPopulateDto)
-  owner: OwnerPopulateDto[]
+  @Type(() => UserFoundOneResponseDto)
+  owner: UserFoundOneResponseDto[]
 
   @Expose()
   imgNames?: string[]
@@ -47,7 +36,7 @@ export class StoreFoundOneResponseDto implements Omit<StoreInterface, 'owner'> {
   poiAddress: string
 
   @Expose()
-  details?: string
+  details: string
 
   @Expose()
   lon: number
@@ -56,7 +45,7 @@ export class StoreFoundOneResponseDto implements Omit<StoreInterface, 'owner'> {
   lat: number
 }
 
-export class SearchResponse extends PageBaseResponseDto {
+export class StoreSearchResponseDto extends PageBaseResponseDto {
   @Expose()
   @Type(() => StoreFoundOneResponseDto)
   list: StoreFoundOneResponseDto[]

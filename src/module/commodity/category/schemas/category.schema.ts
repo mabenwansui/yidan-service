@@ -33,3 +33,6 @@ CategorySchema.pre(['deleteOne', 'findOneAndDelete'], async function (next) {
   }
   return next()
 })
+CategorySchema.index({
+  title: 'text'
+})

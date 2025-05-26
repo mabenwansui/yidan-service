@@ -1,3 +1,8 @@
+import { Expose, Transform } from 'class-transformer'
+import { toId } from '@/common/utils/transform'
+
 export class StoreCreatedResponseDto {
-  id: string // 用户ID
+  @Expose()
+  @Transform(toId)
+  id?: string
 }

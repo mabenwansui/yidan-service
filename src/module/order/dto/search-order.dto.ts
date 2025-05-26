@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional } from 'class-validator'
-import { ORDER_STATUS } from '../interface/order.interface'
+import { ORDER_STATUS } from '../schemas/order.schema'
 
 export class SearchOrderDto {
   /** 店铺ID */

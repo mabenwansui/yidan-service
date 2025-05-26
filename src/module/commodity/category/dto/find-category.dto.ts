@@ -1,6 +1,6 @@
 import { IsOptional } from 'class-validator'
 
-export class FoundCategoryDto {
+export class SearchCategoryDto {
   @IsOptional()
   hasRootCategory?: boolean
 }

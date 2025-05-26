@@ -1,8 +1,6 @@
-import { UserInterface } from '../interface/user.interface'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty } from 'class-validator'
 
-export class DeleteUserDto implements Partial<UserInterface> {
-  @IsString()
+export class DeleteUserDto {
   @IsNotEmpty()
   id: string
 }

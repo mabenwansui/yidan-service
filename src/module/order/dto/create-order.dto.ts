@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsArray, ValidateNested, IsOptional, IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
-import { OrderInterface } from '../interface/order.interface'
 
 export class CommodityDto {
   @IsNotEmpty()
@@ -11,7 +10,7 @@ export class CommodityDto {
   quantity: number
 }
 
-export class CreateOrderDto implements Pick<OrderInterface, 'table_number'> {
+export class CreateOrderDto {
   /** 店铺 */
   @IsNotEmpty()
   storeId: string
@@ -20,7 +19,7 @@ export class CreateOrderDto implements Pick<OrderInterface, 'table_number'> {
   @IsOptional()
   table_number?: string
 
-  @ValidateNested({ each: true })
+  @ValidateNested({ each: true })1
   @Type(() => CommodityDto)
   @IsArray()
   @IsNotEmpty()

@@ -1,3 +1,12 @@
+import { ROLE } from '@/common/constants/role'
+import { Expose, Transform } from 'class-transformer'
+import { toId } from '@/common/utils/transform'
+
 export class UserCreatedResponseDto {
-  id: string // 用户ID
+  @Expose()
+  @Transform(toId)
+  id?: string  
+
+  @Expose()
+  role: ROLE[]
 }

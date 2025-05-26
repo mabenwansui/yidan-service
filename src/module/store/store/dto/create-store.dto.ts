@@ -1,10 +1,13 @@
-import { StoreInterface } from '../interface/store.interface'
 import { IsString, IsArray, IsOptional, IsNotEmpty, IsBoolean } from 'class-validator'
-import { AddressLocationDto } from '@/common/dto/address.dto'
+import { PickType, IntersectionType } from '@nestjs/mapped-types'
+import { AddressLocationBaseDto } from '@/common/dto/address-base.dto'
+import { Store } from '../schemas/store.schema'
 
-export class CreateStoreDto extends AddressLocationDto implements Omit<StoreInterface, 'owner'> {
+export class CreateStoreDto extends IntersectionType(
+  AddressLocationBaseDto,
+  PickType(Store, ['name', 'imgNames', 'coverImageUrl', 'description', 'open', 'details'] as const)
+) {
   /** 项目名称 */
-  @IsString()
   @IsNotEmpty()
   name: string
 

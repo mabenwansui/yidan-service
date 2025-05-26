@@ -1,20 +1,12 @@
 import { MaxLength, IsNotEmpty, IsEnum, IsOptional } from 'class-validator'
+import { IntersectionType, OmitType } from '@nestjs/mapped-types'
 import { presets } from '@/common/constants/valid'
-import {
-  OrderInterface,
-  ORDER_TYPE,
-  ORDER_STATUS,
-  PAYMENT_TYPE,
-  PAYMENT_STATUS
-} from '../interface/order.interface'
+import { Order, ORDER_STATUS, ORDER_TYPE, PAYMENT_STATUS, PAYMENT_TYPE } from '../schemas/order.schema'
 import { CreateOrderDto } from './create-order.dto'
 
 const { maxDescriptionLength } = presets
 
-export class SubmitOrderDto
-  extends CreateOrderDto
-  implements Omit<OrderInterface, 'user' | 'table_number' | 'commoditys' | 'originalAmount' | 'store'>
-{
+export class SubmitOrderDto extends IntersectionType(CreateOrderDto, OmitType(Order, [])) {
   /** 订单ID */
   @IsNotEmpty()
   orderId: string
@@ -22,21 +14,21 @@ export class SubmitOrderDto
   /** 订单状态 */
   @IsEnum(ORDER_STATUS)
   @IsNotEmpty()
-  orderStatus: OrderInterface['orderStatus']
+  orderStatus: ORDER_STATUS
 
   /** 订单类型 */
   @IsEnum(ORDER_TYPE)
   @IsNotEmpty()
-  orderType: OrderInterface['orderType']
+  orderType: ORDER_TYPE
 
   /** 支付类型 */
   @IsEnum(PAYMENT_TYPE)
   @IsNotEmpty()
-  paymentType: OrderInterface['paymentType']
+  paymentType: PAYMENT_TYPE
 
   /** 支付状态 */
   @IsEnum(PAYMENT_STATUS)
-  paymentStatus: OrderInterface['paymentStatus']
+  paymentStatus: PAYMENT_STATUS
 
   /** 完成时间 */
   @IsOptional()

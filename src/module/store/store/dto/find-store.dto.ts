@@ -1,4 +1,4 @@
-import { IsOptional } from 'class-validator'
+import { IsOptional, IsNumber, IsNotEmpty } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 
 export class SearchStoreDto extends PageBaseDto {
@@ -13,4 +13,16 @@ export class SearchStoreDto extends PageBaseDto {
     this.curPage = 1
     this.pageSize = 100
   }
+}
+
+export class findNearStoreDto {
+  /** 经度 */
+  @IsNumber()
+  @IsNotEmpty()
+  lon: number
+
+  /** 纬度 */
+  @IsNumber()
+  @IsNotEmpty()
+  lat: number
 }

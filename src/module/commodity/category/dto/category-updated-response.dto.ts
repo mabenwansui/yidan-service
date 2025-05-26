@@ -1,3 +1,3 @@
-import { BaseResponse } from './base-response'
+import { CategoryFoundOneResponse } from './category-found-response.dto'
 
-export class CategoryUpdatedResponseItem extends BaseResponse {}
+export class CategoryUpdatedResponseItem extends CategoryFoundOneResponse {}
