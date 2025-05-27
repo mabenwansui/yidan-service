@@ -40,7 +40,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ strategy: 'excludeAll', type: UserSearchResponseDto })
   @Auth()
-  @Post('search-all')
+  @Post('superadmin/search')
   async searchAdmin(@Body() searchAdminDto: SearchAdminDto) {
     const { role, ...rest } = searchAdminDto
     const _role = role ? role.filter((item) => item !== ROLE.SUPER_ADMIN) : [ROLE.ADMIN, ROLE.STAFF]

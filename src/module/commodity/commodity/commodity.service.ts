@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
 import { Category } from '@/module/commodity/category/schemas/category.schema'
+import { CategoryService } from '@/module/commodity/category/category.service'
 import { Commodity } from './schemas/commodity.schema'
 import { CreateCommodityDto } from './dto/create-commodity.dto'
 import { SearchCommodityDto } from './dto/find-commodity.dto'
@@ -15,7 +16,8 @@ import { DeleteCommodityDto } from './dto/delete-commodity.dto'
 export class CommodityService {
   constructor(
     @InjectModel(Commodity.name)
-    private readonly commodityModel: Model<Commodity>
+    private readonly commodityModel: Model<Commodity>,
+    private readonly categoryService: CategoryService
   ) {}
 
   async create(createCommodityDto: CreateCommodityDto): Promise<CommodityCreatedResponseDto> {
@@ -52,7 +54,9 @@ export class CommodityService {
       query.name = id
     }
     if (categoryId) {
-      query.category = categoryId
+      const ids = await this.categoryService.getCateoryAncestors(categoryId)
+      // debugger
+      query.category = { $in: ids }
     }
     const total = await db.countDocuments(query)
     const data = await db

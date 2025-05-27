@@ -24,7 +24,15 @@ export class StoreService {
   }
 
   async create(params: CreateStoreDto) {
-    return await this.StoreModel.create(params)
+    const { lon, lat, ...rest } = params
+    const location = {
+      type: 'Point',
+      coordinates: [lon, lat]
+    }
+    return await this.StoreModel.create({
+      location,
+      ...rest
+    })
   }
 
   async update(params: UpdateStoreDto) {
