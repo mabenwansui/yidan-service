@@ -249,7 +249,7 @@ export class CategoryService {
     return {}
   }
 
-  async getCateoryAncestors(categoryId: string) {
+  async getCateoryContainsChildren(categoryId: string) {
     const db = this.categoryModel
     const result: string[] = [categoryId]
     const doc = await db.findById(categoryId)

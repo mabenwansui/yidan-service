@@ -4,10 +4,9 @@ import { Model, Types } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
 import { Branch } from './schemas/branch.schema'
 import { CreateBranchDto } from './dto/create-branch.dto'
-import { BranchCreatedResponseDto } from './dto/branch-created-response.dto'
 import { SearchBranchDto } from './dto/find-branch.dto'
 import { UpdateBranchDto } from './dto/update-branch.dto'
-import { BranchSearchedResponseDto } from './dto/branch-found-response.dto'
+import { BranchSearchedByStoreResponseDto } from './dto/branch-found-response.dto'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -39,7 +38,7 @@ export class BranchService {
     return await this.branchModel.findByIdAndDelete(id)
   }
 
-  async searchCommodity(params: SearchBranchDto): Promise<BranchSearchedResponseDto> {
+  async searchCommodity(params: SearchBranchDto): Promise<BranchSearchedByStoreResponseDto> {
     const db = this.branchModel
     const {
       curPage = 1,
@@ -82,18 +81,6 @@ export class BranchService {
       { $sort: { createdAt: -1 } },     
       { $skip: Math.max(curPage - 1, 0) * pageSize },
       { $limit: pageSize },
-      {
-        $project: {
-          'commodity.id': '$commodity._id',
-          'commodity.name': 1,
-          'commodity.category.title': 1,
-          'commodity.category.id': '$commodity.category._id',
-          stockConunt: 1,
-          soldCount: 1,
-          price: 1,
-          isOnShelf: 1
-        }
-      }      
     ]
     const [data, total] = await Promise.all([
       db.aggregate(pipeline),

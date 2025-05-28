@@ -13,7 +13,7 @@ import { CreateBranchDto } from './dto/create-branch.dto'
 import { SearchBranchDto } from './dto/find-branch.dto'
 import { UpdateBranchDto } from './dto/update-branch.dto'
 import { DeleteBranchDto } from './dto/delete-branch.dto'
-import { BranchSearchedResponseDto } from './dto/branch-found-response.dto'
+import { BranchSearchedByStoreResponseDto } from './dto/branch-found-response.dto'
 import { BranchCreatedResponseDto } from './dto/branch-created-response.dto'
 
 @Controller('branch')
@@ -42,10 +42,10 @@ export class BranchController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll', type: BranchSearchedResponseDto })
+  @SerializeOptions({ strategy: 'excludeAll', type: BranchSearchedByStoreResponseDto })
   @Auth(ROLE.ADMIN)
   @Post('search-commodity')
-  async search(@Body() searchBranchDto: SearchBranchDto): Promise<BranchSearchedResponseDto> {
+  async search(@Body() searchBranchDto: SearchBranchDto): Promise<BranchSearchedByStoreResponseDto> {
     return await this.branchService.searchCommodity(searchBranchDto)
   }
 }

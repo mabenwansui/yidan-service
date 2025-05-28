@@ -54,8 +54,7 @@ export class CommodityService {
       query.name = id
     }
     if (categoryId) {
-      const ids = await this.categoryService.getCateoryAncestors(categoryId)
-      // debugger
+      const ids = await this.categoryService.getCateoryContainsChildren(categoryId)
       query.category = { $in: ids }
     }
     const total = await db.countDocuments(query)

@@ -36,12 +36,6 @@ export class CommodityFoundOneResponseDto extends OmitType(Commodity, ['category
   coverImageUrl?: string
 
   @Expose()
-  stockConunt?: number
-
-  @Expose()
-  soldCount?: number
-
-  @Expose()
   createdAt?: Date
 
   @Expose()

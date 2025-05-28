@@ -2,26 +2,38 @@ import { Expose, Type, Transform } from 'class-transformer'
 import { OmitType } from '@nestjs/mapped-types'
 import { toId } from '@/common/utils/transform'
 import { PageBaseResponseDto } from '@/common/dto/page-base.dto'
-import { StoreFoundOneResponseDto } from '@/module/store/store/dto/store-found-response.dto'
-import { Commodity } from '@/module/commodity/commodity/schemas/commodity.schema'
+// import { StoreFoundOneResponseDto } from '@/module/store/store/dto/store-found-response.dto'
+import { CommodityFoundOneResponseDto } from '@/module/commodity/commodity/dto/commodity-found-response.dto'
 import { Branch } from '../schemas/branch.schema'
 
-export class BranchFoundOneResponseDto extends OmitType(Branch, ['store', 'commodity']) {
+export class BranchFoundOneByStoreResponseDto extends OmitType(Branch, ['store', 'commodity']) {
   @Expose()
   @Transform(toId)
   id?: string
 
-  @Expose()
-  @Type(() => StoreFoundOneResponseDto)
-  store: StoreFoundOneResponseDto
+  // @Expose()
+  // @Type(() => StoreFoundOneResponseDto)
+  // store: StoreFoundOneResponseDto
 
   @Expose()
-  commodity: Commodity
+  @Type(() => CommodityFoundOneResponseDto)
+  commodity: CommodityFoundOneResponseDto
+
+  @Expose()
+  stockConunt?: number
+
+  @Expose()
+  soldCount?: number
+
+  @Expose()
+  price?: number
+
+  @Expose()
+  isOnShelf?: boolean
 }
 
-
-export class BranchSearchedResponseDto extends PageBaseResponseDto {
+export class BranchSearchedByStoreResponseDto extends PageBaseResponseDto {
   @Expose()
-  @Type(() => BranchFoundOneResponseDto)
-  list: BranchFoundOneResponseDto[]
+  @Type(() => BranchFoundOneByStoreResponseDto)
+  list: BranchFoundOneByStoreResponseDto[]
 }
