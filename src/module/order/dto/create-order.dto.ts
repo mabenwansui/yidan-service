@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsArray, ValidateNested, IsOptional, IsNumber } from 'class-validator'
+import { IsNotEmpty, ValidateNested, IsOptional, IsNumber } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export class CommodityDto {
@@ -21,7 +21,6 @@ export class CreateOrderDto {
 
   @ValidateNested({ each: true })1
   @Type(() => CommodityDto)
-  @IsArray()
   @IsNotEmpty()
   commoditys: CommodityDto[]
 }

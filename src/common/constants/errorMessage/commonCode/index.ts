@@ -61,7 +61,8 @@ const COMMODITY_ERROR_CODE = {
 
 const MAP_ERROR_CODE = {
   /** 获取下一级行政区错误 */
-  GET_DISTRICT_CHILDREN_ERROR: '14100'
+  GET_DISTRICT_CHILDREN_ERROR: '14100',
+  GEO_TO_ADDRESS_ERROR: '14101' // 逆地理编码错误, 请稍后重试
 }
 
 const ADDRESS_ERROR_CODE = {

@@ -13,9 +13,13 @@ export enum ORDER_TYPE {
 export enum ORDER_STATUS {
   /** 待支付 */
   PENDING = 'pending',
+  /** 用户已支付，等待商家接单 */
+  PAID = 'paid',
+  /** 商家已确认并开始准备 */
+  ACCEPTED = 'accepted',
   /** 处理中, 出餐中 */
   PROCESSING = 'processing',
-  /** 待取餐 */
+  /** 餐已备好, 待取 */
   READY = 'ready',
   /** 已取消 */
   CANCELLED = 'cancelled',

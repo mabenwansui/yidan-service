@@ -24,7 +24,7 @@ export class Branch {
   @Prop({ type: Number })
   price?: number
 
-  @Prop({ type: Boolean })
+  @Prop({ type: Boolean, default: false })
   isOnShelf?: boolean
 }
 

@@ -2,6 +2,7 @@ import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
+import { CategoryService } from '@/module/commodity/category/category.service'
 import { Branch } from './schemas/branch.schema'
 import { CreateBranchDto } from './dto/create-branch.dto'
 import { SearchBranchDto } from './dto/find-branch.dto'
@@ -15,7 +16,8 @@ import logger from '@/common/utils/logger'
 export class BranchService {
   constructor(
     @InjectModel(Branch.name)
-    private readonly branchModel: Model<Branch>
+    private readonly branchModel: Model<Branch>,
+    private readonly categoryService: CategoryService
   ) {}
   async create(params: CreateBranchDto) {
     const { commodityId, storeId, ...rest } = params
@@ -26,7 +28,7 @@ export class BranchService {
     })
   }
   async update(params: UpdateBranchDto) {
-    const { id, commodityId, storeId, ...rest } = params    
+    const { id, commodityId, storeId, ...rest } = params
     await this.branchModel.findByIdAndUpdate(id, {
       commodity: commodityId,
       store: storeId,
@@ -49,12 +51,18 @@ export class BranchService {
       isOnShelf
     } = params
 
+    const categoryIds = categoryId
+      ? (await this.categoryService.getCateoryContainsChildren(categoryId)).map(
+          (id) => new Types.ObjectId(id)
+        )
+      : null
+
     const pipeline: any = [
       {
         $match: {
           ...(storeId && { store: new Types.ObjectId(storeId) }),
           ...(commodityId && { commodity: new Types.ObjectId(commodityId) }),
-          ...((isOnShelf !== undefined) && { isOnShelf })
+          ...(isOnShelf !== undefined && { isOnShelf })
         }
       },
       {
@@ -75,12 +83,20 @@ export class BranchService {
         }
       },
       { $unwind: { path: '$commodity.category', preserveNullAndEmptyArrays: true } },
-      ...(categoryId
-        ? [{ $match: { 'commodity.category._id': new Types.ObjectId(categoryId) } }]
+      ...(categoryIds
+        ? [
+            {
+              $match: {
+                'commodity.category._id': {
+                  $in: categoryIds
+                }
+              }
+            }
+          ]
         : []),
-      { $sort: { createdAt: -1 } },     
+      { $sort: { createdAt: -1 } },
       { $skip: Math.max(curPage - 1, 0) * pageSize },
-      { $limit: pageSize },
+      { $limit: pageSize }
     ]
     const [data, total] = await Promise.all([
       db.aggregate(pipeline),

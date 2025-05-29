@@ -9,7 +9,7 @@ import { CityItem, ResponseDistrictForTianDiTu } from '../interface/map.interfac
 export class TianDiTuService {
   constructor(private readonly httpService: HttpService) {}
 
-  async getchildren(keyword: string): Promise<CityItem[]> {
+  async getDistrictChildren(keyword: string): Promise<CityItem[]> {
     if (!keyword) {
       return provincial
     } else {
@@ -22,7 +22,7 @@ export class TianDiTuService {
           data: ResponseDistrictForTianDiTu
         }>('https://api.tianditu.gov.cn/v2/administrative', {
           params: {
-            tk: process.env.MAP_KEY,
+            tk: process.env.MAP_TIANDITU_KEY,
             keyword: keyword,
             childLevel: 1
           }
@@ -37,7 +37,7 @@ export class TianDiTuService {
         }))
       } else {
         throw new HttpException(
-          ERROR_MESSAGE.GET_DISTRICT_CHILDREN_ERROR,
+          ERROR_MESSAGE.GET_DISTRICT_CHILDREN_ERROR.message,
           ERROR_MESSAGE.GET_DISTRICT_CHILDREN_ERROR.status
         )
       }

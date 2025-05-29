@@ -8,8 +8,8 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "dev": "nest start --watch --env-file .env",
-    "dev:warning": "NODE_OPTIONS='--trace-warnings' nest start --watch --env-file .env",
+    "dev": "NODE_OPTIONS='--no-warnings' nest start --watch --env-file .env",
+    "dev:warning": "NODE_OPTIONS='--trace-warnings' npm run dev",
     "start": "nest start",
     "start:dev": "nest start --watch --env-file .env",
     "start:debug": "nest start --debug --watch",

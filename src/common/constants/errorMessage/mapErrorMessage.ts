@@ -6,5 +6,10 @@ export const MAP_ERROR_MESSAGE = {
     status: HttpStatus.BAD_REQUEST,
     code: ERROR_CODE.GET_DISTRICT_CHILDREN_ERROR,
     message: '获取地区信息失败, 请稍后重试'
+  },
+  GEO_TO_ADDRESS_ERROR: {
+    status: HttpStatus.BAD_REQUEST,
+    code: ERROR_CODE.GEO_TO_ADDRESS_ERROR,
+    message: '获取地址信息失败, 请稍后重试'
   }
 }
