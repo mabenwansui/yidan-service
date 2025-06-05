@@ -43,9 +43,14 @@ export class BranchController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ strategy: 'excludeAll', type: BranchSearchedByStoreResponseDto })
-  @Auth(ROLE.ADMIN)
+  @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('search-commodity')
   async search(@Body() searchBranchDto: SearchBranchDto): Promise<BranchSearchedByStoreResponseDto> {
     return await this.branchService.searchCommodity(searchBranchDto)
+  }
+
+  @Post('category-list')
+  async getCategory() {
+    return await this.branchService.getCategory()
   }
 }

@@ -31,13 +31,6 @@ export class CreateCommodityDto extends OmitType(Commodity, ['category']) {
   @IsOptional()
   tags?: [string]
 
-  /** 原价 */
-  @Min(0, { message: '原价不能为负数' })
-  @IsNumber({}, { message: '原价必须是数字' })
-  @Type(() => Number)
-  @IsOptional()
-  originalPrice?: number
-
   /** 商品描述 */
   @MaxLength(presets.maxDescriptionLength, {
     message: `商品描述不能超过${maxDescriptionLength}个字`
@@ -66,17 +59,4 @@ export class CreateCommodityDto extends OmitType(Commodity, ['category']) {
   /** 商品封面图 */
   @IsOptional()
   coverImageUrl?: string
-
-  /** 商品库存 */
-  @Min(0, { message: '商品库存不能为负数' })
-  @IsNumber({}, { message: '商品库存必须是数字' })
-  @IsOptional()
-  stockConunt?: number
-
-  /** 已售 */
-  @Min(0, { message: '已售不能为负数' })
-  @IsNumber({}, { message: '已售必须是数字' })
-  @Type(() => Number)
-  @IsOptional()
-  soldCount?: number
 }

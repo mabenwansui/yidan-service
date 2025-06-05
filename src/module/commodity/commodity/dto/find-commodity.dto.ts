@@ -2,7 +2,7 @@ import { IsNotEmpty, IsOptional } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
 
 export class FindOneCommodityDto {
-  @IsNotEmpty()
+  @IsOptional()
   id?: string
 
   @IsOptional()
@@ -10,7 +10,7 @@ export class FindOneCommodityDto {
 }
 
 export class SearchCommodityDto extends PageBaseDto {
-  @IsNotEmpty()
+  @IsOptional()
   id?: string
 
   @IsOptional()

@@ -2,6 +2,7 @@ import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
+import { CommodityService } from '@/module/commodity/commodity/commodity.service'
 import { CategoryService } from '@/module/commodity/category/category.service'
 import { Branch } from './schemas/branch.schema'
 import { CreateBranchDto } from './dto/create-branch.dto'
@@ -17,15 +18,29 @@ export class BranchService {
   constructor(
     @InjectModel(Branch.name)
     private readonly branchModel: Model<Branch>,
-    private readonly categoryService: CategoryService
+    private readonly categoryService: CategoryService,
+    private readonly commodityService: CommodityService
   ) {}
   async create(params: CreateBranchDto) {
     const { commodityId, storeId, ...rest } = params
-    return await this.branchModel.create({
-      commodity: commodityId,
-      store: storeId,
-      ...rest
-    })
+    const commodity = await this.commodityService._find({ _id: commodityId })
+    const categoryId = commodity[0].category._id
+    try {
+      return await this.branchModel.create({
+        category: categoryId,
+        commodity: commodityId,
+        store: storeId,
+        ...rest
+      })
+    } catch (e) {
+      if (e.code === 11000) {
+        logger.error(e)
+        throw new HttpException(
+          ERROR_MESSAGE.CREATE_BRANCH_UNIQUE_ERROR,
+          ERROR_MESSAGE.CREATE_BRANCH_UNIQUE_ERROR.status
+        )
+      }
+    }
   }
   async update(params: UpdateBranchDto) {
     const { id, commodityId, storeId, ...rest } = params
@@ -39,7 +54,6 @@ export class BranchService {
   async delete(id: string) {
     return await this.branchModel.findByIdAndDelete(id)
   }
-
   async searchCommodity(params: SearchBranchDto): Promise<BranchSearchedByStoreResponseDto> {
     const db = this.branchModel
     const {
@@ -108,5 +122,22 @@ export class BranchService {
       pageSize,
       list: data as any
     }
+  }
+  async getCategory() {
+    const category = await this.categoryService.search()
+    const categoryIds = (await this.branchModel.distinct('category')).reduce<any>((o, value) => {
+      o[value.toString()] = true
+      return o
+    }, {})    
+    const categoryFilter = category.filter((item) => {
+      if (item.level === 0) return true
+      return categoryIds[item._id.toString()]
+    })
+    return {
+      list: this.categoryService.transFormFoundData(categoryFilter)[0]?.children || []
+    }
+  }
+  getModel() {
+    return this.branchModel
   }
 }

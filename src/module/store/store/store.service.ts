@@ -6,7 +6,7 @@ import { Model } from 'mongoose'
 import { Store } from './schemas/store.schema'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
-import { SearchStoreDto } from './dto/find-store.dto'
+import { SearchStoreDto, FindNearStoreDto } from './dto/find-store.dto'
 
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import logger from '@/common/utils/logger'
@@ -48,21 +48,18 @@ export class StoreService {
     }
   }
 
-  async getNearOne() {
-    // const { latitude, longitude } = getClosestStoreDto
-    // 利用 MongoDB 的地理空间查询来找到最近的店铺
-    // const result = await this.StoreModel.findOne({
-    //   location: {
-    //     $near: {
-    //       $geometry: {
-    //         type: "Point",
-    //         coordinates: [longitude, latitude]
-    //       }
-    //     }
-    //   }
-    // });
-
-    // return result;
+  async getNearOne(findNearStoreDto: FindNearStoreDto) {
+    const { lon, lat } = findNearStoreDto
+    return await this.StoreModel.findOne({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [lon, lat]
+          }
+        }
+      }
+    }).populate('owner')
   }
 
   async search(params: SearchStoreDto) {

@@ -1,9 +1,17 @@
-import { Body, Controller, Post, Req } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UseInterceptors,
+  SerializeOptions,
+  ClassSerializerInterceptor
+} from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
 import { CartService } from './cart.service'
 import { ChangeCartDto } from './dto/change-cart.dto'
-
+import { CartFoundResponseDto } from './dto/cart-found-response.dto'
 
 @Controller('cart')
 export class CartController {
@@ -21,9 +29,12 @@ export class CartController {
     return await this.cartService.delete(request.user.sub)
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: CartFoundResponseDto })
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('list')
-  async list(@Req() request) {    
-    return await this.cartService.getList(request.user.sub)
+  async list(@Req() request): Promise<CartFoundResponseDto> {
+    return await this.cartService.getList(request.user.sub) as any
   }
 }
+// : Promise<CartFoundResponseDto>

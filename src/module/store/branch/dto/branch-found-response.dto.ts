@@ -11,10 +11,6 @@ export class BranchFoundOneByStoreResponseDto extends OmitType(Branch, ['store',
   @Transform(toId)
   id?: string
 
-  // @Expose()
-  // @Type(() => StoreFoundOneResponseDto)
-  // store: StoreFoundOneResponseDto
-
   @Expose()
   @Type(() => CommodityFoundOneResponseDto)
   commodity: CommodityFoundOneResponseDto
@@ -24,6 +20,9 @@ export class BranchFoundOneByStoreResponseDto extends OmitType(Branch, ['store',
 
   @Expose()
   soldCount?: number
+
+  @Expose()
+  originalPrice?: number
 
   @Expose()
   price?: number

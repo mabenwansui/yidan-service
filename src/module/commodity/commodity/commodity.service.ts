@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
+import { WithMongoId } from '@/common/types/mongo.interface'
 import { Category } from '@/module/commodity/category/schemas/category.schema'
 import { CategoryService } from '@/module/commodity/category/category.service'
 import { Commodity } from './schemas/commodity.schema'
@@ -74,6 +75,6 @@ export class CommodityService {
   }
 
   async _find(query: any) {
-    return await this.commodityModel.find(query)
+    return await this.commodityModel.find(query).populate<{ category: WithMongoId<Category> }>('category')
   }
 }

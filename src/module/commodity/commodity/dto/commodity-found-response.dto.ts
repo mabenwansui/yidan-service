@@ -17,9 +17,6 @@ export class CommodityFoundOneResponseDto extends OmitType(Commodity, ['category
   tags?: [string]
 
   @Expose()
-  originalPrice?: number
-
-  @Expose()
   description?: string
 
   @Expose()

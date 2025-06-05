@@ -8,7 +8,7 @@ import { Store } from '../schemas/store.schema'
 export class StoreFoundOneResponseDto extends OmitType(Store, ['owner']) {
   @Expose()
   @Transform(toId)
-  id: string
+  id?: string
 
   @Expose()
   name: string

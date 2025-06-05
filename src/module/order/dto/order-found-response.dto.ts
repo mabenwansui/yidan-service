@@ -1,16 +1,16 @@
 import { OmitType } from '@nestjs/mapped-types'
 import { Expose, Type, Transform } from 'class-transformer'
 import { toId } from '@/common/utils/transform'
-import { CommodityFoundOneResponseDto } from '@/module/commodity/commodity/dto/commodity-found-response.dto'
 import { UserFoundOneResponseDto } from '@/module/user/dto/user-found-response.dto'
 import { StoreFoundOneResponseDto } from '@/module/store/store/dto/store-found-response.dto'
+import { BranchFoundOneByStoreResponseDto } from '@/module/store/branch/dto/branch-found-response.dto'
 import { CouponFoundResponse } from '@/module/coupon/dto/coupon-found-response'
 import { Order } from '../schemas/order.schema'
 
 class OrderCommoditysDto {
   @Expose()
-  @Type(() => CommodityFoundOneResponseDto)
-  commodity: CommodityFoundOneResponseDto
+  @Type(() => BranchFoundOneByStoreResponseDto)
+  branch: BranchFoundOneByStoreResponseDto
 
   @Expose()
   quantity: number
@@ -19,7 +19,7 @@ class OrderCommoditysDto {
 export class OrderFoundOneResponseDto extends OmitType(Order, []) {
   @Expose()
   @Transform(toId)
-  id: string
+  id?: string
 
   @Expose()
   orderId: string

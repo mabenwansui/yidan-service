@@ -15,7 +15,7 @@ export class SearchStoreDto extends PageBaseDto {
   }
 }
 
-export class findNearStoreDto {
+export class FindNearStoreDto {
   /** 经度 */
   @IsNumber()
   @IsNotEmpty()

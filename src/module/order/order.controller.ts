@@ -1,7 +1,16 @@
-import { Post, Controller, Body, Req } from '@nestjs/common'
+import {
+  Post,
+  Controller,
+  Body,
+  Req,
+  UseInterceptors,
+  SerializeOptions,
+  ClassSerializerInterceptor
+} from '@nestjs/common'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { SubmitOrderDto } from './dto/submit-order.dto'
 import { SearchOrderDto, FindOneOrderDto } from './dto/find-order.dto'
+import { OrderFoundOneResponseDto } from './dto/order-found-response.dto'
 import { OrderService } from './order.service'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
@@ -28,7 +37,11 @@ export class OrderController {
     return await this.orderService.getOrderList(searchOrderDto)
   }
 
-  async getOrder(@Body() findOneOrderDto: FindOneOrderDto) {
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: OrderFoundOneResponseDto })
+  @Auth(ROLE.ADMIN, ROLE.USER)
+  @Post('get-info')
+  async getOrder(@Body() findOneOrderDto: FindOneOrderDto): Promise<OrderFoundOneResponseDto> {
     const { orderId } = findOneOrderDto
     return await this.orderService.getOrder(orderId)
   }

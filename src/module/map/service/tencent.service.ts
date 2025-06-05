@@ -38,30 +38,49 @@ export interface GeoToAddressResponse {
   }
 }
 
+export interface Response {
+  /** 国家 */
+  nation: string
+  /** 省 */
+  province: string
+  /** 市 */
+  city: string
+  /** 区 */
+  district: string
+  /** 街道 */
+  street: string
+  /** 门牌号 */
+  street_number: string
+}
+
 @Injectable()
 export class TencentService {
   constructor(private readonly httpService: HttpService) {}
-  async geoToAddress(props: GeoToAddressProps): Promise<GeoToAddressResponse> {
-    const { location: { lon, lat } } = props
+  async geoToAddress(props: GeoToAddressProps): Promise<Response> {
+    const {
+      location: { lon, lat }
+    } = props
     /**
      * 腾讯地图逆地址解析
      * API文档：https://lbs.qq.com/service/webService/webServiceGuide/address/Gcoder
      */
     const { status, data } = await firstValueFrom(
-      this.httpService.get<{
-        data: GeoToAddressResponse
-      }>('https://apis.map.qq.com/ws/geocoder/v1', {
-        params: {
-          key: process.env.MAP_TENCENT_KEY,
-          location: `${lat},${lon}`,
+      this.httpService.get<{ result: GeoToAddressResponse }>(
+        'https://apis.map.qq.com/ws/geocoder/v1',
+        {
+          params: {
+            key: process.env.MAP_TENCENT_KEY,
+            location: `${lat},${lon}`
+          }
         }
-      })
+      )
     )
     if (status === 200) {
-      return data.data
+      const { nation, province, city, district, street, street_number } = data.result.address_component
+      return { nation, province, city, district, street, street_number }
     } else {
       throw new HttpException(
-        ERROR_MESSAGE.GEO_TO_ADDRESS_ERROR.message,
+        ERROR_MESSAGE.GEO_TO_ADDRESS_ERROR,
         ERROR_MESSAGE.GEO_TO_ADDRESS_ERROR.status
       )
     }

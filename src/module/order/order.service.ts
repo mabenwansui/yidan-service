@@ -3,13 +3,32 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { generateOrderId } from '@/common/utils/generateuuid'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
-import { Order, ORDER_STATUS, ORDER_TYPE, PAYMENT_STATUS, PAYMENT_TYPE } from './schemas/order.schema'
+import {
+  Order,
+  ORDER_STATUS,
+  ORDER_TYPE,
+  PAYMENT_STATUS,
+  PAYMENT_TYPE
+} from './schemas/order.schema'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { SubmitOrderDto } from './dto/submit-order.dto'
 import { SearchOrderDto } from './dto/find-order.dto'
-import { OrderFoundOneResponseDto } from './dto/order-found-response.dto'
 import { MessageService } from '@/module/message/message.service'
-import { CommodityService } from '@/module/commodity/commodity/commodity.service'
+import { BranchService } from '@/module/store/branch/branch.service'
+
+const populate = [
+  { path: 'store', populate: { path: 'owner', select: '-password' } },
+  { path: 'user', select: '-openidMpWx' },
+  { path: 'coupon' },
+  {
+    path: 'commoditys',
+    populate: {
+      path: 'branch',
+      select: '-store -category',
+      populate: { path: 'commodity', populate: { path: 'category' } }
+    }
+  }
+]
 
 @Injectable()
 export class OrderService {
@@ -17,34 +36,40 @@ export class OrderService {
     @InjectModel(Order.name)
     private readonly orderModel: Model<Order>,
     private readonly messageService: MessageService,
-    private readonly commodityService: CommodityService
+    private readonly branchService: BranchService
   ) {}
 
-  private async formatCommodity(commodity: CreateOrderDto['commoditys']) {
-    const doc = await this.commodityService._find({
-      _id: { $in: commodity.map((item) => item.commodityId) }
+  private async calculateAmount(commoditys: CreateOrderDto['commoditys']) {
+    const branchDB = this.branchService.getModel()
+    const branches = await branchDB
+      .find({ _id: { $in: commoditys.map((item) => item.branchId) } })
+      .lean()    
+    let originalAmount = 0
+    let actualAmount = 0
+    commoditys.forEach((item) => {
+      const branch = branches.find((branch) => branch._id.toString() === (item.branchId as string))
+      originalAmount += branch.originalPrice * item.quantity
+      actualAmount += branch.price * item.quantity
     })
-    return doc.map((item, index) => ({
-      name: item.name,
-      category: item.category,
-      quantity: commodity[index].quantity
-    }))
+    return { originalAmount, actualAmount }
   }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string): Promise<any> {
     const { commoditys, storeId, table_number } = createOrderDto
-    const _commoditys = await this.formatCommodity(commoditys)
+    const { originalAmount, actualAmount } = await this.calculateAmount(commoditys)    
     const data = {
       orderId: generateOrderId(),
       user: userId,
       store: storeId,
       orderStatus: ORDER_STATUS.PENDING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
-      commoditys: commoditys.map((item)=> ({
-        id: item.commodityId,
-        quantity: item.quantity
-      })),
-      // originalAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0)      
+      commoditys: commoditys.map((item) => {
+        const { branchId, ...rest } = item
+        return { branch: branchId, ...rest }
+      }),
+      table_number,
+      originalAmount,
+      actualAmount
     }
     const order = await this.orderModel.create(data)
     return { id: order.id }
@@ -52,7 +77,6 @@ export class OrderService {
 
   async submitOrder(submitOrderDto: SubmitOrderDto, userId: string) {
     const { orderId, commoditys, ...rest } = submitOrderDto
-    const _commoditys = await this.formatCommodity(commoditys)
     const data = {
       orderStatus: ORDER_STATUS.PROCESSING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
@@ -71,11 +95,8 @@ export class OrderService {
     return await this.orderModel.find(query)
   }
 
-  async getOrder(orderId: string): Promise<OrderFoundOneResponseDto> {
-    return (await this.orderModel.findById(orderId)).populate({
-      path: 'user',
-      select: 'nickname phoneNumber'
-    })
+  async getOrder(orderId: string) {
+    return await this.orderModel.findById(orderId).populate<any>(populate)
   }
 
   async updateOrder(): Promise<any> {}

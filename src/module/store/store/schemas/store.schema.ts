@@ -27,4 +27,4 @@ export class Store extends AddressSchemas {
 
 export const StoreSchema = SchemaFactory.createForClass(Store)
 
-StoreSchema.index({ location: '2dsphere' }, { name: 'StoreLocationIndex' })
+StoreSchema.index({ location: '2dsphere' })

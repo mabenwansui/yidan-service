@@ -12,9 +12,9 @@ import { StoreService } from './store.service'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
 import { DeleteStoreDto } from './dto/delete-store.dto'
-import { SearchStoreDto } from './dto/find-store.dto'
+import { SearchStoreDto, FindNearStoreDto} from './dto/find-store.dto'
 import { StoreCreatedResponseDto } from './dto/store-created-response.dto'
-import { StoreSearchResponseDto } from './dto/store-found-response.dto'
+import { StoreSearchResponseDto, StoreFoundOneResponseDto } from './dto/store-found-response.dto'
 
 @Controller('store')
 export class StoreController {
@@ -41,9 +41,12 @@ export class StoreController {
     return await this.storeService.delete(id)
   }
 
-  @Auth()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: StoreFoundOneResponseDto })
   @Post('get-near')
-  async getNear(@Body() getBranchDto) {}
+  async getNear(@Body() findNearStoreDto: StoreFoundOneResponseDto) {
+    return await this.storeService.getNearOne(findNearStoreDto)
+  }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ strategy: 'excludeAll', type: StoreSearchResponseDto })

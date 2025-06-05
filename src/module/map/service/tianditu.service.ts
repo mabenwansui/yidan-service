@@ -37,7 +37,7 @@ export class TianDiTuService {
         }))
       } else {
         throw new HttpException(
-          ERROR_MESSAGE.GET_DISTRICT_CHILDREN_ERROR.message,
+          ERROR_MESSAGE.GET_DISTRICT_CHILDREN_ERROR,
           ERROR_MESSAGE.GET_DISTRICT_CHILDREN_ERROR.status
         )
       }

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
+import { CartItem } from '@/module/cart/schemas/cart.schema'
 
 export enum ORDER_TYPE {
   /** 堂食 */
@@ -53,13 +54,6 @@ export enum PAYMENT_STATUS {
 
 export type OrderDocument = HydratedDocument<Order>
 
-class OrderCommoditysSchema {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Commodity' })
-  commodity: Types.ObjectId
-  @Prop({ required: true, type: Number, min: 1 })
-  quantity: number
-}
-
 @Schema({ timestamps: true })
 export class Order {
   @Prop({ required: true, unique: true })
@@ -101,8 +95,8 @@ export class Order {
   @Prop()
   remark?: string // 备注
 
-  @Prop({ type: [OrderCommoditysSchema], default: [] })
-  commoditys: OrderCommoditysSchema[]
+  @Prop({ type: [CartItem], default: [] })
+  commoditys: CartItem[]
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)

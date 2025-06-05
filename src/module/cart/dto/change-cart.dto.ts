@@ -2,7 +2,7 @@ import { IsNotEmpty } from 'class-validator'
 
 export class ChangeCartDto {
   @IsNotEmpty()
-  commodityId?: string
+  branchId: string
 
   @IsNotEmpty()
   quantity: number

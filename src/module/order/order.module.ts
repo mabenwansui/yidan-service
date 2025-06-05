@@ -4,12 +4,12 @@ import { Order, OrderSchema } from './schemas/order.schema'
 import { OrderController } from './order.controller'
 import { OrderService } from './order.service'
 import { MessageModule } from '@/module/message/message.module'
-import { CommodityModule } from '@/module/commodity/commodity.module'
+import { BranchModule } from '@/module/store/branch/branch.module'
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
-    CommodityModule,
+    BranchModule,
     MessageModule
   ],
   controllers: [OrderController],

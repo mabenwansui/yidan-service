@@ -18,24 +18,7 @@ import { OrderModule } from '@/module/order/order.module'
 import { MessageModule } from '@/module/message/message.module'
 import { CouponModule } from '@/module/coupon/coupon.module'
 import { AddressModule } from '@/module/address/address.module'
-
-const mongooseModuleOptions = {
-  connectionFactory: (connection) => {
-    connection.plugin((schema) => {
-      schema.set('toJSON', {
-        versionKey: true,
-        transform: (doc, ret) => {
-          const { _id, ...rest } = ret
-          return {
-            id: _id,
-            ...rest
-          }
-        }
-      })
-    })
-    return connection
-  }
-}
+import { TagModule } from '@/module/tag/tag.module'
 
 @Module({
   imports: [
@@ -53,6 +36,7 @@ const mongooseModuleOptions = {
     OrderModule,
     CouponModule,
     AddressModule,
+    TagModule,
     MockModule
   ],
   providers: [

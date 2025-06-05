@@ -1,11 +1,9 @@
-import { IsNotEmpty, ValidateNested, IsOptional, IsNumber } from 'class-validator'
+import { IsNotEmpty, ValidateNested, IsOptional } from 'class-validator'
 import { Type } from 'class-transformer'
 
-export class CommodityDto {
+class CommodityItem {
   @IsNotEmpty()
-  commodityId: string;
-
-  @IsNumber()
+  branchId: string
   @IsNotEmpty()
   quantity: number
 }
@@ -19,8 +17,8 @@ export class CreateOrderDto {
   @IsOptional()
   table_number?: string
 
-  @ValidateNested({ each: true })1
-  @Type(() => CommodityDto)
+  @ValidateNested({ each: true })
+  @Type(() => CommodityItem)
   @IsNotEmpty()
-  commoditys: CommodityDto[]
+  commoditys: CommodityItem[]
 }

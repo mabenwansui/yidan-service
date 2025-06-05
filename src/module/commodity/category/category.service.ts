@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { insertAfter } from '@/common/utils/array'
 import logger from '@/common/utils/logger'
+import { WithMongoId } from '@/common/types/mongo.interface'
 import { Category } from './schemas/category.schema'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
@@ -15,8 +16,6 @@ import {
   CategorySearchResponseDto,
   CategoryFoundOneResponse
 } from './dto/category-found-response.dto'
-
-type ICategory = Category & { id: string }
 
 @Injectable()
 export class CategoryService {
@@ -32,45 +31,52 @@ export class CategoryService {
     }
   }
 
-  private async search(query: any = {}): Promise<CategorySearchResponseDto> {
-    const foundDatas = (await this.categoryModel.find(query)) as ICategory[]
-    if (foundDatas.length === 0) {
-      return { list: [] }
-    }
-    function transFormData(datas: Array<ICategory>) {
-      const rootDatas = new Array<string>()
-      const dataMap = new Map<string, ICategory>()
-      datas.forEach((item) => {
-        const id = item.id
-        dataMap.set(id, item)
-        if (item.level === 0) {
-          rootDatas.push(id)
-        }
-      })
-      function fn(arr: Array<string>) {
-        return arr.map((id) => {
-          const { title, childrenIds, parentId, level } = dataMap.get(id)
+  transFormFoundData(datas: Array<WithMongoId<Category>>) {
+    const rootDatas = new Array<string>()
+    const dataMap = new Map<string, WithMongoId<Category>>()
+    datas.forEach((item) => {
+      const id = item._id.toString()
+      dataMap.set(id, item)
+      if (item.level === 0) {
+        rootDatas.push(id)
+      }
+    })
+    function fn(arr: Array<string>) {
+      return arr
+        .map((id) => {
+          const item = dataMap.get(id)
+          if (!item) return null
+          const { title, childrenIds, parentId, level } = item
           const responseData: CategoryFoundOneResponse = { id, title, parentId, level }
           if (childrenIds?.length > 0) {
             responseData.children = fn(childrenIds)
           }
           return responseData
         })
-      }
-      return fn(rootDatas)
+        .filter((item) => item !== null)
     }
-    return { list: transFormData(foundDatas) }
+    return fn(rootDatas)
+  }
+
+  async search(query: any = {}) {
+    return await this.categoryModel.find(query)
+    // const foundDatas = (await this.categoryModel.find(query)) as ICategory[]
+    // if (foundDatas.length === 0) return { list: [] }
+    // return { list: this.transFormFoundData(foundDatas) }
   }
 
   /** 包含顶级分类 - 全部 */
   async formList(): Promise<CategorySearchResponseDto> {
-    return await this.search()
+    const foundDatas = await this.search()
+    if (foundDatas.length === 0) return { list: [] }
+    return { list: this.transFormFoundData(foundDatas) }
   }
 
   /** 不返回顶级分类 - 全部 */
   async list(): Promise<CategorySearchResponseDto> {
-    const { list } = await this.search()
-    return { list: list[0]?.children || [] }
+    const foundDatas = await this.search()
+    if (foundDatas.length === 0) return { list: [] }
+    return { list: this.transFormFoundData(foundDatas)[0]?.children || [] }
   }
 
   async create(

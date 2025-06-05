@@ -12,6 +12,11 @@ export class CreateBranchDto extends OmitType(Branch, ['store', 'commodity']) {
   @Min(0)
   @IsNumber()
   @IsOptional()
+  originalPrice?: number
+
+  @Min(0)
+  @IsNumber()
+  @IsOptional()
   price?: number
 
   @Min(0)

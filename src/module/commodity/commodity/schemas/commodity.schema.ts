@@ -17,9 +17,6 @@ export class Commodity {
   @Prop()
   coverImageUrl?: string // 封面图
 
-  @Prop({ type: Number, min: 0 })
-  originalPrice?: number // 原价
-
   @Prop()
   description?: string // 描述
 
@@ -31,7 +28,7 @@ export class Commodity {
 }
 
 export const CommoditySchema = SchemaFactory.createForClass(Commodity)
-CommoditySchema.index({
-  category: 1,
-  name: 'text'
-})
+CommoditySchema.index({ name: 'text', createdAt: -1 })
+CommoditySchema.index({ category: 1, createdAt: -1 })
+  
+
