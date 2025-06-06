@@ -9,11 +9,12 @@ import {
 } from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
+import { TagService } from './tag.service'
 import { TagCreatedResponseDto } from './dto/tag-created-response.dto'
 import { CreateTagDto } from './dto/create-tag.dto'
 import { SearchTagResponseDto } from './dto/tag-found-response.dto'
 import { DeleteDto } from './dto/delete-tag.dto'
-import { TagService } from './tag.service'
+import { SortTagDto } from './dto/sort-tag.dto'
 
 @Controller('tag')
 export class TagController {
@@ -27,7 +28,6 @@ export class TagController {
     return await this.tagService.create(createTagDto, request.user.sub)
   }
 
-
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ strategy: 'excludeAll', type: SearchTagResponseDto }) 
   @Auth(ROLE.ADMIN, ROLE.USER)
@@ -40,9 +40,15 @@ export class TagController {
   @SerializeOptions({ strategy: 'excludeAll', type: SearchTagResponseDto }) 
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('remark/list')
-  async getReMarkList() {
-    return await this.tagService.getReMarkList(false)
-  }  
+  async getReMarkList(@Req() request) {
+    return await this.tagService.getReMarkList(false, request.user.sub)
+  }
+
+  @Auth(ROLE.ADMIN)
+  @Post('remark/admin/sort')
+  async sortRemark(@Body() sortTagDto: SortTagDto) {
+    return await this.tagService.sortRemark(sortTagDto)
+  }
 
   @Auth(ROLE.ADMIN)
   @Post('admin/delete')
