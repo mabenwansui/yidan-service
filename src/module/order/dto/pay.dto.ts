@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsEnum } from 'class-validator'
 import { ORDER_STATUS } from '../schemas/order.schema'
 
-export class UpdateStageDto {
+export class PayDto {
   @IsNotEmpty()
   orderId: string
 

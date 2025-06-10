@@ -11,7 +11,8 @@ import { CreateOrderDto } from './dto/create-order.dto'
 import { SubmitOrderDto } from './dto/submit-order.dto'
 import { SearchOrderDto, FindOneOrderDto } from './dto/find-order.dto'
 import { OrderFoundOneResponseDto } from './dto/order-found-response.dto'
-import { OrderService } from './order.service'
+import { UpdateStageDto } from './dto/update-order.dto'
+import { OrderService } from './service/order.service'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
 
@@ -29,6 +30,14 @@ export class OrderController {
   @Post('submit')
   async submitOrder(@Req() request, @Body() submitDto: SubmitOrderDto) {
     return await this.orderService.submitOrder(submitDto, request.user.sub)
+  }
+
+  @Auth(ROLE.ADMIN, ROLE.USER)
+  async updateStage(@Req() request, @Body() updateStage: UpdateStageDto) {
+    return await this.orderService.updateStage({
+      ...updateStage,
+     userId: request.user.sub as string
+    })
   }
 
   @Auth(ROLE.ADMIN)

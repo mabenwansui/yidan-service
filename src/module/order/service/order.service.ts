@@ -9,10 +9,10 @@ import {
   ORDER_TYPE,
   PAYMENT_STATUS,
   PAYMENT_TYPE
-} from './schemas/order.schema'
-import { CreateOrderDto } from './dto/create-order.dto'
-import { SubmitOrderDto } from './dto/submit-order.dto'
-import { SearchOrderDto } from './dto/find-order.dto'
+} from '../schemas/order.schema'
+import { CreateOrderDto } from '../dto/create-order.dto'
+import { SubmitOrderDto } from '../dto/submit-order.dto'
+import { SearchOrderDto } from '../dto/find-order.dto'
 import { MessageService } from '@/module/message/message.service'
 import { BranchService } from '@/module/store/branch/branch.service'
 
@@ -43,7 +43,7 @@ export class OrderService {
     const branchDB = this.branchService.getModel()
     const branches = await branchDB
       .find({ _id: { $in: commoditys.map((item) => item.branchId) } })
-      .lean()    
+      .lean()
     let originalAmount = 0
     let actualAmount = 0
     commoditys.forEach((item) => {
@@ -56,7 +56,7 @@ export class OrderService {
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string): Promise<any> {
     const { commoditys, storeId, table_number } = createOrderDto
-    const { originalAmount, actualAmount } = await this.calculateAmount(commoditys)    
+    const { originalAmount, actualAmount } = await this.calculateAmount(commoditys)
     const data = {
       orderId: generateOrderId(),
       user: userId,
@@ -78,17 +78,35 @@ export class OrderService {
   async submitOrder(submitOrderDto: SubmitOrderDto, userId: string) {
     const { orderId, commoditys, ...rest } = submitOrderDto
     const data = {
-      orderStatus: ORDER_STATUS.PROCESSING,
+      _id: orderId,
+      user: userId,
+      orderStatus: ORDER_STATUS.PENDING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
-      // originalAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0),
-      // actualAmount: _commoditys.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      completedAt: new Date(),
       ...rest
     }
-    const order = await this.orderModel.findByIdAndUpdate(orderId, data)
+    const order = await this.orderModel.findOneAndUpdate(data)
     if (order) {
-      this.messageService.createOrderSystemMessage(order)
+      // this.messageService.createOrderSystemMessage(order)
       return { id: order.id }
     }
+  }
+
+  async updateStage(params: { orderId: string; userId: string; orderStatus: ORDER_STATUS }) {
+    const { orderId, userId, orderStatus } = params
+    let data: Partial<Order> = {}
+    switch (orderStatus) {
+      case orderStatus['PAID']:
+        data = { paymentStatus: PAYMENT_STATUS.PAID }
+        break
+    }
+    await this.orderModel.findOneAndUpdate({
+      _id: orderId,
+      user: userId,
+      orderStatus,
+      ...data
+    })
+    return {}
   }
 
   async getOrderList(query: SearchOrderDto) {

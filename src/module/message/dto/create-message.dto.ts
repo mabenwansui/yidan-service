@@ -2,7 +2,7 @@ import { OmitType } from '@nestjs/mapped-types'
 import { IsNotEmpty, IsOptional, IsBoolean, IsEnum } from 'class-validator'
 import { Message } from '../schemas/message.schema'
 
-export class CreateMessageDto extends OmitType(Message, ['sender']) {
+export class CreateMessageDto extends OmitType(Message, []) {
   @IsEnum(Message['type'])
   @IsNotEmpty()
   type: Message['type']
@@ -12,10 +12,6 @@ export class CreateMessageDto extends OmitType(Message, ['sender']) {
   
   @IsOptional()
   content?: string | object
-
-  @IsEnum(Message['senderType'])
-  @IsNotEmpty()
-  senderType: Message['senderType']
 
   @IsOptional()
   sender?: string

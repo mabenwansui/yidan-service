@@ -1,12 +1,12 @@
 import { MaxLength, IsNotEmpty, IsEnum, IsOptional } from 'class-validator'
-import { IntersectionType, OmitType } from '@nestjs/mapped-types'
+import { PartialType } from '@nestjs/mapped-types'
 import { presets } from '@/common/constants/valid'
 import { Order, ORDER_TYPE, PAYMENT_TYPE } from '../schemas/order.schema'
 import { CreateOrderDto } from './create-order.dto'
 
-const { maxDescriptionLength } = presets
+const { maxRemarkLength } = presets
 
-export class SubmitOrderDto extends IntersectionType(CreateOrderDto, OmitType(Order, [])) {
+export class SubmitOrderDto extends PartialType(CreateOrderDto) {
   /** 订单ID */
   @IsNotEmpty()
   orderId: string
@@ -21,12 +21,8 @@ export class SubmitOrderDto extends IntersectionType(CreateOrderDto, OmitType(Or
   @IsNotEmpty()
   paymentType: PAYMENT_TYPE
 
-  /** 操作完成时间 */
-  @IsOptional()
-  completedAt?: Date
-
   /** 备注 */
-  @MaxLength(maxDescriptionLength)
+  @MaxLength(maxRemarkLength)
   @IsOptional()
   remark?: string
 }

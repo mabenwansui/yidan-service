@@ -17,7 +17,19 @@ services:
       - mongo2-data:/data/db
     restart: always
     command: mongod --replSet rs0 --bind_ip_all
+
+  redis:
+    image: redis:7.4.4-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    restart: always
+    command: redis-server
+
 volumes:
   mongo-data:
   mongo2-data:
+  redis-data:
 

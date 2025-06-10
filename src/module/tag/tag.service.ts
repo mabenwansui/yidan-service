@@ -22,7 +22,7 @@ export class TagService {
     this.resetRemarkSort()
   }
 
-  async create(createTagDto: CreateTagDto, userId: string) {
+  async create(createTagDto: CreateTagDto & { isSystem: boolean }, userId: string) {
     const { type, isSystem } = createTagDto
     try {
       const total = await this.tagModel.countDocuments({ type, isSystem })
@@ -49,7 +49,7 @@ export class TagService {
   }
 
   async deleteUserTag(id: string, userId: string) {
-    const doc = await this.tagModel.findOneAndDelete({ id, creator: userId })
+    const doc = await this.tagModel.findOneAndDelete({ _id: id, creator: userId })
     if (!doc) {
       throw new HttpException(ERROR_MESSAGE.DELETE_TAG_ERROR, ERROR_MESSAGE.DELETE_TAG_ERROR.status)
     }

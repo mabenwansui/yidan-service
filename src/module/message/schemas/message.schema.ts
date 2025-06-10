@@ -6,11 +6,6 @@ export enum MessageType {
   ORDER = 'order'
 }
 
-export enum SenderType {
-  USER = 'user',
-  SYSTEM = 'system'
-}
-
 @Schema({ timestamps: true })
 export class Message {
   @Prop({ required: true, type: String, enum: MessageType })
@@ -22,16 +17,7 @@ export class Message {
   @Prop({ type: mongoose.Schema.Types.Mixed })
   content?: string | Object
 
-  @Prop({ required: true, type: String, enum: SenderType })
-  senderType: SenderType
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'user' })
-  sender?: Types.ObjectId
-
-  @Prop({ required: true })
-  receiverId: string
-
-  @Prop({ required: true, type: Boolean, default: false })
-  isRead?: boolean
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Order' })
+  order?: Types.ObjectId
 }
 export const MessageSchema = SchemaFactory.createForClass(Message)

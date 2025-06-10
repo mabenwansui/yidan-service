@@ -21,15 +21,23 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll', type: TagCreatedResponseDto }) 
-  @Auth(ROLE.ADMIN, ROLE.USER)
-  @Post('create')
-  async create(@Req() request, @Body() createTagDto: CreateTagDto) {
-    return await this.tagService.create(createTagDto, request.user.sub)
+  @SerializeOptions({ strategy: 'excludeAll', type: TagCreatedResponseDto })
+  @Auth(ROLE.ADMIN)
+  @Post('admin/create')
+  async create4Admin(@Req() request, @Body() createTagDto: CreateTagDto) {
+    return await this.tagService.create({ ...createTagDto, isSystem: true }, request.user.sub)
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll', type: SearchTagResponseDto }) 
+  @SerializeOptions({ strategy: 'excludeAll', type: TagCreatedResponseDto })
+  @Auth(ROLE.USER)
+  @Post('create')
+  async create(@Req() request, @Body() createTagDto: CreateTagDto) {
+    return await this.tagService.create({ ...createTagDto, isSystem: false }, request.user.sub)
+  }  
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: SearchTagResponseDto })
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('remark/admin/list')
   async getAdminReMarkList() {
@@ -37,7 +45,7 @@ export class TagController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll', type: SearchTagResponseDto }) 
+  @SerializeOptions({ strategy: 'excludeAll', type: SearchTagResponseDto })
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('remark/list')
   async getReMarkList(@Req() request) {
@@ -52,10 +60,13 @@ export class TagController {
 
   @Auth(ROLE.ADMIN)
   @Post('admin/delete')
-  async deleteBySystem(@Req() request, @Body() deleteTagDto: DeleteDto): Promise<Record<never, never>> {
+  async deleteBySystem(
+    @Req() request,
+    @Body() deleteTagDto: DeleteDto
+  ): Promise<Record<never, never>> {
     const { id } = deleteTagDto
     return await this.tagService.deleteSystemTag(id)
-  }  
+  }
 
   @Auth(ROLE.USER)
   @Post('delete')
