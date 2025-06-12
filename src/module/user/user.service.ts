@@ -74,7 +74,7 @@ export class UserService {
     role?: ROLE[]
     curPage?: number
     pageSize?: number
-  }): Promise<UserSearchResponseDto> {
+  }) {
     const db = this.userModel
     const { id, username, nickname, role, curPage, pageSize } = params
     const query: any = {}
@@ -100,7 +100,7 @@ export class UserService {
       total: total,
       curPage,
       pageSize: pageSize,
-      list: data as any
+      list: data
     }
   }
 

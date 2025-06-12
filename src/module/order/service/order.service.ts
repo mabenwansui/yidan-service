@@ -96,25 +96,35 @@ export class OrderService {
     const { orderId, userId, orderStatus } = params
     let data: Partial<Order> = {}
     switch (orderStatus) {
-      case orderStatus['PAID']:
+      case ORDER_STATUS['PAID']:
         data = { paymentStatus: PAYMENT_STATUS.PAID }
         break
     }
-    await this.orderModel.findOneAndUpdate({
-      _id: orderId,
-      user: userId,
-      orderStatus,
-      ...data
-    })
-    return {}
+    const doc = await this.orderModel.findOneAndUpdate(
+      {
+        _id: orderId,
+        user: userId
+      },
+      {
+        orderStatus,
+        ...data
+      }
+    )
+    if (!doc) {
+      throw new HttpException(
+        ERROR_MESSAGE.FOUND_ORDER_ERROR,
+        ERROR_MESSAGE.FOUND_ORDER_ERROR.status
+      )
+    }
+    return doc
   }
 
   async getOrderList(query: SearchOrderDto) {
     return await this.orderModel.find(query)
   }
 
-  async getOrder(orderId: string) {
-    return await this.orderModel.findById(orderId).populate<any>(populate)
+  async findOne(query: any) {
+    return await this.orderModel.findOne(query).populate<any>(populate)
   }
 
   async updateOrder(): Promise<any> {}

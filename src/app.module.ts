@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core'
 import { MongooseModule } from '@nestjs/mongoose'
 import { ConfigModule } from '@nestjs/config'
+import { BullModule } from '@nestjs/bullmq'
 import config from '@/config'
 import { TransformResponseInterceptor } from '@/common/interceptors/transformResponse.interceptor'
 import { HttpExceptionFilter } from '@/common/exceptionfilters/http.exceptionfilter'
@@ -23,7 +24,8 @@ import { TagModule } from '@/module/tag/tag.module'
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ...config.dbs.map((item) => MongooseModule.forRoot(item.uri)),
+    MongooseModule.forRoot(config.mongo),
+    BullModule.forRoot(config.redis),
     MapModule,
     FileModule,
     MessageModule,

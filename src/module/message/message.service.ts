@@ -1,39 +1,78 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import mongoose, { Model, Types } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Observable, Subject } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Message } from './schemas/message.schema'
-import { CreateMessageDto } from './dto/create-message.dto'
+import { ROLE } from '@/common/constants/role'
+import { UserService } from '@/module/user/user.service'
+import { Message, MessageType, SenderType } from './schemas/message.schema'
+import { MessageSystem, MessageSystemSchema } from './schemas/message_system.schema'
+import { MessageQueue } from './message.queue'
+import { JobTypeOrder } from './message.processor'
+import { CreateOrderMessageDto } from './dto/create-message.dto'
 import { MessageFoundOneResponseDto } from './dto/message-found-response.dto'
 import { MessageCreatedResponseDto } from './dto/message-created-response.dto'
-import { MessageType } from './schemas/message.schema'
+
 
 @Injectable()
 export class MessageService {
   private readonly subject = new Subject<any>()
   constructor(
     @InjectModel(Message.name)
-    private readonly messageModel: Model<Message & { createdAt: Date }>
-  ) {
-    this.getEventStream()
-  }
+    private readonly messageModel: Model<Message & { createdAt: Date }>,
+    @InjectModel(MessageSystem.name)
+    private readonly messageSystemModel: Model<MessageSystem & { createdAt: Date }>,
+    private readonly messageQueue: MessageQueue,
+    private readonly userService: UserService
+  ) {}
 
-  private emitNewMessage(message: MessageFoundOneResponseDto) {
+  public emitNewMessage(message: MessageFoundOneResponseDto) {
     this.subject.next(message)
   }
 
-  async createOrderSystemMessage(orderId: string) {
-    const doc = await this.messageModel.create({
-      type: MessageType.ORDER,
-      title: '您有新的订单',
-      order: orderId
-    })
-    // 得再查一次user
-    // this.emitNewMessage(doc)
-  }  
+  async pay(storeId: string, orderId: string) {
+    const pageSize = 100
+    const fn = async (curPage: number) => {
+      const { total, list } = await this.userService.search({
+        role: [ROLE.ADMIN, ROLE.SUPER_ADMIN],
+        curPage,
+        pageSize
+      })
+      this.messageQueue.addOrderQueue({
+        storeId,
+        userIds: list.map((item) => item._id),
+        message: {
+          orderId
+        }
+      })
+      if (curPage * pageSize < total) fn(curPage + 1)
+    }
+    fn(1)
+  }
 
-  getEventStream(): Observable<any> {
+  async insertManyOrder(dto: JobTypeOrder) {
+    const { userIds, message, storeId } = dto
+    const { orderId, ...messageRest } = message 
+    return await this.messageModel.insertMany(
+      userIds.map((receiver) => ({
+        store: storeId,
+        receiver,
+        messageType: MessageType.ORDER,
+        content: {
+          order: orderId,
+          ...messageRest
+        },
+        senderType: SenderType.SYSTEM,
+        sendTime: new Date()
+      }))
+    )
+  }
+
+  async search(query: any) {
+    return await this.messageModel.find(query).populate<any>(['receiver', 'store', 'content.order'])
+  }
+
+  getEventStream(userId: string): Observable<any> {
     return this.subject.asObservable().pipe(map((message: MessageFoundOneResponseDto) => message))
   }
 

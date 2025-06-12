@@ -6,6 +6,7 @@ import { MAP_ERROR_MESSAGE } from './mapErrorMessage'
 import { ADDRESS_ERROR_MESSAGE } from './addressErrorMessage'
 import { BRANCH_ERROR_MESSAGE } from './branchErrorMessage'
 import { TAG_ERROR_MESSAGE } from './tagErrorMessage'
+import { ORDER_ERROR_MESSAGE } from './orderErrorMessage'
 
 export const ERROR_MESSAGE = {
   ...COMMON_ERROR_MESSAGE,
@@ -15,5 +16,6 @@ export const ERROR_MESSAGE = {
   ...COMMODITY_ERROR_MESSAGE,
   ...MAP_ERROR_MESSAGE,
   ...ADDRESS_ERROR_MESSAGE,
-  ...TAG_ERROR_MESSAGE
+  ...TAG_ERROR_MESSAGE,
+  ...ORDER_ERROR_MESSAGE
 }
