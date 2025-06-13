@@ -10,7 +10,7 @@ import {
   PAYMENT_TYPE
 } from '../schemas/order.schema'
 import { OrderService } from './order.service'
-import { MessageService } from '@/module/message/message.service'
+import { MessageService } from '@/module/message/service/message.service'
 import { PayDto } from '../dto/pay.dto'
 
 @Injectable()
@@ -26,7 +26,7 @@ export class PayService {
       ...payDto,
       orderStatus: ORDER_STATUS.PAID
     })
-    await this.messageService.pay(doc.store._id.toString(), payDto.orderId)
+    await this.messageService.createPayMessage(doc.store._id.toString(), payDto.orderId)
     return {}
   }
 }

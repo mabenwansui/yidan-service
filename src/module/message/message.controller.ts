@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Get, Sse, Req } from '@nestjs/common'
 import { Auth } from '@/module/auth/guard/auth.decorator'
 import { ROLE } from '@/common/constants/role'
-import { MessageService } from './message.service'
+import { MessageService } from './service/message.service'
 
 @Controller('message')
 export class MessageController {

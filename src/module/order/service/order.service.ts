@@ -13,7 +13,7 @@ import {
 import { CreateOrderDto } from '../dto/create-order.dto'
 import { SubmitOrderDto } from '../dto/submit-order.dto'
 import { SearchOrderDto } from '../dto/find-order.dto'
-import { MessageService } from '@/module/message/message.service'
+import { MessageService } from '@/module/message/service/message.service'
 import { BranchService } from '@/module/store/branch/branch.service'
 
 const populate = [

@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { InjectQueue } from '@nestjs/bullmq'
-import { Job, Queue } from 'bullmq'
-import { JobTypeOrder, JobType } from './message.processor'
-
+import { Queue } from 'bullmq'
+import { JobType } from './interface/message.interface'
 
 @Injectable()
 export class MessageQueue {
   constructor(@InjectQueue('message') private queue: Queue<JobType>) {}
 
-  async addOrderQueue(params: JobTypeOrder) {
-    await this.queue.add('order-paid', params, { removeOnComplete: 10 })
+  async addQueue(name, params: any) {
+    await this.queue.add(name, params, { removeOnComplete: 10 })
   }
 }
