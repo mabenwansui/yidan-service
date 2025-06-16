@@ -3,13 +3,13 @@ import { Job } from 'bullmq'
 import { JobTypeOrder, JobType, JobNameType } from './interface/message.interface'
 import { MessageService } from './service/message.service'
 import { MessageDbService } from './service/message-db.service'
-import { MessageType, SenderType } from './schemas/message.schema'
+import { MessageType, SenderType } from './interface/message.interface'
 
 @Processor('message')
 export class MessageProcessor extends WorkerHost {
   constructor(
     private readonly messageService: MessageService,
-    private readonly messageDbService: MessageDbService
+    private readonly messageDbService: MessageDbService,
   ) {
     super()
   }
@@ -25,34 +25,37 @@ export class MessageProcessor extends WorkerHost {
   private async orderPaid(job: Job<JobTypeOrder>) {
     const { userIds, message, storeId } = job.data
     const { orderId, ...messageRest } = message
-    await this.messageDbService.insertMany(userIds.map((receiver)=> ({
-      store: storeId,
-      receiver,
-      messageType: MessageType.ORDER,
-      content: {
-        order: orderId,
-        ...messageRest
-      },
-      senderType: SenderType.SYSTEM,
-      sendTime: new Date()
-    })))
+    const insertDoc = await this.messageDbService.insertMany(
+      userIds.map((receiver) => ({
+        store: storeId,
+        receiver,
+        messageType: MessageType.ORDER,
+        title: '您有新的订单',
+        content: {
+          orderId
+        },
+        senderType: SenderType.SYSTEM,
+        sendTime: new Date()
+      }))
+    )
     const doc = await this.messageDbService.search({
-      store: job.data.storeId,
-      receiver: {
-        $in: job.data.userIds
-      }
+      _id: { $in: insertDoc.map((item) => item._id) }
     })
-    doc.forEach((item) => {
-      const { messageType, content, isRead, sender, senderType, readAt, sendTime } = item
+    doc.list.forEach((item) => {
+      const { messageType, content, title, isRead, sender, senderType, readAt, sendTime } = item
       this.messageService.emitEventStream(item.receiver._id.toString(), {
         id: item._id.toString(),
-        messageType,
-        content,
-        isRead,
-        sender,
-        senderType,
-        readAt,
-        sendTime
+        data: {
+          messageType,
+          title,
+          content,
+          isRead,
+          sender,
+          senderType,
+          readAt,
+          sendTime
+        },
+        type: messageType
       })
     })
   }

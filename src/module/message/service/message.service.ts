@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs'
 import { ROLE } from '@/common/constants/role'
 import { UserService } from '@/module/user/user.service'
 import { MessageQueue } from '../message.queue'
-import { JobNameType } from '../interface/message.interface'
+import { JobNameType, MessageEvent } from '../interface/message.interface'
 import { MessageFoundOneResponseDto } from '../dto/message-found-response.dto'
 
 @Injectable()
@@ -13,15 +13,14 @@ export class MessageService {
     private readonly userService: UserService
   ) {}
 
-  private userStreams = new Map<string, Subject<MessageFoundOneResponseDto>>()
-
-  emitEventStream(userId: string, message: MessageFoundOneResponseDto) {
+  private userStreams = new Map<string, Subject<MessageEvent>>()
+  emitEventStream(userId: string, messageEvent: MessageEvent) {
     const stream = this.userStreams.get(userId)
-    if (stream) stream.next(message)
+    if (stream) stream.next(messageEvent)
   }
-  getEventStream(userId: string): Observable<MessageFoundOneResponseDto> {
+  getEventStream(userId: string) {
     if (!this.userStreams.has(userId)) {
-      this.userStreams.set(userId, new Subject<MessageFoundOneResponseDto>())
+      this.userStreams.set(userId, new Subject<MessageEvent>())
     }
     return this.userStreams.get(userId).asObservable()
   }

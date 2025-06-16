@@ -1,11 +1,8 @@
-interface Maben {
-  m1: string;
-}  
 namespace NodeJS {
   interface ProcessEnv {
     JWT_CONSTANTS_SECRET: string;
-    WEIXIN_APPID: number;
-    WEIXIN_APPSECRET: boolean;
+    WEIXIN_APPID: string;
+    WEIXIN_APPSECRET: string;
     MAP_KEY: string;
   }
 }

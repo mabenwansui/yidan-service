@@ -29,10 +29,6 @@ export class OrderFoundOneResponseDto extends OmitType(Order, []) {
   store: StoreFoundOneResponseDto
 
   @Expose()
-  @Type(() => UserFoundOneResponseDto)
-  user: UserFoundOneResponseDto
-
-  @Expose()
   orderType: Order['orderType']
 
   @Expose()

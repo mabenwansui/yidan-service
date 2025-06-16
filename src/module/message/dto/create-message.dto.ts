@@ -1,6 +1,6 @@
 import { OmitType } from '@nestjs/mapped-types'
 import { IsNotEmpty, IsOptional, IsBoolean, IsEnum } from 'class-validator'
-import { Message, MessageType, SenderType } from '../schemas/message.schema'
+import { MessageType, SenderType } from '../interface/message.interface'
 
 class Content {
   orderId: string

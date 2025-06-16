@@ -78,16 +78,14 @@ export class OrderService {
   async submitOrder(submitOrderDto: SubmitOrderDto, userId: string) {
     const { orderId, commoditys, ...rest } = submitOrderDto
     const data = {
-      _id: orderId,
       user: userId,
       orderStatus: ORDER_STATUS.PENDING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
       completedAt: new Date(),
       ...rest
     }
-    const order = await this.orderModel.findOneAndUpdate(data)
+    const order = await this.orderModel.findOneAndUpdate({ _id: orderId }, data)
     if (order) {
-      // this.messageService.createOrderSystemMessage(order)
       return { id: order.id }
     }
   }

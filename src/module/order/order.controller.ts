@@ -60,7 +60,7 @@ export class OrderController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ strategy: 'excludeAll', type: OrderFoundOneResponseDto })
-  @Auth(ROLE.ADMIN, ROLE.USER)
+  @Auth(ROLE.USER)
   @Post('get-info')
   async getOrder(
     @Req() request,
@@ -69,4 +69,16 @@ export class OrderController {
     const { orderId } = findOneOrderDto
     return await this.orderService.findOne({ _id: orderId, user: request.user.sub })
   }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: OrderFoundOneResponseDto })
+  @Auth(ROLE.ADMIN)
+  @Post('admin/get-info')
+  async getAdminOrder(
+    @Req() request,
+    @Body() findOneOrderDto: FindOneOrderDto
+  ): Promise<OrderFoundOneResponseDto> {
+    const { orderId } = findOneOrderDto
+    return await this.orderService.findOne({ _id: orderId })
+  }  
 }

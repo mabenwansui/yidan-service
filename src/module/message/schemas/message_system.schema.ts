@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { Types } from 'mongoose'
-import { MessageType, SenderType, OrderContent } from './message.schema'
+import { MessageType, SenderType } from '../interface/message.interface'
 
 
 @Schema({ timestamps: true })
@@ -8,8 +8,6 @@ export class MessageSystem {
   @Prop({ required: true, enum: MessageType })
   messageType: MessageType
 
-  @Prop({ required: true, type: OrderContent })
-  content: OrderContent
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'message' })
   sender?: Types.ObjectId

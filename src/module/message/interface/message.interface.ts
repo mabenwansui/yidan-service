@@ -1,5 +1,16 @@
 import { Types } from 'mongoose'
 
+export enum JobNameType {
+  ORDER_PAID = 'order-paid'
+}
+export enum MessageType {
+  ORDER = 'order'
+}
+export enum SenderType {
+  SYSTEM = 'system',
+  USER = 'user'
+}
+
 export interface MessageEvent<DATA = any> {
   id?: string
   data: DATA
@@ -18,6 +29,3 @@ interface MessageBase<T = Record<never, never>> {
 export type JobTypeOrder = MessageBase<{ orderId: string }>
 export type JobTypeSystem = MessageBase
 export type JobType = JobTypeOrder | JobTypeSystem
-export enum JobNameType {
-  ORDER_PAID = 'order-paid'
-}

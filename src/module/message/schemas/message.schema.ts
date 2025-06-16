@@ -1,22 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { Types } from 'mongoose'
+import { MessageType, SenderType } from '../interface/message.interface'
 
-export enum MessageType {
-  ORDER = 'order'
-}
-export enum SenderType {
-  SYSTEM = 'system',
-  USER = 'user'
-}
-
-export class Base {
-  title?: string
-  content?: string
-}
-
-export class OrderContent extends Base {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'order' })
-  order: Types.ObjectId
+class Content_Order {
+  orderId: string
 }
 
 @Schema({ timestamps: true })
@@ -24,8 +11,14 @@ export class Message {
   @Prop({ required: true, enum: MessageType })
   messageType: MessageType
 
-  @Prop({ required: true, type: OrderContent })
-  content: OrderContent
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  extra: any
+
+  @Prop({ required: true, type: String })
+  title: string
+
+  @Prop({ type: Content_Order || String })
+  content: Content_Order | string
 
   @Prop({ type: Boolean, default: false })
   isRead?: boolean
@@ -49,8 +42,7 @@ export class Message {
   sendTime: Date
 }
 export const MessageSchema = SchemaFactory.createForClass(Message)
-MessageSchema.index({ store: 1, receiver: 1, createdAt: -1 })
-MessageSchema.index({ store: 1, messageType: 1, createdAt: -1 })
-MessageSchema.index({ store: 1, senderType: 1, createdAt: -1 })
-MessageSchema.index({ store: 1, messageType: 1, isRead: 1, createdAt: -1 })
-MessageSchema.index({ store: 1, messageType: 1, isRead: 1, createdAt: -1 })
+const pub = { store: 1, isRead: 1, createdAt: -1 } as const
+MessageSchema.index({ receiver: 1, ...pub })
+MessageSchema.index({ senderType: 1, ...pub })
+MessageSchema.index({ messageType: 1, ...pub })

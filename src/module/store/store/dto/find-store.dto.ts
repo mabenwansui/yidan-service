@@ -7,12 +7,6 @@ export class SearchStoreDto extends PageBaseDto {
 
   @IsOptional()
   owner?: string
-
-  constructor() {
-    super()
-    this.curPage = 1
-    this.pageSize = 100
-  }
 }
 
 export class FindNearStoreDto {
