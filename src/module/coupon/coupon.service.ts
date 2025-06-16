@@ -4,7 +4,7 @@ import { Model } from 'mongoose'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import { Coupon } from './schemas/coupon.schema'
 import { CreateCouponDto } from './dto/create-coupon.dto'
-import { MessageService } from '@/module/message/message.service'
+import { MessageService } from '@/module/message/service/message.service'
 
 @Injectable()
 export class OrderService {

@@ -8,8 +8,8 @@ export class FindOneOrderDto {
 }
 
 export class SearchOrderDto extends PageBaseDto {
-  @IsNotEmpty()
-  orderId: string 
+  @IsOptional()
+  orderId?: string 
 
   @IsOptional()
   storeId?: string
@@ -20,10 +20,4 @@ export class SearchOrderDto extends PageBaseDto {
   /** 订单状态 */
   @IsOptional()
   orderStatus?: ORDER_STATUS
-
-  constructor() {
-    super()
-    this.curPage = 1
-    this.pageSize = 20
-  }
 }

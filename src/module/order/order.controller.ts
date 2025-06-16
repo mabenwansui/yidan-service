@@ -7,18 +7,23 @@ import {
   SerializeOptions,
   ClassSerializerInterceptor
 } from '@nestjs/common'
+import { ROLE } from '@/common/constants/role'
+import { Auth } from '@/module/auth/guard/auth.decorator'
+import { OrderService } from './service/order.service'
+import { PayService } from './service/pay.service'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { SubmitOrderDto } from './dto/submit-order.dto'
 import { SearchOrderDto, FindOneOrderDto } from './dto/find-order.dto'
 import { OrderFoundOneResponseDto } from './dto/order-found-response.dto'
 import { UpdateStageDto } from './dto/update-order.dto'
-import { OrderService } from './service/order.service'
-import { Auth } from '@/module/auth/guard/auth.decorator'
-import { ROLE } from '@/common/constants/role'
+import { PayDto } from './dto/pay.dto'
 
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly payService: PayService
+  ) {}
 
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('create')
@@ -32,11 +37,18 @@ export class OrderController {
     return await this.orderService.submitOrder(submitDto, request.user.sub)
   }
 
+  @Auth(ROLE.USER)
+  @Post('pay')
+  async pay(@Req() request, @Body() payDto: PayDto) {
+    return await this.payService.pay(payDto, request.user.sub)
+  }
+
   @Auth(ROLE.ADMIN, ROLE.USER)
+  @Post('update-stage')
   async updateStage(@Req() request, @Body() updateStage: UpdateStageDto) {
     return await this.orderService.updateStage({
       ...updateStage,
-     userId: request.user.sub as string
+      userId: request.user.sub as string
     })
   }
 
@@ -48,10 +60,25 @@ export class OrderController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @SerializeOptions({ strategy: 'excludeAll', type: OrderFoundOneResponseDto })
-  @Auth(ROLE.ADMIN, ROLE.USER)
+  @Auth(ROLE.USER)
   @Post('get-info')
-  async getOrder(@Body() findOneOrderDto: FindOneOrderDto): Promise<OrderFoundOneResponseDto> {
+  async getOrder(
+    @Req() request,
+    @Body() findOneOrderDto: FindOneOrderDto
+  ): Promise<OrderFoundOneResponseDto> {
     const { orderId } = findOneOrderDto
-    return await this.orderService.getOrder(orderId)
+    return await this.orderService.findOne({ _id: orderId, user: request.user.sub })
   }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: OrderFoundOneResponseDto })
+  @Auth(ROLE.ADMIN)
+  @Post('admin/get-info')
+  async getAdminOrder(
+    @Req() request,
+    @Body() findOneOrderDto: FindOneOrderDto
+  ): Promise<OrderFoundOneResponseDto> {
+    const { orderId } = findOneOrderDto
+    return await this.orderService.findOne({ _id: orderId })
+  }  
 }

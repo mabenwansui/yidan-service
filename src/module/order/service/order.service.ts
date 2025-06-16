@@ -13,7 +13,7 @@ import {
 import { CreateOrderDto } from '../dto/create-order.dto'
 import { SubmitOrderDto } from '../dto/submit-order.dto'
 import { SearchOrderDto } from '../dto/find-order.dto'
-import { MessageService } from '@/module/message/message.service'
+import { MessageService } from '@/module/message/service/message.service'
 import { BranchService } from '@/module/store/branch/branch.service'
 
 const populate = [
@@ -78,16 +78,14 @@ export class OrderService {
   async submitOrder(submitOrderDto: SubmitOrderDto, userId: string) {
     const { orderId, commoditys, ...rest } = submitOrderDto
     const data = {
-      _id: orderId,
       user: userId,
       orderStatus: ORDER_STATUS.PENDING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
       completedAt: new Date(),
       ...rest
     }
-    const order = await this.orderModel.findOneAndUpdate(data)
+    const order = await this.orderModel.findOneAndUpdate({ _id: orderId }, data)
     if (order) {
-      // this.messageService.createOrderSystemMessage(order)
       return { id: order.id }
     }
   }
@@ -96,25 +94,35 @@ export class OrderService {
     const { orderId, userId, orderStatus } = params
     let data: Partial<Order> = {}
     switch (orderStatus) {
-      case orderStatus['PAID']:
+      case ORDER_STATUS['PAID']:
         data = { paymentStatus: PAYMENT_STATUS.PAID }
         break
     }
-    await this.orderModel.findOneAndUpdate({
-      _id: orderId,
-      user: userId,
-      orderStatus,
-      ...data
-    })
-    return {}
+    const doc = await this.orderModel.findOneAndUpdate(
+      {
+        _id: orderId,
+        user: userId
+      },
+      {
+        orderStatus,
+        ...data
+      }
+    )
+    if (!doc) {
+      throw new HttpException(
+        ERROR_MESSAGE.FOUND_ORDER_ERROR,
+        ERROR_MESSAGE.FOUND_ORDER_ERROR.status
+      )
+    }
+    return doc
   }
 
   async getOrderList(query: SearchOrderDto) {
     return await this.orderModel.find(query)
   }
 
-  async getOrder(orderId: string) {
-    return await this.orderModel.findById(orderId).populate<any>(populate)
+  async findOne(query: any) {
+    return await this.orderModel.findOne(query).populate<any>(populate)
   }
 
   async updateOrder(): Promise<any> {}

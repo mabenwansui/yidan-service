@@ -27,7 +27,8 @@ async function bootstrap() {
     origin: corsOrigin, // 允许来自 origin 的请求
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'POST'], // 允许的 HTTP 方法
     allowedHeaders: ['Content-Type', 'Authorization', 'credentials', 'X-Requested-With'], // 允许的请求头
-    credentials: true // 允许发送认证信息（cookies等）
+    credentials: true, // 允许发送认证信息（cookies等）
+    maxAge: 600 // 设置预检请求的有效期（秒）, 避免多次触发OPTIONS
   })  
   app.useStaticAssets({
     root: path.resolve('.uploadStorage'),

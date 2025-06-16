@@ -14,6 +14,7 @@ import { BranchModule } from '@/module/store/branch/branch.module'
     MessageModule
   ],
   controllers: [OrderController],
-  providers: [OrderService, PayService]
+  providers: [OrderService, PayService],
+  exports: [OrderService]
 })
 export class OrderModule {}
