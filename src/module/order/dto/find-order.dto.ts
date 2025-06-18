@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator'
 import { PageBaseDto } from '@/common/dto/page-base.dto'
-import { ORDER_STATUS } from '../schemas/order.schema'
+import { ORDER_STATUS, ORDER_TYPE } from '../schemas/order.schema'
 
 export class FindOneOrderDto {
   @IsNotEmpty()
@@ -15,7 +15,7 @@ export class SearchOrderDto extends PageBaseDto {
   storeId?: string
 
   @IsOptional()
-  orderType?: ORDER_STATUS
+  orderType?: ORDER_TYPE
 
   /** 订单状态 */
   @IsOptional()

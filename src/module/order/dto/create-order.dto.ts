@@ -15,7 +15,7 @@ export class CreateOrderDto {
 
   /** 桌号 */
   @IsOptional()
-  table_number?: string
+  tableNumber?: string
 
   @ValidateNested({ each: true })
   @Type(() => CommodityItem)

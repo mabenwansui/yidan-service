@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
 import { Message } from '../schemas/message.schema'
 import { MessageSystem } from '../schemas/message_system.schema'
+import { MessageType } from '../interface/message.interface'
 
 @Injectable()
 export class MessageDbService {
@@ -40,9 +41,10 @@ export class MessageDbService {
     return { total }
   }
 
-  async setRead(userId: string, id?: string) {
+  async setRead(params: { userId: string; id?: string; messageType: MessageType }) {
+    const { id, userId, messageType } = params
     if (id) {
-      return await this.messageModel.findOneAndUpdate(
+      await this.messageModel.findOneAndUpdate(
         {
           _id: id,
           receiver: userId
@@ -50,11 +52,28 @@ export class MessageDbService {
         { isRead: true }
       )
     } else {
-      return await this.messageModel.updateMany({ receiver: userId }, { isRead: true })
+      await this.messageModel.updateMany(
+        {
+          receiver: userId,
+          ...((messageType && { messageType }) || {})
+        },
+        { isRead: true }
+      )
     }
+    return {}
   }
 
-  async delete(id: string) {
-    return await this.messageModel.findByIdAndDelete(id)
+  async delete(params: { userId: string; id?: string; messageType: MessageType }) {
+    const { id, userId, messageType } = params
+    if (id) {
+      await this.messageModel.findOneAndDelete({ _id: id, receiver: userId })
+    } else {
+      await this.messageModel.deleteMany({ 
+        isRead: true, 
+        receiver: userId, 
+        ...((messageType && { messageType }) || {}) 
+      })
+    }
+    return {}
   }
 }

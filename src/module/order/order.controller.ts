@@ -14,7 +14,7 @@ import { PayService } from './service/pay.service'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { SubmitOrderDto } from './dto/submit-order.dto'
 import { SearchOrderDto, FindOneOrderDto } from './dto/find-order.dto'
-import { OrderFoundOneResponseDto } from './dto/order-found-response.dto'
+import { OrderFoundOneResponseDto, OrderSearchResponseDto } from './dto/order-found-response.dto'
 import { UpdateStageDto } from './dto/update-order.dto'
 import { PayDto } from './dto/pay.dto'
 
@@ -52,6 +52,8 @@ export class OrderController {
     })
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll', type: OrderSearchResponseDto })
   @Auth(ROLE.ADMIN)
   @Post('list')
   async getOrderInfo(@Body() searchOrderDto: SearchOrderDto) {

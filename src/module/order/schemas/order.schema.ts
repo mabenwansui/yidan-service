@@ -87,7 +87,7 @@ export class Order {
   paymentStatus?: PAYMENT_STATUS // 支付状态
 
   @Prop()
-  table_number?: string // 桌号
+  tableNumber?: string // 桌号
 
   @Prop()
   completedAt?: Date // 完成时间

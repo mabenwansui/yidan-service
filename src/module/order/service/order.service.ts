@@ -55,7 +55,7 @@ export class OrderService {
   }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string): Promise<any> {
-    const { commoditys, storeId, table_number } = createOrderDto
+    const { commoditys, storeId, tableNumber } = createOrderDto
     const { originalAmount, actualAmount } = await this.calculateAmount(commoditys)
     const data = {
       orderId: generateOrderId(),
@@ -67,7 +67,7 @@ export class OrderService {
         const { branchId, ...rest } = item
         return { branch: branchId, ...rest }
       }),
-      table_number,
+      tableNumber,
       originalAmount,
       actualAmount
     }

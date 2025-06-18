@@ -1,10 +1,10 @@
 import { IsOptional } from 'class-validator'
 import { MessageType } from '../interface/message.interface'
 
-export class ReadMessageDto {
+export class DeleteMessageDto {
   @IsOptional()
   id?: string
 
   @IsOptional()
-  messageType?: MessageType  
+  messageType?: MessageType
 }

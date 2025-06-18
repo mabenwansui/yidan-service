@@ -42,10 +42,12 @@ export class MessageProcessor extends WorkerHost {
       _id: { $in: insertDoc.map((item) => item._id) }
     })
     doc.list.forEach((item) => {
-      const { messageType, content, title, isRead, sender, senderType, readAt, sendTime } = item
+      const { _id, messageType, content, title, isRead, sender, senderType, readAt, sendTime } = item
+      const id = _id.toString()
       this.messageService.emitEventStream(item.receiver._id.toString(), {
-        id: item._id.toString(),
+        id,
         data: {
+          id,
           messageType,
           title,
           content,

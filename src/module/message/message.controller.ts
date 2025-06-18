@@ -15,6 +15,7 @@ import { MessageDbService } from './service/message-db.service'
 import { SearchMessageDto } from './dto/find-message.dto'
 import { MessageSearchedResponseDto } from './dto/message-found-response.dto'
 import { ReadMessageDto } from './dto/read-message.dto'
+import { DeleteMessageDto } from './dto/delete-message.dto'
 
 @Controller('message')
 export class MessageController {
@@ -23,8 +24,16 @@ export class MessageController {
     private readonly messageDbService: MessageDbService
   ) {}
 
+  @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('delete')
-  async delete() {}
+  async delete(@Req() request, @Body() deleteMessageDto: DeleteMessageDto) {
+    const { id, messageType } = deleteMessageDto
+    return await this.messageDbService.delete({
+      id,
+      userId: request.user.sub,
+      messageType
+    })
+  }
 
   @Auth(ROLE.ADMIN, ROLE.USER)
   @Post('unread-total')
@@ -35,9 +44,12 @@ export class MessageController {
   @Post('read')
   @Auth(ROLE.ADMIN, ROLE.USER)
   async read(@Req() request, @Body() readMessageDto: ReadMessageDto) {
-    const { id } = readMessageDto
-    await this.messageDbService.setRead(request.user.sub, id)
-    return {}
+    const { id, messageType } = readMessageDto
+    return await this.messageDbService.setRead({
+      id,
+      userId: request.user.sub,
+      messageType: messageType
+    })
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

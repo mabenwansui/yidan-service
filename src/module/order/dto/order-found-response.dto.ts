@@ -1,6 +1,7 @@
 import { OmitType } from '@nestjs/mapped-types'
 import { Expose, Type, Transform } from 'class-transformer'
 import { toId } from '@/common/utils/transform'
+import { PageBaseResponseDto } from '@/common/dto/page-base.dto'
 import { UserFoundOneResponseDto } from '@/module/user/dto/user-found-response.dto'
 import { StoreFoundOneResponseDto } from '@/module/store/store/dto/store-found-response.dto'
 import { BranchFoundOneByStoreResponseDto } from '@/module/store/branch/dto/branch-found-response.dto'
@@ -51,7 +52,7 @@ export class OrderFoundOneResponseDto extends OmitType(Order, []) {
   paymentStatus: Order['paymentStatus']
 
   @Expose()
-  table_number?: string
+  tableNumber?: string
 
   @Expose()
   completedAt?: Date
@@ -62,4 +63,10 @@ export class OrderFoundOneResponseDto extends OmitType(Order, []) {
   @Expose()
   @Type(() => OrderCommoditysDto)
   commoditys: OrderCommoditysDto[]
+}
+
+export class OrderSearchResponseDto extends PageBaseResponseDto {
+  @Expose()
+  @Type(() => OrderFoundOneResponseDto)
+  list: OrderFoundOneResponseDto[]
 }
