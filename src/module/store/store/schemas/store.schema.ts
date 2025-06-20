@@ -1,8 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
 import { AddressSchemas } from '@/common/schemas/address.schemas'
+import { WithMongoId } from '@/common/types/mongo.interface'
+import { UserPopulate } from '@/module/user/schemas/user.schema'
 
 export type StoreDocument = HydratedDocument<Store>
+
+export type StorePopulate = WithMongoId<Omit<Store, 'owner'> & {
+  owner: UserPopulate[]
+}>
 
 @Schema({ timestamps: true })
 export class Store extends AddressSchemas {

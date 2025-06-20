@@ -1,6 +1,7 @@
 import { Injectable, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { PAGE_SIZE } from '@/common/constants/page'
 import { generateOrderId } from '@/common/utils/generateuuid'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
 import {
@@ -10,11 +11,22 @@ import {
   PAYMENT_STATUS,
   PAYMENT_TYPE
 } from '../schemas/order.schema'
+import { MessageService } from '@/module/message/service/message.service'
+import { BranchService } from '@/module/store/branch/branch.service'
+import { StorePopulate } from '@/module/store/store/schemas/store.schema'
+import { BranchPopulate } from '@/module/store/branch/schemas/branch.schema'
+import { User } from '@/module/user/schemas/user.schema'
+import { Coupon } from '@/module/coupon/schemas/coupon.schema'
 import { CreateOrderDto } from '../dto/create-order.dto'
 import { SubmitOrderDto } from '../dto/submit-order.dto'
 import { SearchOrderDto } from '../dto/find-order.dto'
-import { MessageService } from '@/module/message/service/message.service'
-import { BranchService } from '@/module/store/branch/branch.service'
+
+type PopulateType = {
+  store: Omit<StorePopulate, 'owner'> & { owner: Omit<User, 'password'> }
+  user: Omit<User, 'openidMpWx'>
+  coupon: Coupon
+  commoditys: BranchPopulate[]
+}
 
 const populate = [
   { path: 'store', populate: { path: 'owner', select: '-password' } },
@@ -81,7 +93,6 @@ export class OrderService {
       user: userId,
       orderStatus: ORDER_STATUS.PENDING,
       paymentStatus: PAYMENT_STATUS.UNPAID,
-      completedAt: new Date(),
       ...rest
     }
     const order = await this.orderModel.findOneAndUpdate({ _id: orderId }, data)
@@ -95,7 +106,10 @@ export class OrderService {
     let data: Partial<Order> = {}
     switch (orderStatus) {
       case ORDER_STATUS['PAID']:
-        data = { paymentStatus: PAYMENT_STATUS.PAID }
+        data = { 
+          paymentStatus: PAYMENT_STATUS.PAID,
+          payAt: new Date()
+        }
         break
     }
     const doc = await this.orderModel.findOneAndUpdate(
@@ -117,12 +131,36 @@ export class OrderService {
     return doc
   }
 
-  async getOrderList(query: SearchOrderDto) {
-    return await this.orderModel.find(query)
+  async search(searchOrderDto: SearchOrderDto) {
+    const db = this.orderModel
+    const { storeId, orderType, orderStatus, curPage = 1, pageSize = PAGE_SIZE } = searchOrderDto
+    const query: any = {}
+    if (storeId) {
+      query.store = storeId
+    }
+    if (orderType) {
+      query.orderType = orderType
+    }
+    if (orderStatus) {
+      query.orderStatus = orderStatus
+    }
+    const total = await db.countDocuments(query)
+    const data = await this.orderModel
+      .find(query)
+      .populate<PopulateType>(populate)
+      .skip(Math.max(curPage - 1, 0) * pageSize)
+      .limit(pageSize)
+      .lean()
+    return {
+      total,
+      curPage,
+      pageSize: pageSize,
+      list: data      
+    }
   }
 
   async findOne(query: any) {
-    return await this.orderModel.findOne(query).populate<any>(populate)
+    return await this.orderModel.findOne(query).populate<PopulateType>(populate)
   }
 
   async updateOrder(): Promise<any> {}

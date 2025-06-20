@@ -26,7 +26,7 @@ export class OrderFoundOneResponseDto extends OmitType(Order, []) {
   orderId: string
 
   @Expose()
-  @Type(() => UserFoundOneResponseDto)
+  @Type(() => StoreFoundOneResponseDto)
   store: StoreFoundOneResponseDto
 
   @Expose()
@@ -59,6 +59,9 @@ export class OrderFoundOneResponseDto extends OmitType(Order, []) {
 
   @Expose()
   remark?: string
+
+  @Expose()
+  payAt?: Date
 
   @Expose()
   @Type(() => OrderCommoditysDto)

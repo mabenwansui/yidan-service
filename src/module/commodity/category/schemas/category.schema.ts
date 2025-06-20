@@ -2,8 +2,10 @@ import { HttpException } from '@nestjs/common'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
+import { WithMongoId } from '@/common/types/mongo.interface'
 
 export type CategoryDocument = HydratedDocument<Category>
+export type CategoryPopulate = WithMongoId<Category>
 
 @Schema()
 export class Category {

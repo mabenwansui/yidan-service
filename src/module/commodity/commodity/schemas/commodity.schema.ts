@@ -1,7 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
+import { CategoryPopulate } from '@/module/commodity/category/schemas/category.schema'
 
 export type CommodityDocument = HydratedDocument<Commodity>
+
+export type CommodityPopulate = Omit<Commodity, 'category'> & {
+  category: CategoryPopulate
+}
 
 @Schema({ timestamps: true })
 export class Commodity {

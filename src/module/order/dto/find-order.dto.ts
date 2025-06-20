@@ -9,9 +9,6 @@ export class FindOneOrderDto {
 
 export class SearchOrderDto extends PageBaseDto {
   @IsOptional()
-  orderId?: string 
-
-  @IsOptional()
   storeId?: string
 
   @IsOptional()

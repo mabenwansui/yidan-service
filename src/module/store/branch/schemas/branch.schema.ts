@@ -1,7 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
+import { WithMongoId } from '@/common/types/mongo.interface'
+import { CommodityPopulate } from '@/module/commodity/commodity/schemas/commodity.schema'
+import { CategoryPopulate } from '@/module/commodity/category/schemas/category.schema'
+import { StorePopulate } from '@/module/store/store/schemas/store.schema'
 
 export type BranchDocument = HydratedDocument<Branch>
+
+export type BranchPopulate = WithMongoId<Omit<Branch, 'commodity' | 'category' | 'store'> & {
+  commodity: CommodityPopulate
+  category: CategoryPopulate
+  store: StorePopulate
+}>
 
 @Schema({ timestamps: true })
 export class Branch {

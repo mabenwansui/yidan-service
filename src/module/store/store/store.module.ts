@@ -7,6 +7,7 @@ import { StoreService } from './store.service'
 @Module({
   imports: [MongooseModule.forFeature([{ name: Store.name, schema: StoreSchema }])],
   controllers: [StoreController],
-  providers: [StoreService]
+  providers: [StoreService],
+  exports: [StoreService]
 })
 export class StoreModule {}

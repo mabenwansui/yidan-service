@@ -1,6 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose, { HydratedDocument, Types } from 'mongoose'
-import { CartItem } from '@/module/cart/schemas/cart.schema'
+import { CartItem, CartPopulate } from '@/module/cart/schemas/cart.schema'
+import { StorePopulate } from '@/module/store/store/schemas/store.schema'
+import { User } from '@/module/user/schemas/user.schema'
+import { Coupon } from '@/module/coupon/schemas/coupon.schema'
+
+export type OrderPopulate = Omit<Order, 'store' | 'commoditys'> & {
+  store: StorePopulate
+  user: User
+  coupon: Coupon[]
+  commoditys: CartPopulate[]
+}
 
 export enum ORDER_TYPE {
   /** 堂食 */
@@ -89,7 +99,7 @@ export class Order {
   @Prop()
   tableNumber?: string // 桌号
 
-  @Prop()
+  @Prop({ type: Date })
   completedAt?: Date // 完成时间
 
   @Prop()
@@ -97,6 +107,9 @@ export class Order {
 
   @Prop({ type: [CartItem], default: [] })
   commoditys: CartItem[]
+
+  @Prop({ type: Date })
+  payAt: Date
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)

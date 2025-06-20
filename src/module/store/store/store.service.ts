@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { PAGE_SIZE } from '@/common/constants/page'
 import { WithMongoId } from '@/common/types/mongo.interface'
 import { Model } from 'mongoose'
-import { Store } from './schemas/store.schema'
+import { Store, StorePopulate } from './schemas/store.schema'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { UpdateStoreDto } from './dto/update-store.dto'
 import { SearchStoreDto, FindNearStoreDto } from './dto/find-store.dto'
@@ -75,7 +75,7 @@ export class StoreService {
       .populate('owner')
       .skip(Math.max(curPage - 1, 0) * pageSize)
       .limit(pageSize)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .lean()
     return {
       total,
@@ -83,5 +83,9 @@ export class StoreService {
       pageSize: pageSize,
       list: data.map((item) => this.formatResponse(item))
     }
+  }
+
+  async findOne(query) {
+    return await this.StoreModel.findOne(query).populate<Pick<StorePopulate, 'owner'>>('owner')
   }
 }

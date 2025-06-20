@@ -4,16 +4,17 @@ import { Model } from 'mongoose'
 import { pwdEncrypt } from '@/common/utils/pwdEncrypt'
 import { ROLE } from '@/common/constants/role'
 import { ERROR_MESSAGE } from '@/common/constants/errorMessage'
+import logger from '@/common/utils/logger'
+import { selectForm } from '@/common/constants/user'
 import { CaptchaService } from '@/module/captcha/captcha.service'
-import { User } from './schemas/user.schema'
+import { User, UserPopulate } from './schemas/user.schema'
 import { CreateUserDto, CreateAdminDto } from './dto/create-user.dto'
 import { UserFoundOneResponseDto, UserSearchResponseDto } from './dto/user-found-response.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import logger from '@/common/utils/logger'
-import { selectForm } from '@/common/constants/user'
 
 @Injectable()
 export class UserService {
+  private superAdminCache: UserPopulate
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
@@ -65,6 +66,15 @@ export class UserService {
       logger.error(error)
       throw new HttpException(ERROR_MESSAGE.USER_NOT_FOUND, ERROR_MESSAGE.USER_NOT_FOUND.status)
     }
+  }
+
+  async getSuperAdminInfo() {
+    if (this.superAdminCache) {
+      return this.superAdminCache
+    }
+    const user = await this.userModel.findOne({ role: ROLE.SUPER_ADMIN })
+    this.superAdminCache = user
+    return user
   }
 
   async search(params: {

@@ -1,8 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
+import { WithMongoId } from '@/common/types/mongo.interface'
 import { ROLE } from '@/common/constants/role'
 
 export type UserDocument = HydratedDocument<User>
+export type UserPopulate = WithMongoId<User>
 
 export enum SexType {
   male = 'male',

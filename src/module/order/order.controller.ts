@@ -57,7 +57,7 @@ export class OrderController {
   @Auth(ROLE.ADMIN)
   @Post('list')
   async getOrderInfo(@Body() searchOrderDto: SearchOrderDto) {
-    return await this.orderService.getOrderList(searchOrderDto)
+    return await this.orderService.search(searchOrderDto)
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
@@ -67,7 +67,7 @@ export class OrderController {
   async getOrder(
     @Req() request,
     @Body() findOneOrderDto: FindOneOrderDto
-  ): Promise<OrderFoundOneResponseDto> {
+  ) {
     const { orderId } = findOneOrderDto
     return await this.orderService.findOne({ _id: orderId, user: request.user.sub })
   }
@@ -79,7 +79,7 @@ export class OrderController {
   async getAdminOrder(
     @Req() request,
     @Body() findOneOrderDto: FindOneOrderDto
-  ): Promise<OrderFoundOneResponseDto> {
+  ) {
     const { orderId } = findOneOrderDto
     return await this.orderService.findOne({ _id: orderId })
   }  
