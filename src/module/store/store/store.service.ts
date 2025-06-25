@@ -64,7 +64,7 @@ export class StoreService {
 
   async search(params: SearchStoreDto) {
     const db = this.StoreModel
-    const { name, owner, curPage, pageSize = PAGE_SIZE } = params
+    const { name, owner, curPage = 1, pageSize = PAGE_SIZE } = params
     const query: any = {}
     if (name) {
       query.name = { $regex: name, $options: 'i' }
@@ -79,8 +79,8 @@ export class StoreService {
       .lean()
     return {
       total,
-      curPage,
-      pageSize: pageSize,
+      curPage: 
+      pageSize,
       list: data.map((item) => this.formatResponse(item))
     }
   }

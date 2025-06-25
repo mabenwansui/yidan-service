@@ -11,15 +11,19 @@ import {
   PAYMENT_STATUS,
   PAYMENT_TYPE
 } from '../schemas/order.schema'
-import { MessageService } from '@/module/message/service/message.service'
-import { BranchService } from '@/module/store/branch/branch.service'
-import { StorePopulate } from '@/module/store/store/schemas/store.schema'
 import { BranchPopulate } from '@/module/store/branch/schemas/branch.schema'
+import { StorePopulate } from '@/module/store/store/schemas/store.schema'
 import { User } from '@/module/user/schemas/user.schema'
 import { Coupon } from '@/module/coupon/schemas/coupon.schema'
+import { MessageService } from '@/module/message/service/message.service'
+import { BranchService } from '@/module/store/branch/branch.service'
 import { CreateOrderDto } from '../dto/create-order.dto'
 import { SubmitOrderDto } from '../dto/submit-order.dto'
-import { SearchOrderDto } from '../dto/find-order.dto'
+import {
+  SearchOrderDto,
+  AdminSearchOrderDto,
+  AdminSearchArchivedOrderDto
+} from '../dto/find-order.dto'
 
 type PopulateType = {
   store: Omit<StorePopulate, 'owner'> & { owner: Omit<User, 'password'> }
@@ -101,26 +105,39 @@ export class OrderService {
     }
   }
 
-  async updateStage(params: { orderId: string; userId: string; orderStatus: ORDER_STATUS }) {
+  async updateStage(params: { orderId: string; userId?: string; orderStatus: ORDER_STATUS }) {
     const { orderId, userId, orderStatus } = params
     let data: Partial<Order> = {}
     switch (orderStatus) {
-      case ORDER_STATUS['PAID']:
-        data = { 
+      case ORDER_STATUS.PAID:
+        data = {
           paymentStatus: PAYMENT_STATUS.PAID,
           payAt: new Date()
         }
         break
+      case ORDER_STATUS.ACCEPTED:
+        data = {
+          orderStatus: ORDER_STATUS.PROCESSING,
+          acceptedAt: new Date()
+        }
+        break
+      case ORDER_STATUS.READY:
+        data = {
+          orderStatus: ORDER_STATUS.COMPLETED,
+          completedAt: new Date()
+        }
+      case ORDER_STATUS.COMPLETED:
+        data = {
+          orderStatus: ORDER_STATUS.ARCHIVED,
+          completedAt: new Date()
+        }
     }
     const doc = await this.orderModel.findOneAndUpdate(
       {
         _id: orderId,
-        user: userId
+        ...(userId ? { user: userId } : {})
       },
-      {
-        orderStatus,
-        ...data
-      }
+      { ...data }
     )
     if (!doc) {
       throw new HttpException(
@@ -155,8 +172,26 @@ export class OrderService {
       total,
       curPage,
       pageSize: pageSize,
-      list: data      
+      list: data
     }
+  }
+
+  /** 管理后台订单列表 */
+  async adminSearch(adminSearchOrderDto: AdminSearchOrderDto) {
+    const { orderStatus, ...rest } = adminSearchOrderDto
+    return await this.search({
+      orderStatus: orderStatus
+        ? orderStatus
+        : { $nin: [ORDER_STATUS.PENDING, ORDER_STATUS.ARCHIVED] },
+      ...rest
+    })
+  }
+
+  async adminSearchArchived(adminSearchOrderDto: AdminSearchArchivedOrderDto) {
+    return await this.search({
+      orderStatus: ORDER_STATUS.ARCHIVED,
+      ...adminSearchOrderDto
+    })
   }
 
   async findOne(query: any) {

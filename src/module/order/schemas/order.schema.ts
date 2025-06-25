@@ -43,7 +43,9 @@ export enum ORDER_STATUS {
   /** 退款完成 */
   REFUNDED = 'refunded',
   /** 已完成 */
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
+  /** 已归档 */
+  ARCHIVED = 'archived'
 }
 
 export enum PAYMENT_TYPE {
@@ -99,17 +101,26 @@ export class Order {
   @Prop()
   tableNumber?: string // 桌号
 
-  @Prop({ type: Date })
-  completedAt?: Date // 完成时间
-
   @Prop()
   remark?: string // 备注
 
   @Prop({ type: [CartItem], default: [] })
   commoditys: CartItem[]
+  
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Address' })
+  address?: Types.ObjectId
 
   @Prop({ type: Date })
   payAt: Date
+
+  @Prop({ type: Date })
+  acceptedAt?: Date // 接单时间
+
+  @Prop({ type: Date })
+  completedAt?: Date // 完成时间
+
+  @Prop({ type: Date })
+  archivedAt?: Date // 归档时间
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)
